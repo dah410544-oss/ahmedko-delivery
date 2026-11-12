@@ -1,79 +1,93 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ahmedko Delivery</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHMEDKO DELIVERY</title>
 <style>
-*{box-sizing:border-box;font-family:system-ui}body{margin:0;background:#0f172a;color:#fff;padding:12px}
-.top{background:#f59e0b;color:#000;padding:15px;border-radius:15px;text-align:center}.top h1{margin:0}
-.tabs{display:flex;gap:10px;margin:12px 0}.tabs button{flex:1;padding:13px;border-radius:12px;border:0;font-weight:bold;font-size:16px;cursor:pointer}
-.tabs .on{background:#f59e0b}.tabs .off{background:#334155;color:#fff}
-.box{background:#1e293b;padding:15px;border-radius:15px;margin-bottom:12px}
-input,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:0;background:#334155;color:#fff;font-size:15px}
-label{font-size:13px;color:#cbd5e1}.price{background:#22c55e;color:#000;padding:12px;border-radius:12px;text-align:center;font-weight:bold;font-size:18px;margin:10px 0}
-.btn{width:100%;padding:14px;border:0;border-radius:12px;background:#f59e0b;font-weight:bold;font-size:17px;cursor:pointer}
-.order{background:#334155;padding:12px;border-radius:12px;margin-top:10px}
-.badge{background:#f59e0b;color:#000;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:bold}
-.small{font-size:13px;color:#cbd5e1}.driverName{background:#22c55e;color:#000;padding:10px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:10px}
+*{box-sizing:border-box;font-family:system-ui,Tahoma}
+body{margin:0;background:#0f172a;color:white}
+.header{background:#f59e0b;color:#000;text-align:center;padding:22px 12px;border-radius:0 0 20px 20px}
+.header h1{margin:0;font-size:28px}
+.header p{margin:8px 0 0;font-weight:700}
+.tabs{display:flex;gap:10px;padding:14px}
+.tabs button{flex:1;padding:14px;border:0;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;background:#1e293b;color:white}
+.tabs button.active{background:#f59e0b;color:#000}
+.card{background:#1e293b;margin:0 14px 14px;padding:16px;border-radius:18px}
+input,select,textarea{width:100%;padding:13px;margin:8px 0;border:0;border-radius:12px;background:#334155;color:white;font-size:16px}
+button.main{width:100%;padding:14px;border:0;border-radius:14px;background:#f59e0b;font-size:19px;font-weight:900;cursor:pointer}
+.wa{display:block;text-align:center;background:#25D366;color:#fff;text-decoration:none;padding:13px;border-radius:14px;font-weight:900;margin-top:10px}
+.order{background:#0f172a;padding:12px;border-radius:12px;margin-top:10px}
+.footer{text-align:center;color:#94a3b8;padding:10px 0 22px;font-size:13px}
 </style>
 </head>
 <body>
-<div class="top"><h1>🛵 AHMEDKO DELIVERY</h1><p>توصيل جميع الطرود - جميع الأنواع والأحجام</p></div>
+<div class="header">
+<h1>AHMEDKO DELIVERY 🛵</h1>
+<p>توصيل جميع الطرود - نخدم جميع قطاع غزة بشكل عام</p>
+</div>
 <div class="tabs">
-<button id="b1" class="on" onclick="show('customer')">🙋 أنا زبون</button>
-<button id="b2" class="off" onclick="show('driver')">🚗 أنا سائق</button>
+<button id="btnDriver" class="active" onclick="show('driver')">أنا سائق 🚗</button>
+<button id="btnCustomer" onclick="show('customer')">أنا زبون 🙋</button>
 </div>
-<div id="customer">
-<div class="box">
-<h3>اطلب توصيلة جديدة</h3>
-<label>اسمك</label><input id="cname" placeholder="مثال: أحمد">
-<label>رقم الجوال</label><input id="cphone" placeholder="0599xxxxxx">
-<label>نوع الطرد</label>
-<select id="ctype"><option>طرد 📦</option><option>أكل 🍔</option><option>أدوية 💊</option><option>أوراق 📄</option><option>ملابس 👕</option><option>أثاث 🛋️</option><option>أجهزة 🔌</option><option>غيره</option></select>
-<label>حجم الطرد</label>
-<select id="csize" onchange="calc()"><option value="صغير">صغير - 10 شيكل</option><option value="وسط">وسط - 15 شيكل</option><option value="كبير">كبير - 25 شيكل</option><option value="كبير جدا">كبير جداً - 40 شيكل</option></select>
-<label>من وين؟</label><input id="cfrom" placeholder="مثال: الرمال">
-<label>لوين؟</label><input id="cto" placeholder="مثال: النصيرات">
-<label>ملاحظات</label><input id="cnote" placeholder="مثال: اتصل قبل ما توصل">
-<div class="price" id="priceShow">سعر التوصيل: 10 شيكل</div>
-<button class="btn" onclick="sendOrder()">إرسال الطلب 🚀</button>
-</div>
-<div class="box"><h3>طلباتي</h3><div id="myOrders"></div></div>
-</div>
-<div id="driver" style="display:none">
-<div id="loginBox" class="box">
-<h3>🔐 دخول السائقين</h3>
-<p class="small">فقط سائقين احمدكو ديلفري</p>
+<div id="driverBox" class="card">
+<h2>🔐 دخول للسائقين</h2>
+<p>فقط لسائقين احمدكو ديلفري</p>
 <label>اسم السائق</label>
-<select id="dname"><option>أحمد</option><option>محمد</option><option>علي</option><option>سائق جديد</option></select>
+<select id="driverName">
+<option value="أبو عبيدة سلمي">أبو عبيدة سلمي</option>
+<option value="أبو عيسى هنية">أبو عيسى هنية</option>
+</select>
 <label>الرقم السري</label>
-<input id="dpass" type="password" placeholder="اكتب الرقم السري" inputmode="numeric">
-<button class="btn" onclick="login()">دخول</button>
-<p class="small" style="text-align:center;margin-top:10px">للتجربة: أحمد - 1234</p>
-</div>
+<input id="driverPass" type="password" placeholder="ادخل الرقم السري">
+<button class="main" onclick="login()">دخول</button>
 <div id="driverArea" style="display:none">
-<div class="driverName" id="welcomeDriver"></div>
-<button class="btn" style="background:#ef4444;color:#fff;margin-bottom:12px" onclick="logout()">تسجيل خروج</button>
-<div class="box"><h3>📦 الطلبات المتاحة</h3><input id="search" placeholder="ابحث..." oninput="renderDriver()"><div id="driverList"></div></div>
+<h3 id="welcome"></h3>
+<div id="orders"></div>
+<button class="main" style="background:#475569;color:white;margin-top:10px" onclick="logout()">خروج</button>
 </div>
+<a class="wa" href="https://wa.me/972598407547" target="_blank">واتساب المكتب 📲 +972598407547</a>
 </div>
+<div id="customerBox" class="card" style="display:none">
+<h2>اطلب توصيل 📦</h2>
+<input id="custName" placeholder="اسمك">
+<input id="custPhone" placeholder="رقم جوالك">
+<input id="fromLoc" placeholder="من وين؟ العنوان">
+<input id="toLoc" placeholder="لوين؟ العنوان">
+<select id="size"><option>طرد صغير</option><option>طرد متوسط</option><option>طرد كبير</option></select>
+<textarea id="notes" placeholder="ملاحظات للسائق"></textarea>
+<button class="main" onclick="makeOrder()">ارسل الطلب 🚀</button>
+<a class="wa" href="https://wa.me/972598407547?text=مرحبا%20احمدكو%20ديلفري%20بدي%20اطلب%20توصيل" target="_blank">اطلب عبر واتساب 📲</a>
+<p id="orderMsg"></p>
+</div>
+<div class="footer">AHMEDKO DELIVERY © 2026 - جميع الحقوق محفوظة<br>للتواصل: +972598407547</div>
 <script>
-let drivers={'أحمد':'1234','محمد':'2222','علي':'3333','سائق جديد':'0000'};
-let currentDriver=localStorage.getItem('ahmedko_driver')||'';
-let orders=JSON.parse(localStorage.getItem('ahmedko2')||'[]');
-let prices={'صغير':10,'وسط':15,'كبير':25,'كبير جدا':40};
-function calc(){let s=document.getElementById('csize').value;document.getElementById('priceShow').innerText='سعر التوصيل: '+prices[s]+' شيكل';return prices[s];}
-function show(w){document.getElementById('customer').style.display=w=='customer'?'block':'none';document.getElementById('driver').style.display=w=='driver'?'block':'none';document.getElementById('b1').className=w=='customer'?'on':'off';document.getElementById('b2').className=w=='driver'?'on':'off';if(w=='driver')checkLogin();else renderMine();}
-function login(){let n=document.getElementById('dname').value;let p=document.getElementById('dpass').value;if(drivers[n]==p){currentDriver=n;localStorage.setItem('ahmedko_driver',n);checkLogin();}else{alert('الرقم السري غلط!');}}
-function logout(){localStorage.removeItem('ahmedko_driver');currentDriver='';checkLogin();}
-function checkLogin(){if(currentDriver){document.getElementById('loginBox').style.display='none';document.getElementById('driverArea').style.display='block';document.getElementById('welcomeDriver').innerText='أهلا فيك يا '+currentDriver+' 🛵';renderDriver();}else{document.getElementById('loginBox').style.display='block';document.getElementById('driverArea').style.display='none';}}
-function sendOrder(){let o={name:cname.value,phone:cphone.value,type:ctype.value,size:csize.value,from:cfrom.value,to:cto.value,note:cnote.value,price:calc(),status:'بانتظار سائق',time:new Date().toLocaleString('ar')};if(!o.name||!o.phone||!o.from||!o.to){alert('عبي الاسم والجوال ومن وين لوين');return;}orders.unshift(o);localStorage.setItem('ahmedko2',JSON.stringify(orders));cname.value=cphone.value=cfrom.value=cto.value=cnote.value='';alert('تم إرسال طلبك!');renderMine();}
-function renderMine(){document.getElementById('myOrders').innerHTML=orders.map(o=>`<div class="order"><b>${o.type} - ${o.size}</b> <span class="badge">${o.price} شيكل</span><br><span class="small">من: ${o.from} إلى: ${o.to}<br>الحالة: ${o.status}</span></div>`).join('')||'لسه ما طلبت شي';}
-function renderDriver(){let q=document.getElementById('search').value||'';let f=orders.filter(o=>(o.name+o.from+o.to+o.type).includes(q));document.getElementById('driverList').innerHTML=f.map(o=>{let idx=orders.indexOf(o);return `<div class="order"><b>${o.type}</b> - ${o.size} <span class="badge">${o.price} شيكل</span><br><b>${o.name} - ${o.phone}</b><br><span class="small">من: ${o.from}<br>إلى: ${o.to}<br>ملاحظة: ${o.note||'لا يوجد'}<br>الحالة: ${o.status}</span><br><br>${o.status=='بانتظار سائق'?`<button class="btn" style="background:#22c55e" onclick="accept(${idx})">قبول الطلب ✅</button>`:o.status=='مع السائق - '+currentDriver||o.status.startsWith('مع السائق')?`<button class="btn" style="background:#3b82f6;color:#fff" onclick="finish(${idx})">تم التوصيل ✅</button>`:`<button class="btn" style="background:#64748b" onclick="del(${idx})">حذف</button>`}</div>`}).join('')||'<p>لا يوجد طلبات</p>';}
-function accept(i){orders[i].status='مع السائق - '+currentDriver;localStorage.setItem('ahmedko2',JSON.stringify(orders));renderDriver();}
-function finish(i){orders[i].status='تم التوصيل ✅';localStorage.setItem('ahmedko2',JSON.stringify(orders));renderDriver();}
-function del(i){orders.splice(i,1);localStorage.setItem('ahmedko2',JSON.stringify(orders));renderDriver();}
-calc();renderMine();checkLogin();
+const DRIVERS={"أبو عبيدة سلمي":"6070","أبو عيسى هنية":"9080"};
+let currentDriver="";
+function show(t){
+document.getElementById('driverBox').style.display=t=='driver'?'block':'none';
+document.getElementById('customerBox').style.display=t=='customer'?'block':'none';
+document.getElementById('btnDriver').className=t=='driver'?'active':'';
+document.getElementById('btnCustomer').className=t=='customer'?'active':'';
+}
+function login(){
+let n=document.getElementById('driverName').value;
+let p=document.getElementById('driverPass').value;
+if(DRIVERS[n]==p){currentDriver=n;document.getElementById('driverArea').style.display='block';document.getElementById('welcome').innerText='أهلا '+n+' 👋';loadOrders();}
+else alert('الرقم السري خطأ');
+}
+function logout(){currentDriver="";document.getElementById('driverArea').style.display='none';document.getElementById('driverPass').value='';}
+function makeOrder(){
+let o={name:document.getElementById('custName').value,phone:document.getElementById('custPhone').value,from:document.getElementById('fromLoc').value,to:document.getElementById('toLoc').value,size:document.getElementById('size').value,notes:document.getElementById('notes').value,time:new Date().toLocaleString('ar')};
+if(!o.name||!o.phone||!o.from||!o.to){alert('عبي كل البيانات');return;}
+let all=JSON.parse(localStorage.getItem('ahmedko_orders')||'[]');all.push(o);localStorage.setItem('ahmedko_orders',JSON.stringify(all));
+document.getElementById('orderMsg').innerText='✅ تم ارسال طلبك، السائق رح يتواصل معك';
+}
+function loadOrders(){
+let all=JSON.parse(localStorage.getItem('ahmedko_orders')||'[]');
+let h=all.length==0?'لا يوجد طلبات حالياً':all.map((o,i)=>`<div class="order"><b>${o.name}</b> - ${o.phone}<br>من: ${o.from}<br>إلى: ${o.to}<br>${o.size} - ${o.notes}<br><small>${o.time}</small></div>`).join('');
+document.getElementById('orders').innerHTML=h;
+}
 </script>
 </body>
 </html>
