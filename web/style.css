@@ -1,61 +1,206 @@
 
-/* AHMEDKO DELIVERY - Main Design */
-
 :root {
   --navy: #071A35;
   --blue: #102849;
   --yellow: #F5C32B;
   --white: #FFFFFF;
-  --muted: #D8DFEB;
+  --muted: #B9C7D9;
+  --border: rgba(255,255,255,.12);
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
-  margin: 0;
   background: var(--navy);
   color: var(--white);
   font-family: Arial, sans-serif;
   direction: rtl;
+  line-height: 1.7;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  transition: 0.25s;
+a { text-decoration: none; color: inherit; }
+
+.container {
+  width: min(1100px, 92%);
+  margin: auto;
 }
 
-button:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
-}
-
-.card {
-  background: var(--blue);
-  border: 1px solid #294466;
-  border-radius: 20px;
-  padding: 24px;
-  margin: 15px 0;
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
 }
 
 .logo {
   color: var(--yellow);
+  font-size: 25px;
   font-weight: 900;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
-h1, h2 {
-  font-weight: 800;
+.nav-links {
+  display: flex;
+  gap: 24px;
+  color: var(--muted);
+  font-size: 14px;
 }
 
-h2 {
+.hero {
+  padding: 75px 0;
+  text-align: center;
+  background: radial-gradient(ellipse at top, #17365b, var(--navy) 70%);
+}
+
+.hero h1 {
+  font-size: clamp(32px, 6vw, 55px);
+  line-height: 1.3;
+  margin: 15px 0;
+}
+
+.hero h1 span { color: var(--yellow); }
+
+.hero p {
+  color: var(--muted);
+  max-width: 550px;
+  margin: 15px auto 25px;
+}
+
+.btn {
+  display: inline-block;
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-primary {
+  background: var(--yellow);
+  color: var(--navy);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--yellow);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+}
+
+.section {
+  padding: 55px 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section-title h2 {
   color: var(--yellow);
+  font-size: 28px;
 }
 
-@media (max-width: 600px) {
-  main {
-    padding: 15px;
-  }
+.section-title p { color: var(--muted); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card {
+  background: var(--blue);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 25px;
+  transition: .2s;
+}
+
+.card:hover {
+  border-color: var(--yellow);
+  transform: translateY(-4px);
+}
+
+.card-icon {
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  color: var(--yellow);
+  margin-bottom: 8px;
+}
+
+.card p { color: var(--muted); }
+
+.order-box {
+  max-width: 650px;
+  margin: auto;
+  background: var(--blue);
+  padding: 28px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+}
+
+.field { margin-bottom: 17px; }
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: bold;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 14px;
+  background: var(--navy);
+  border: 1px solid #36516f;
+  border-radius: 10px;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid var(--yellow);
+}
+
+.field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.order-box .btn { width: 100%; }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 30px 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+footer strong { color: var(--yellow); }
+
+@media(max-width:700px) {
+  .grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .hero { padding: 55px 0; }
+  .section { padding: 38px 0; }
+  .order-box { padding: 20px; }
 }
