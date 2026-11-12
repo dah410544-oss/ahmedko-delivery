@@ -1,0 +1,61 @@
+
+/* AHMEDKO DELIVERY - Main Design */
+
+:root {
+  --navy: #071A35;
+  --blue: #102849;
+  --yellow: #F5C32B;
+  --white: #FFFFFF;
+  --muted: #D8DFEB;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--navy);
+  color: var(--white);
+  font-family: Arial, sans-serif;
+  direction: rtl;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.card {
+  background: var(--blue);
+  border: 1px solid #294466;
+  border-radius: 20px;
+  padding: 24px;
+  margin: 15px 0;
+}
+
+.logo {
+  color: var(--yellow);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+h1, h2 {
+  font-weight: 800;
+}
+
+h2 {
+  color: var(--yellow);
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 15px;
+  }
+}
