@@ -4,17 +4,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071A35">
-<meta name="description" content="أحمدكو ديلفري للخدمات اللوجستية والتوصيل في غزة">
-<title>أحمدكو ديلفري | AHMEDKO DELIVERY</title>
-<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#07152b">
+<meta name="description" content="أحمدكو ديلفري - خدمات التوصيل والخدمات اللوجستية في غزة والجنوب">
+<title>AHMEDKO DELIVERY | أحمدكو ديلفري</title>
+
+<style>
+:root {
+  --navy:#07152b;
+  --blue:#102849;
+  --yellow:#ffc928;
+  --white:#fff;
+  --muted:#bdc9d9;
+  --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Tahoma,Arial,sans-serif;
+  background:var(--navy);
+  color:var(--white);
+  line-height:1.8;
+}
+a{text-decoration:none;color:inherit}
+.container{width:min(1120px,92%);margin:auto}
+header{
+  position:sticky;top:0;z-index:10;
+  background:rgba(7,21,43,.96);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+nav{
+  min-height:75px;display:flex;
+  justify-content:space-between;align-items:center;
+  gap:15px;
+}
+.logo{font-size:23px;font-weight:900;color:var(--yellow)}
+.logo span{color:white}
+.nav-links{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+.nav-links a:hover{color:var(--yellow)}
+.hero{
+  padding:90px 0 85px;text-align:center;
+  background:
+  radial-gradient(ellipse at 50% 0%,#24466c 0%,transparent 65%),
+  linear-gradient(145deg,#0b1d38,#07152b);
+  border-bottom:1px solid var(--line);
+}
+.hero-label{
+  display:inline-block;padding:7px 17px;
+  border:1px solid rgba(255,201,40,.4);
+  border-radius:30px;color:var(--yellow);
+  font-size:13px;margin-bottom:22px;
+}
+.hero h1{font-size:clamp(36px,7vw,65px);line-height:1.35}
+.hero h1 span{color:var(--yellow)}
+.hero p{
+  color:var(--muted);max-width:620px;
+  margin:20px auto 28px;font-size:17px;
+}
+.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-block;padding:13px 25px;
+  border-radius:12px;font-weight:bold;
+  border:1px solid transparent;cursor:pointer;
+  font-size:15px;transition:.2s;
+}
+.btn:hover{transform:translateY(-3px)}
+.primary{background:var(--yellow);color:var(--navy)}
+.outline{border-color:var(--yellow);color:var(--yellow)}
+.section{padding:65px 0}
+.section-title{text-align:center;margin-bottom:35px}
+.section-title h2{font-size:30px;color:var(--yellow)}
+.section-title p{color:var(--muted);margin-top:5px}
+.grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.card{
+  padding:27px;background:linear-gradient(145deg,#142f50,#0d213d);
+  border:1px solid var(--line);border-radius:19px;
+  transition:.2s;
+}
+.card:hover{border-color:var(--yellow);transform:translateY(-4px)}
+.icon{font-size:35px;margin-bottom:12px}
+.card h3{color:var(--yellow);font-size:19px;margin-bottom:7px}
+.card p{color:var(--muted);font-size:14px;margin-bottom:15px}
+.order-area{
+  max-width:700px;margin:auto;padding:30px;
+  border:1px solid var(--line);border-radius:22px;
+  background:linear-gradient(145deg,#142f50,#0d213d);
+}
+.field{margin-bottom:17px}
+label{display:block;margin-bottom:7px;font-weight:bold}
+input,select,textarea{
+  width:100%;padding:14px;border-radius:10px;
+  border:1px solid #36516f;background:#071a33;
+  color:white;font:inherit;font-size:15px;
+}
+input:focus,select:focus,textarea:focus{
+  outline:2px solid var(--yellow);
+}
+textarea{min-height:95px;resize:vertical}
+.order-area button{width:100%;font:inherit}
+.note{
+  color:var(--muted);font-size:12px;
+  text-align:center;margin-top:12px;
+}
+.contact{
+  text-align:center;
+  background:linear-gradient(145deg,#142f50,#0a1a32);
+  padding:45px 20px;border-radius:22px;
+}
+.contact h2{color:var(--yellow);font-size:27px}
+.contact p{color:var(--muted);margin:8px}
+footer{
+  text-align:center;padding:35px 15px;
+  border-top:1px solid var(--line);color:var(--muted);
+}
+footer .logo{margin-bottom:8px}
+footer strong{color:var(--yellow)}
+@media(max-width:700px){
+  nav{padding:12px 0;flex-direction:column}
+  .nav-links{gap:15px;flex-wrap:wrap;justify-content:center;font-size:13px}
+  .hero{padding:65px 0}
+  .grid{grid-template-columns:1fr}
+  .section{padding:45px 0}
+  .order-area{padding:20px}
+}
+</style>
 </head>
 
 <body>
 
-<header class="container">
+<header>
+<div class="container">
 <nav>
-  <div class="logo">AHMEDKO</div>
+  <div class="logo">AHMEDKO <span>DELIVERY</span></div>
   <div class="nav-links">
     <a href="#home">الرئيسية</a>
     <a href="#services">خدماتنا</a>
@@ -22,81 +146,73 @@
     <a href="#contact">تواصل معنا</a>
   </div>
 </nav>
+</div>
 </header>
 
 <main>
 
 <section class="hero" id="home">
 <div class="container">
-  <div class="logo">AHMEDKO DELIVERY</div>
+  <div class="hero-label">🚚 الخدمات اللوجستية والتوصيل</div>
   <h1>طلبك علينا<br><span>وراحتك تهمّنا!</span></h1>
   <p>
-    خدمات توصيل لوجستية احترافية.
-    نستلم طلبك ونعمل على إيصاله بأمان وسرعة.
+    مع أحمدكو ديلفري، نوفر لك خدمات توصيل
+    باهتمام وسرعة وأمان، من الاستلام حتى التسليم.
   </p>
-  <a href="#order" class="btn btn-primary">اطلب خدمة التوصيل الآن</a>
+  <div class="actions">
+    <a href="#order" class="btn primary">اطلب توصيلك الآن</a>
+    <a href="https://wa.me/970598407547" class="btn outline">تواصل عبر واتساب</a>
+  </div>
 </div>
 </section>
 
 <section class="section container" id="services">
 <div class="section-title">
   <h2>خدمات أحمدكو</h2>
-  <p>حلول توصيل تناسب احتياجاتك</p>
+  <p>خدمات متنوعة لتلبية احتياجاتكم</p>
 </div>
-
 <div class="grid">
   <article class="card">
-    <div class="card-icon">🛵</div>
+    <div class="icon">🛵</div>
     <h3>توصيل الطلبات</h3>
-    <p>توصيل طلباتك من مكان الاستلام حتى باب منزلك.</p>
+    <p>استلام طلباتكم وتوصيلها إلى العنوان المطلوب.</p>
   </article>
-
   <article class="card">
-    <div class="card-icon">🏪</div>
-    <h3>خدمة المتاجر</h3>
-    <p>خدمات توصيل للمتاجر والمشاريع الإلكترونية.</p>
+    <div class="icon">🏪</div>
+    <h3>المتاجر والمطاعم</h3>
+    <p>نتعاون مع المتاجر والمطاعم لتوصيل طلبات الزبائن.</p>
   </article>
-
   <article class="card">
-    <div class="card-icon">🚙</div>
+    <div class="icon">🚙</div>
     <h3>وسائل نقل متعددة</h3>
-    <p>خيارات توصيل متنوعة حسب طبيعة الطلب والتوفر.</p>
+    <p>سيارات ودراجات وتكاتك ووسائل نقل حسب طبيعة الطلب والتوفر.</p>
   </article>
 </div>
 </section>
 
 <section class="section container" id="order">
 <div class="section-title">
-  <h2>اطلب توصيلك الآن</h2>
-  <p>أدخل بيانات طلبك وسنتواصل معك عبر واتساب</p>
+  <h2>اطلب خدمة التوصيل</h2>
+  <p>أدخل بياناتك وسنستقبل طلبك عبر واتساب</p>
 </div>
 
-<form class="order-box" id="orderForm">
-
+<form class="order-area" id="orderForm">
   <div class="field">
     <label for="customer">اسم الزبون</label>
-    <input id="customer" type="text" required
-      placeholder="اكتب اسمك">
+    <input id="customer" required placeholder="اكتب اسمك">
   </div>
-
   <div class="field">
-    <label for="phone">رقم هاتفك</label>
-    <input id="phone" type="tel" required
-      placeholder="رقم التواصل">
+    <label for="phone">رقم الهاتف</label>
+    <input id="phone" type="tel" required placeholder="رقم التواصل">
   </div>
-
   <div class="field">
-    <label for="pickup">موقع الاستلام</label>
-    <input id="pickup" type="text" required
-      placeholder="من أين نستلم الطلب؟">
+    <label for="pickup">منطقة الاستلام</label>
+    <input id="pickup" required placeholder="مثال: الرمال">
   </div>
-
   <div class="field">
-    <label for="delivery">موقع التسليم</label>
-    <input id="delivery" type="text" required
-      placeholder="إلى أين نوصّل الطلب؟">
+    <label for="delivery">منطقة التسليم</label>
+    <input id="delivery" required placeholder="مثال: معسكر الشاطئ">
   </div>
-
   <div class="field">
     <label for="kind">نوع الطلب</label>
     <select id="kind" required>
@@ -107,75 +223,62 @@
       <option>طلبات أخرى</option>
     </select>
   </div>
-
   <div class="field">
     <label for="notes">ملاحظات إضافية</label>
-    <textarea id="notes"
-      placeholder="أي تفاصيل إضافية عن الطلب"></textarea>
+    <textarea id="notes" placeholder="تفاصيل إضافية إن وجدت"></textarea>
   </div>
-
-  <button type="submit" class="btn btn-primary">
-    إرسال الطلب عبر واتساب
-  </button>
-
+  <button type="submit" class="btn primary">إرسال الطلب عبر واتساب</button>
+  <p class="note">سيتم فتح واتساب لمراجعة الطلب وإرساله إلى المكتب.</p>
 </form>
 </section>
 
 <section class="section container">
 <div class="section-title">
   <h2>انضم إلى عائلة أحمدكو</h2>
-  <p>نعمل معاً لنقدم خدمة توصيل أفضل</p>
+  <p>كن شريكاً في نجاح خدماتنا</p>
 </div>
-
 <div class="grid">
   <article class="card">
-    <div class="card-icon">🛵</div>
+    <div class="icon">🏍️</div>
     <h3>السائقون</h3>
-    <p>هل ترغب بالعمل معنا كسائق توصيل؟</p>
-    <a class="btn btn-outline"
-      href="https://wa.me/972598407547?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%A7%D9%84%D8%A7%D9%86%D8%B6%D9%85%D8%A7%D9%85%20%D9%84%D8%B3%D8%A7%D8%A6%D9%82%D9%8A%20%D8%A3%D8%AD%D9%85%D8%AF%D9%83%D9%88">
-      التسجيل كسائق
-    </a>
+    <p>هل ترغب بالانضمام إلى فريق سائقي أحمدكو؟</p>
+    <a class="btn outline" href="https://wa.me/970598407547?text=أرغب بالانضمام إلى سائقي أحمدكو">التسجيل كسائق</a>
   </article>
-
   <article class="card">
-    <div class="card-icon">🏪</div>
+    <div class="icon">🏬</div>
     <h3>المتاجر والمطاعم</h3>
-    <p>تعاون معنا لتوصيل طلبات زبائنك.</p>
-    <a class="btn btn-outline"
-      href="https://wa.me/972598407547?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86%20%D9%85%D8%B9%20%D8%A3%D8%AD%D9%85%D8%AF%D9%83%D9%88">
-      طلب التعاون
-    </a>
+    <p>تعاون معنا لتوصيل طلبات عملائك.</p>
+    <a class="btn outline" href="https://wa.me/970598407547?text=أرغب بالتعاون مع أحمدكو">طلب التعاون</a>
   </article>
-
   <article class="card">
-    <div class="card-icon">📞</div>
-    <h3>إدارة المكتب</h3>
-    <p>للاستفسارات والتواصل المباشر.</p>
-    <a class="btn btn-outline"
-      href="https://wa.me/972598407547">
-      تواصل معنا
-    </a>
+    <div class="icon">🤝</div>
+    <h3>خدمة العملاء</h3>
+    <p>نحن جاهزون لاستقبال استفساراتكم وطلباتكم.</p>
+    <a class="btn outline" href="https://wa.me/970598407547">تواصل معنا</a>
   </article>
+</div>
+</section>
+
+<section class="section container" id="contact">
+<div class="contact">
+  <h2>AHMEDKO DELIVERY</h2>
+  <p>الخدمات اللوجستية</p>
+  <p>📍 معسكر الشاطئ – شارع حميد</p>
+  <p>📲 واتساب: 0598407547</p>
+  <a class="btn primary" href="https://wa.me/970598407547">راسلنا الآن</a>
 </div>
 </section>
 
 </main>
 
-<footer id="contact">
-<div class="container">
+<footer>
   <div class="logo">AHMEDKO DELIVERY</div>
-  <p>الخدمات اللوجستية</p>
-  <p>معسكر الشاطئ – شارع حميد</p>
-  <p>واتساب: 0598407547</p>
+  <p>سرعتكم وراحتكم هدفنا</p>
   <p>© 2026 جميع الحقوق محفوظة</p>
-  <strong>سرعتكم وراحتكم هدفنا</strong>
-</div>
 </footer>
 
 <script>
-document.getElementById("orderForm").addEventListener("submit",
-function(event) {
+document.getElementById("orderForm").addEventListener("submit", function(event) {
   event.preventDefault();
 
   const customer = document.getElementById("customer").value.trim();
@@ -197,10 +300,8 @@ function(event) {
 
 يرجى تأكيد استلام الطلب.`;
 
-  const url = "https://wa.me/972598407547?text=" +
-    encodeURIComponent(message);
-
-  window.open(url, "_blank");
+  const url = "https://wa.me/970598407547?text=" + encodeURIComponent(message);
+  window.location.href = url;
 });
 </script>
 
