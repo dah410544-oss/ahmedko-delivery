@@ -1,223 +1,185 @@
 
 <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#081a35">
 <title>لوحة إدارة أحمدكو ديلفري</title>
-
 <style>
-:root {
-  --navy: #081a35;
-  --blue: #17365f;
-  --yellow: #f5c542;
-  --bg: #f2f5fa;
-  --white: #ffffff;
-  --text: #17243a;
-  --muted: #77849a;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Tahoma, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-header {
-  background: var(--navy);
-  color: white;
-  padding: 24px 20px;
-  border-bottom: 4px solid var(--yellow);
-}
-.brand { font-size: 23px; font-weight: bold; }
-.brand span { color: var(--yellow); }
-header p { color: #c7d3e4; font-size: 13px; }
-nav {
-  display: flex;
-  gap: 9px;
-  padding: 14px;
-  background: white;
-  overflow-x: auto;
-}
-nav a {
-  text-decoration: none;
-  color: var(--navy);
-  background: #f0f3f8;
-  padding: 11px 15px;
-  border-radius: 10px;
-  white-space: nowrap;
-  font-size: 13px;
-}
-nav a:first-child {
-  background: var(--navy);
-  color: white;
-}
-main { padding: 20px; max-width: 1200px; margin: auto; }
-.welcome {
-  background: linear-gradient(120deg, #0a1d3b, #1b4778);
-  color: white;
-  border-radius: 18px;
-  padding: 24px;
-  margin-bottom: 20px;
-}
-.welcome h1 { margin: 0 0 10px; font-size: 23px; }
-.welcome p { color: #d3deec; font-size: 13px; line-height: 1.8; }
-.welcome strong { color: var(--yellow); }
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 13px;
-}
-.card {
-  background: white;
-  border-radius: 15px;
-  padding: 18px;
-  box-shadow: 0 3px 14px #10294d0a;
-  border: 1px solid #e8edf4;
-}
-.card .icon { font-size: 23px; }
-.card p { color: var(--muted); font-size: 12px; }
-.card h2 { font-size: 25px; margin: 12px 0 5px; }
-.section-title { margin: 27px 0 13px; font-size: 17px; }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px;
-}
-.item {
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  border: 1px solid #e8edf4;
-}
-.item b { display: block; margin-bottom: 8px; }
-.item span { font-size: 12px; color: var(--muted); }
-.note {
-  background: #fff7df;
-  border: 1px solid #f3df9e;
-  padding: 13px;
-  border-radius: 12px;
-  font-size: 12px;
-  line-height: 1.8;
-  margin-top: 20px;
-}
-footer {
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
-  padding: 25px 10px;
-}
-@media(max-width:750px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .grid { grid-template-columns: repeat(2, 1fr); }
-  main { padding: 14px; }
-}
-@media(max-width:400px) {
-  .grid { grid-template-columns: 1fr; }
-  .welcome h1 { font-size: 19px; }
-}
+:root{--navy:#081a35;--blue:#17365f;--yellow:#f5c542;--bg:#f2f5fa;--text:#17243a;--muted:#77849a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--navy);color:white;padding:24px 20px;border-bottom:4px solid var(--yellow)}
+.brand{font-size:23px;font-weight:bold}.brand span{color:var(--yellow)}
+header p{color:#c7d3e4;font-size:13px}
+nav{display:flex;gap:9px;padding:14px;background:white;overflow-x:auto}
+nav a{text-decoration:none;color:var(--navy);background:#f0f3f8;padding:11px 15px;border-radius:10px;white-space:nowrap;font-size:13px}
+nav a:first-child{background:var(--navy);color:white}
+main{padding:20px;max-width:1200px;margin:auto}
+.welcome{background:linear-gradient(120deg,#0a1d3b,#1b4778);color:white;border-radius:18px;padding:24px;margin-bottom:20px}
+.welcome h1{margin:0 0 10px;font-size:23px}
+.welcome p{color:#d3deec;font-size:13px;line-height:1.8}
+.welcome strong{color:var(--yellow)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.card{background:white;border-radius:15px;padding:18px;box-shadow:0 3px 14px #10294d0a;border:1px solid #e8edf4}
+.card .icon{font-size:23px}.card p{color:var(--muted);font-size:12px}
+.card h2{font-size:25px;margin:12px 0 5px}
+.section-title{margin:27px 0 13px;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.item{background:white;padding:18px;border-radius:14px;border:1px solid #e8edf4}
+.item b{display:block;margin-bottom:8px}.item span{font-size:12px;color:var(--muted)}
+.note{background:#fff7df;border:1px solid #f3df9e;padding:13px;border-radius:12px;font-size:12px;line-height:1.8;margin-top:20px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:25px 10px}
+.auth-panel{max-width:460px;margin:30px auto;background:white;padding:22px;border-radius:16px;border:1px solid #e8edf4}
+.auth-panel h2{margin-top:0}
+.auth-panel input{width:100%;padding:13px;margin:7px 0;border:1px solid #ccd5e2;border-radius:9px;font:inherit}
+.auth-panel button,.logout{width:100%;padding:13px;margin-top:8px;background:var(--navy);color:white;border:0;border-radius:9px;font:inherit;cursor:pointer}
+#auth-message{font-size:12px;line-height:1.8;color:var(--muted)}
+[hidden]{display:none!important}
+@media(max-width:750px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}main{padding:14px}}
+@media(max-width:400px){.grid{grid-template-columns:1fr}.welcome h1{font-size:19px}}
 </style>
 </head>
-
 <body>
-
 <header>
-  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
-  <p>نظام إدارة الخدمات اللوجستية</p>
+<div class="brand">AHMEDKO <span>DELIVERY</span></div>
+<p>نظام إدارة الخدمات اللوجستية</p>
 </header>
 
 <nav>
-  <a href="#home">الرئيسية</a>
-  <a href="#orders">الطلبات</a>
-  <a href="#drivers">السائقون</a>
-  <a href="#customers">العملاء</a>
-  <a href="#finance">الحسابات</a>
-  <a href="#settings">الإعدادات</a>
+<a href="#home">الرئيسية</a>
+<a href="#orders">الطلبات</a>
+<a href="#drivers">السائقون</a>
+<a href="#customers">العملاء</a>
+<a href="#finance">الحسابات</a>
+<a href="#settings">الإعدادات</a>
 </nav>
 
-<main id="home">
+<section class="auth-panel" id="login-panel">
+<h2>دخول إدارة المكتب</h2>
+<input id="admin-email" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+<input id="admin-password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+<button id="login-button" type="button">تسجيل الدخول</button>
+<p id="auth-message">أدخل بيانات حساب المدير المعتمد.</p>
+</section>
 
-  <section class="welcome">
-    <h1>أهلاً بك في لوحة أحمدكو 👋</h1>
-    <p>
-      مركز إدارة عمليات التوصيل ومتابعة السائقين والطلبات.
-      <br>
-      <strong>طلبك علينا وراحتك تهمّنا!</strong>
-    </p>
-  </section>
+<main id="home" hidden>
+<section class="welcome">
+<h1>أهلاً بك في لوحة أحمدكو 👋</h1>
+<p>مركز إدارة عمليات التوصيل ومتابعة السائقين والطلبات.<br>
+<strong>طلبك علينا وراحتك تهمّنا!</strong></p>
+</section>
 
-  <section class="stats">
-    <div class="card">
-      <div class="icon">📦</div>
-      <p>طلبات اليوم</p>
-      <h2>—</h2>
-      <small>بانتظار ربط البيانات</small>
-    </div>
+<section class="stats">
+<div class="card"><div class="icon">📦</div><p>طلبات اليوم</p><h2 id="today-orders">—</h2><small>من بداية اليوم</small></div>
+<div class="card"><div class="icon">🛵</div><p>السائقون</p><h2 id="drivers-count">—</h2><small>إجمالي السائقين</small></div>
+<div class="card"><div class="icon">🚚</div><p>الطلبات المسندة</p><h2 id="assigned-orders">—</h2><small>طلبات مرتبطة بسائق</small></div>
+<div class="card"><div class="icon">💰</div><p>عمولة المكتب</p><h2 id="commission">—</h2><small>من أجرة التوصيل</small></div>
+</section>
 
-    <div class="card">
-      <div class="icon">🛵</div>
-      <p>السائقون</p>
-      <h2>—</h2>
-      <small>بانتظار ربط البيانات</small>
-    </div>
+<h2 class="section-title" id="orders">إدارة العمليات</h2>
+<section class="grid">
+<div class="item"><b>📦 إدارة الطلبات</b><span>استقبال الطلبات ومتابعة حالتها.</span></div>
+<div class="item" id="drivers"><b>🛵 إدارة السائقين</b><span>بيانات السائقين ووسائل النقل.</span></div>
+<div class="item" id="customers"><b>👥 إدارة العملاء</b><span>بيانات العملاء وسجل طلباتهم.</span></div>
+<div class="item" id="finance"><b>💳 الحسابات والأرباح</b><span>حصة المكتب ومستحقات السائقين.</span></div>
+<div class="item" id="settings"><b>📍 مناطق وأسعار التوصيل</b><span>إدارة المناطق والمسافات والأسعار.</span></div>
+<div class="item"><b>📊 التقارير</b><span>ملخصات الأداء والإيرادات.</span></div>
+</section>
 
-    <div class="card">
-      <div class="icon">🚚</div>
-      <p>طلبات قيد التوصيل</p>
-      <h2>—</h2>
-      <small>بانتظار ربط البيانات</small>
-    </div>
-
-    <div class="card">
-      <div class="icon">💰</div>
-      <p>عمولة المكتب</p>
-      <h2>15%</h2>
-      <small>من أجرة التوصيل</small>
-    </div>
-  </section>
-
-  <h2 class="section-title" id="orders">إدارة العمليات</h2>
-  <section class="grid">
-    <div class="item">
-      <b>📦 إدارة الطلبات</b>
-      <span>استقبال الطلبات ومتابعة حالتها.</span>
-    </div>
-    <div class="item" id="drivers">
-      <b>🛵 إدارة السائقين</b>
-      <span>بيانات السائقين ووسائل النقل.</span>
-    </div>
-    <div class="item" id="customers">
-      <b>👥 إدارة العملاء</b>
-      <span>بيانات العملاء وسجل طلباتهم.</span>
-    </div>
-    <div class="item" id="finance">
-      <b>💳 الحسابات والأرباح</b>
-      <span>حصة المكتب ومستحقات السائقين.</span>
-    </div>
-    <div class="item" id="settings">
-      <b>📍 مناطق وأسعار التوصيل</b>
-      <span>إدارة المناطق والمسافات والأسعار.</span>
-    </div>
-    <div class="item">
-      <b>📊 التقارير</b>
-      <span>ملخصات الأداء والإيرادات.</span>
-    </div>
-  </section>
-
-  <div class="note">
-    <strong>تنبيه:</strong>
-    هذه واجهة أولية للتصميم. سيتم ربط الطلبات والسائقين
-    والأرباح بقاعدة بيانات Supabase في الخطوات القادمة.
-  </div>
-
+<div class="note" id="dashboard-message">تم تسجيل الدخول إلى لوحة المكتب.</div>
+<button class="logout" id="logout-button" type="button">تسجيل الخروج</button>
 </main>
 
-<footer>
-  AHMEDKO DELIVERY © 2026
-  <br>
-  معسكر الشاطئ – شارع حميد
-</footer>
+<footer>AHMEDKO DELIVERY © 2026<br>معسكر الشاطئ – شارع حميد</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+const SUPABASE_URL="https://pqulzfhisidcatrakxsx.supabase.co";
+const SUPABASE_KEY="sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const panel=document.getElementById("login-panel");
+const main=document.getElementById("home");
+const message=document.getElementById("auth-message");
+const loginButton=document.getElementById("login-button");
+
+function showLogin(text){
+panel.hidden=false;
+main.hidden=true;
+message.textContent=text;
+}
+
+async function loadDashboard(){
+const {data:{user},error:userError}=await db.auth.getUser();
+if(userError||!user)throw new Error("تعذر التحقق من جلسة الدخول.");
+
+const {data:role,error:roleError}=await db
+.from("user_roles").select("role").eq("user_id",user.id).maybeSingle();
+
+if(roleError)throw new Error("تعذر التحقق من صلاحيات الحساب.");
+if(!role||role.role!=="admin"){
+await db.auth.signOut();
+throw new Error("هذا الحساب لا يملك صلاحية مدير المكتب.");
+}
+
+panel.hidden=true;
+main.hidden=false;
+
+const now=new Date();
+const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+
+const [orders,drivers,assigned,settings]=await Promise.all([
+db.from("orders").select("id",{count:"exact",head:true}).gte("created_at",start),
+db.from("drivers").select("id",{count:"exact",head:true}),
+db.from("orders").select("id",{count:"exact",head:true}).not("driver_id","is",null),
+db.from("business_settings").select("office_commission_percent").eq("id",1).maybeSingle()
+]);
+
+const results=[orders,drivers,assigned,settings];
+if(results.some(x=>x.error)){
+throw new Error("تعذر تحميل الإحصاءات. تحقق من صلاحيات قاعدة البيانات.");
+}
+
+document.getElementById("today-orders").textContent=orders.count??0;
+document.getElementById("drivers-count").textContent=drivers.count??0;
+document.getElementById("assigned-orders").textContent=assigned.count??0;
+document.getElementById("commission").textContent=
+settings.data?settings.data.office_commission_percent+"%":"—";
+}
+
+loginButton.addEventListener("click",async()=>{
+loginButton.disabled=true;
+message.textContent="جارٍ التحقق من بيانات الدخول...";
+try{
+const {error}=await db.auth.signInWithPassword({
+email:document.getElementById("admin-email").value.trim(),
+password:document.getElementById("admin-password").value
+});
+if(error)throw new Error("بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.");
+await loadDashboard();
+}catch(e){
+showLogin(e.message);
+}finally{
+loginButton.disabled=false;
+}
+});
+
+document.getElementById("logout-button").addEventListener("click",async()=>{
+await db.auth.signOut();
+showLogin("تم تسجيل الخروج بنجاح.");
+});
+
+db.auth.getSession().then(({data})=>{
+if(data.session){
+loadDashboard().catch(e=>showLogin(e.message));
+}
+});
+})();
+</script>
 </body>
 </html>
