@@ -1,185 +1,842 @@
 
 <!DOCTYPE html>
-
-<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#081a35">
-<title>لوحة إدارة أحمدكو ديلفري</title>
+<title>أحمدكو ديلفري | لوحة الإدارة</title>
+
 <style>
-:root{--navy:#081a35;--blue:#17365f;--yellow:#f5c542;--bg:#f2f5fa;--text:#17243a;--muted:#77849a}
+:root{
+ --navy:#081a35;
+ --blue:#17365f;
+ --yellow:#f5c542;
+ --bg:#f2f5fa;
+ --white:#fff;
+ --text:#17243a;
+ --muted:#77849a;
+ --border:#e6ebf2;
+ --red:#c0392b;
+ --green:#16845b;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{background:var(--navy);color:white;padding:24px 20px;border-bottom:4px solid var(--yellow)}
-.brand{font-size:23px;font-weight:bold}.brand span{color:var(--yellow)}
-header p{color:#c7d3e4;font-size:13px}
-nav{display:flex;gap:9px;padding:14px;background:white;overflow-x:auto}
-nav a{text-decoration:none;color:var(--navy);background:#f0f3f8;padding:11px 15px;border-radius:10px;white-space:nowrap;font-size:13px}
-nav a:first-child{background:var(--navy);color:white}
-main{padding:20px;max-width:1200px;margin:auto}
-.welcome{background:linear-gradient(120deg,#0a1d3b,#1b4778);color:white;border-radius:18px;padding:24px;margin-bottom:20px}
-.welcome h1{margin:0 0 10px;font-size:23px}
-.welcome p{color:#d3deec;font-size:13px;line-height:1.8}
+body{
+ margin:0;
+ font-family:Tahoma,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
+button,input{font:inherit}
+header{
+ background:var(--navy);
+ color:white;
+ padding:18px 22px;
+ border-bottom:4px solid var(--yellow);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+.brand{font-size:23px;font-weight:bold}
+.brand span{color:var(--yellow)}
+header small{color:#c7d3e4}
+#login-panel{
+ max-width:430px;
+ margin:55px auto;
+ padding:25px;
+ background:white;
+ border-radius:17px;
+ box-shadow:0 5px 25px #10294d12;
+}
+#login-panel h2{margin-top:0}
+#login-panel input{
+ display:block;
+ width:100%;
+ padding:14px;
+ margin:12px 0;
+ border:1px solid #ccd5e2;
+ border-radius:9px;
+}
+.primary{
+ border:0;
+ background:var(--navy);
+ color:white;
+ padding:13px 18px;
+ border-radius:9px;
+ cursor:pointer;
+}
+.primary:disabled{opacity:.6}
+#login-button{width:100%}
+#auth-message{font-size:13px;line-height:1.8;color:var(--muted)}
+.layout{
+ display:grid;
+ grid-template-columns:220px 1fr;
+ min-height:calc(100vh - 85px);
+}
+aside{
+ background:white;
+ border-left:1px solid var(--border);
+ padding:16px 12px;
+}
+.nav-button{
+ display:block;
+ width:100%;
+ text-align:right;
+ border:0;
+ background:transparent;
+ padding:13px;
+ margin-bottom:5px;
+ border-radius:9px;
+ color:var(--text);
+ cursor:pointer;
+}
+.nav-button.active,.nav-button:hover{
+ background:var(--navy);
+ color:white;
+}
+main{padding:22px;min-width:0}
+.page{display:none}
+.page.active{display:block}
+.welcome{
+ background:linear-gradient(120deg,#081a35,#1b4778);
+ color:white;
+ border-radius:17px;
+ padding:23px;
+ margin-bottom:20px;
+}
+.welcome h1{font-size:22px;margin:0 0 10px}
+.welcome p{font-size:13px;color:#d3deec;line-height:1.9}
 .welcome strong{color:var(--yellow)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
-.card{background:white;border-radius:15px;padding:18px;box-shadow:0 3px 14px #10294d0a;border:1px solid #e8edf4}
-.card .icon{font-size:23px}.card p{color:var(--muted);font-size:12px}
-.card h2{font-size:25px;margin:12px 0 5px}
-.section-title{margin:27px 0 13px;font-size:17px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.item{background:white;padding:18px;border-radius:14px;border:1px solid #e8edf4}
-.item b{display:block;margin-bottom:8px}.item span{font-size:12px;color:var(--muted)}
-.note{background:#fff7df;border:1px solid #f3df9e;padding:13px;border-radius:12px;font-size:12px;line-height:1.8;margin-top:20px}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:25px 10px}
-.auth-panel{max-width:460px;margin:30px auto;background:white;padding:22px;border-radius:16px;border:1px solid #e8edf4}
-.auth-panel h2{margin-top:0}
-.auth-panel input{width:100%;padding:13px;margin:7px 0;border:1px solid #ccd5e2;border-radius:9px;font:inherit}
-.auth-panel button,.logout{width:100%;padding:13px;margin-top:8px;background:var(--navy);color:white;border:0;border-radius:9px;font:inherit;cursor:pointer}
-#auth-message{font-size:12px;line-height:1.8;color:var(--muted)}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:13px;
+}
+.stat{
+ background:white;
+ padding:18px;
+ border:1px solid var(--border);
+ border-radius:14px;
+}
+.stat p{font-size:12px;color:var(--muted)}
+.stat h2{font-size:27px;margin:10px 0}
+.stat small{font-size:11px;color:var(--muted)}
+.section-title{font-size:18px;margin:25px 0 14px}
+.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px;
+ margin-bottom:16px;
+}
+.panel h3{margin-top:0;font-size:16px}
+.toolbar{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-bottom:13px;
+}
+.toolbar input{
+ padding:10px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ min-width:180px;
+}
+.table-wrap{overflow-x:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:550px;
+ font-size:12px;
+}
+th,td{
+ padding:12px 10px;
+ border-bottom:1px solid var(--border);
+ text-align:right;
+ max-width:230px;
+ overflow-wrap:anywhere;
+}
+th{background:#f5f7fb;color:var(--blue)}
+td{color:var(--text)}
+.status{
+ padding:5px 9px;
+ border-radius:20px;
+ background:#edf2f8;
+ font-size:11px;
+}
+.error{
+ background:#fff0ef;
+ border:1px solid #f0c5c0;
+ color:#a93226;
+ padding:13px;
+ border-radius:9px;
+ line-height:1.8;
+ font-size:12px;
+}
+.success{
+ background:#eaf8f1;
+ border:1px solid #b9e5ce;
+ color:#16764e;
+ padding:12px;
+ border-radius:9px;
+ font-size:12px;
+}
+.muted{color:var(--muted);font-size:12px}
+#logout-button{
+ width:100%;
+ margin-top:20px;
+ background:#fff0ef;
+ color:#a93226;
+ border:0;
+ padding:12px;
+ border-radius:9px;
+ cursor:pointer;
+}
+#dashboard-message{margin-top:17px}
+footer{
+ text-align:center;
+ color:var(--muted);
+ font-size:11px;
+ padding:20px;
+}
 [hidden]{display:none!important}
-@media(max-width:750px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}main{padding:14px}}
-@media(max-width:400px){.grid{grid-template-columns:1fr}.welcome h1{font-size:19px}}
+@media(max-width:800px){
+ .layout{grid-template-columns:1fr}
+ aside{
+  display:flex;
+  overflow-x:auto;
+  border-left:0;
+  border-bottom:1px solid var(--border);
+  padding:8px;
+ }
+ .nav-button{
+  width:auto;
+  min-width:max-content;
+  margin:0 3px;
+  padding:11px;
+  font-size:12px;
+ }
+ main{padding:13px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+ .brand{font-size:19px}
+ header{padding:15px}
+ .welcome{padding:17px}
+ .welcome h1{font-size:19px}
+ .stat{padding:13px}
+ .stat h2{font-size:23px}
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<div class="brand">AHMEDKO <span>DELIVERY</span></div>
-<p>نظام إدارة الخدمات اللوجستية</p>
+ <div>
+  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
+  <small>نظام إدارة الخدمات اللوجستية</small>
+ </div>
+ <small id="account-label">إدارة المكتب</small>
 </header>
 
-<nav>
-<a href="#home">الرئيسية</a>
-<a href="#orders">الطلبات</a>
-<a href="#drivers">السائقون</a>
-<a href="#customers">العملاء</a>
-<a href="#finance">الحسابات</a>
-<a href="#settings">الإعدادات</a>
-</nav>
-
-<section class="auth-panel" id="login-panel">
-<h2>دخول إدارة المكتب</h2>
-<input id="admin-email" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
-<input id="admin-password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
-<button id="login-button" type="button">تسجيل الدخول</button>
-<p id="auth-message">أدخل بيانات حساب المدير المعتمد.</p>
+<section id="login-panel" hidden>
+ <h2>دخول إدارة المكتب</h2>
+ <p class="muted">سجل الدخول بحساب المدير المعتمد.</p>
+ <input id="admin-email" type="email"
+  placeholder="البريد الإلكتروني" autocomplete="username">
+ <input id="admin-password" type="password"
+  placeholder="كلمة المرور" autocomplete="current-password">
+ <button class="primary" id="login-button">تسجيل الدخول</button>
+ <p id="auth-message">أدخل بيانات حساب المدير.</p>
 </section>
 
-<main id="home" hidden>
-<section class="welcome">
-<h1>أهلاً بك في لوحة أحمدكو 👋</h1>
-<p>مركز إدارة عمليات التوصيل ومتابعة السائقين والطلبات.<br>
-<strong>طلبك علينا وراحتك تهمّنا!</strong></p>
+<div id="app" class="layout" hidden>
+
+<aside>
+ <button class="nav-button active" data-page="home">🏠 الرئيسية</button>
+ <button class="nav-button" data-page="orders">📦 الطلبات</button>
+ <button class="nav-button" data-page="drivers">🛵 السائقون</button>
+ <button class="nav-button" data-page="stores">🏪 المتاجر</button>
+ <button class="nav-button" data-page="regions">📍 المناطق</button>
+ <button class="nav-button" data-page="rates">💰 الأسعار</button>
+ <button class="nav-button" data-page="branches">🏢 الفروع</button>
+ <button class="nav-button" data-page="finance">💳 الحسابات</button>
+ <button class="nav-button" data-page="diagnostics">🔧 فحص النظام</button>
+ <button id="logout-button">تسجيل الخروج</button>
+</aside>
+
+<main>
+
+<section class="page active" id="page-home">
+ <div class="welcome">
+  <h1>مرحباً بك في أحمدكو ديلفري 👋</h1>
+  <p>
+   مركز إدارة الطلبات والسائقين والفروع والحسابات.<br>
+   <strong>طلبك علينا وراحتك تهمّنا!</strong>
+  </p>
+ </div>
+
+ <div class="stats">
+  <div class="stat">
+   <p>📦 طلبات اليوم</p>
+   <h2 id="today-orders">—</h2>
+   <small>الطلبات المسجلة اليوم</small>
+  </div>
+  <div class="stat">
+   <p>🛵 إجمالي السائقين</p>
+   <h2 id="drivers-count">—</h2>
+   <small>السائقون المسجلون</small>
+  </div>
+  <div class="stat">
+   <p>🚚 الطلبات المسندة</p>
+   <h2 id="assigned-orders">—</h2>
+   <small>الطلبات المرتبطة بسائق</small>
+  </div>
+  <div class="stat">
+   <p>💰 عمولة المكتب</p>
+   <h2 id="commission">—</h2>
+   <small>النسبة المعتمدة</small>
+  </div>
+ </div>
+
+ <h2 class="section-title">حالة النظام</h2>
+ <div class="panel">
+  <div id="dashboard-message" class="muted">
+   جارٍ تحميل بيانات المكتب...
+  </div>
+ </div>
 </section>
 
-<section class="stats">
-<div class="card"><div class="icon">📦</div><p>طلبات اليوم</p><h2 id="today-orders">—</h2><small>من بداية اليوم</small></div>
-<div class="card"><div class="icon">🛵</div><p>السائقون</p><h2 id="drivers-count">—</h2><small>إجمالي السائقين</small></div>
-<div class="card"><div class="icon">🚚</div><p>الطلبات المسندة</p><h2 id="assigned-orders">—</h2><small>طلبات مرتبطة بسائق</small></div>
-<div class="card"><div class="icon">💰</div><p>عمولة المكتب</p><h2 id="commission">—</h2><small>من أجرة التوصيل</small></div>
+<section class="page" id="page-orders">
+ <h2 class="section-title">إدارة الطلبات</h2>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>سجل الطلبات</h3>
+   <input class="search" data-table="orders" placeholder="بحث في الطلبات">
+  </div>
+  <div id="table-orders" class="muted">جارٍ التحميل...</div>
+ </div>
 </section>
 
-<h2 class="section-title" id="orders">إدارة العمليات</h2>
-<section class="grid">
-<div class="item"><b>📦 إدارة الطلبات</b><span>استقبال الطلبات ومتابعة حالتها.</span></div>
-<div class="item" id="drivers"><b>🛵 إدارة السائقين</b><span>بيانات السائقين ووسائل النقل.</span></div>
-<div class="item" id="customers"><b>👥 إدارة العملاء</b><span>بيانات العملاء وسجل طلباتهم.</span></div>
-<div class="item" id="finance"><b>💳 الحسابات والأرباح</b><span>حصة المكتب ومستحقات السائقين.</span></div>
-<div class="item" id="settings"><b>📍 مناطق وأسعار التوصيل</b><span>إدارة المناطق والمسافات والأسعار.</span></div>
-<div class="item"><b>📊 التقارير</b><span>ملخصات الأداء والإيرادات.</span></div>
+<section class="page" id="page-drivers">
+ <h2 class="section-title">إدارة السائقين</h2>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>سجل السائقين</h3>
+   <input class="search" data-table="drivers" placeholder="بحث عن سائق">
+  </div>
+  <div id="table-drivers" class="muted">جارٍ التحميل...</div>
+ </div>
 </section>
 
-<div class="note" id="dashboard-message">تم تسجيل الدخول إلى لوحة المكتب.</div>
-<button class="logout" id="logout-button" type="button">تسجيل الخروج</button>
+<section class="page" id="page-stores">
+ <h2 class="section-title">إدارة المتاجر</h2>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>المتاجر المسجلة</h3>
+   <input class="search" data-table="stores" placeholder="بحث عن متجر">
+  </div>
+  <div id="table-stores" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-regions">
+ <h2 class="section-title">مناطق التوصيل</h2>
+ <div class="panel">
+  <h3>المناطق المسجلة</h3>
+  <div id="table-regions" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-rates">
+ <h2 class="section-title">أسعار التوصيل</h2>
+ <div class="panel">
+  <h3>جدول الأسعار</h3>
+  <div id="table-delivery_rates" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-branches">
+ <h2 class="section-title">إدارة الفروع</h2>
+ <div class="panel">
+  <h3>الفروع المسجلة</h3>
+  <div id="table-branches" class="muted">جارٍ التحميل...</div>
+ </div>
+ <div class="panel">
+  <h3>ربط مديري الفروع</h3>
+  <div id="table-branch_users" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-finance">
+ <h2 class="section-title">الحسابات والعمولات</h2>
+ <div class="panel">
+  <h3>إعدادات العمولة</h3>
+  <p>عمولة المكتب: <strong id="finance-commission">—</strong></p>
+  <p>العملة: <strong id="finance-currency">—</strong></p>
+  <p class="muted">
+   يتم عرض نسبة العمولة من إعدادات النشاط التجاري.
+   لا يتم تعديل سجلات الأرباح تلقائياً من هذه الصفحة.
+  </p>
+ </div>
+ <div class="panel">
+  <h3>ملخص الطلبات</h3>
+  <p id="finance-summary" class="muted">جارٍ التحميل...</p>
+ </div>
+</section>
+
+<section class="page" id="page-diagnostics">
+ <h2 class="section-title">فحص قاعدة البيانات</h2>
+ <div class="panel">
+  <h3>نتائج الاتصال والصلاحيات</h3>
+  <p class="muted">
+   تظهر هنا نتيجة كل جدول بشكل مستقل لتحديد سبب أي مشكلة.
+  </p>
+  <div id="diagnostics-list">جارٍ الفحص...</div>
+ </div>
+</section>
+
 </main>
+</div>
 
-<footer>AHMEDKO DELIVERY © 2026<br>معسكر الشاطئ – شارع حميد</footer>
+<footer>
+ AHMEDKO DELIVERY © 2026<br>
+ معسكر الشاطئ – شارع حميد
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 (() => {
-const SUPABASE_URL="https://pqulzfhisidcatrakxsx.supabase.co";
-const SUPABASE_KEY="sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+"use strict";
 
-const panel=document.getElementById("login-panel");
-const main=document.getElementById("home");
-const message=document.getElementById("auth-message");
-const loginButton=document.getElementById("login-button");
+const SUPABASE_URL =
+ "https://pqulzfhisidcatrakxsx.supabase.co";
 
-function showLogin(text){
-panel.hidden=false;
-main.hidden=true;
-message.textContent=text;
+const SUPABASE_KEY =
+ "sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+const panel = $("login-panel");
+const app = $("app");
+const authMessage = $("auth-message");
+
+let currentUser = null;
+let diagnostics = {};
+let tableData = {};
+
+const tableConfig = {
+ orders:{
+  title:"الطلبات",
+  columns:[
+   "id","customer_name","customer_phone",
+   "pickup_address","delivery_address",
+   "status","delivery_price","driver_id","created_at"
+  ]
+ },
+ drivers:{
+  title:"السائقون",
+  columns:[
+   "id","full_name","phone","vehicle_type",
+   "is_active","application_status","created_at"
+  ]
+ },
+ stores:{
+  title:"المتاجر",
+  columns:[
+   "id","store_name","contact_name",
+   "phone","address","store_type","is_active"
+  ]
+ },
+ regions:{
+  title:"المناطق",
+  columns:["id","name","is_active","created_at"]
+ },
+ delivery_rates:{
+  title:"أسعار التوصيل",
+  columns:[
+   "id","pickup_region_id","delivery_region_id",
+   "vehicle_type","price","currency","is_active"
+  ]
+ },
+ branches:{
+  title:"الفروع",
+  columns:["id","branch_name","address","is_active","created_at"]
+ },
+ branch_users:{
+  title:"مديرو الفروع",
+  columns:["user_id","branch_id","created_at"]
+ }
+};
+
+function escapeHTML(value){
+ return String(value ?? "")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+function showLogin(message){
+ app.hidden = true;
+ panel.hidden = false;
+ authMessage.textContent = message || "أدخل بيانات المدير.";
+}
+
+function showApp(){
+ panel.hidden = true;
+ app.hidden = false;
+}
+
+function showPage(name){
+ document.querySelectorAll(".page").forEach(page=>{
+  page.classList.toggle("active",page.id==="page-"+name);
+ });
+ document.querySelectorAll(".nav-button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.page===name);
+ });
+}
+
+document.querySelectorAll(".nav-button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  showPage(button.dataset.page);
+ });
+});
+
+async function verifyAdmin(){
+ const {data,error} = await db.auth.getUser();
+
+ if(error || !data.user){
+  throw new Error("تعذر التحقق من حساب الدخول.");
+ }
+
+ currentUser = data.user;
+
+ const result = await db
+  .from("user_roles")
+  .select("role")
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
+
+ if(result.error){
+  throw new Error(
+   "فشل الوصول إلى جدول user_roles: "+result.error.message
+  );
+ }
+
+ if(!result.data || result.data.role !== "admin"){
+  await db.auth.signOut();
+  throw new Error("هذا الحساب ليس مديراً معتمداً.");
+ }
+
+ $("account-label").textContent =
+  currentUser.email || "مدير المكتب";
+
+ return true;
+}
+
+function setDiagnostic(name,ok,detail){
+ diagnostics[name] = {ok,detail};
+ renderDiagnostics();
+}
+
+function renderDiagnostics(){
+ const container = $("diagnostics-list");
+ container.innerHTML = "";
+
+ Object.entries(diagnostics).forEach(([name,result])=>{
+  const div = document.createElement("div");
+  div.style.marginBottom = "10px";
+
+  const status = result.ok
+   ? "✅ متاح"
+   : "❌ فشل الوصول";
+
+  div.innerHTML =
+   '<div class="'+(result.ok?"success":"error")+'">'+
+   '<strong>'+escapeHTML(name)+'</strong> — '+status+
+   '<br>'+escapeHTML(result.detail)+
+   '</div>';
+
+  container.appendChild(div);
+ });
+}
+
+async function countTable(name,query){
+ try{
+  const result = await query;
+
+  if(result.error){
+   setDiagnostic(name,false,result.error.message);
+   return {ok:false,count:null};
+  }
+
+  setDiagnostic(name,true,"تم الاتصال بنجاح.");
+  return {ok:true,count:result.count ?? 0};
+ }catch(error){
+  setDiagnostic(name,false,error.message);
+  return {ok:false,count:null};
+ }
+}
+
+async function loadTable(name){
+ const config = tableConfig[name];
+ if(!config) return;
+
+ const container = $("table-"+name);
+ container.textContent = "جارٍ تحميل البيانات...";
+
+ try{
+  let query = db.from(name).select("*");
+
+  if(name !== "business_settings"){
+   query = query.order("created_at",{ascending:false});
+  }
+
+  const result = await query.limit(100);
+
+  if(result.error){
+   container.innerHTML =
+    '<div class="error">تعذر قراءة جدول '+
+    escapeHTML(name)+': '+
+    escapeHTML(result.error.message)+
+    '</div>';
+
+   setDiagnostic(name,false,result.error.message);
+   return;
+  }
+
+  tableData[name] = result.data || [];
+  setDiagnostic(name,true,"تم تحميل "+tableData[name].length+" سجل.");
+
+  renderTable(name);
+
+ }catch(error){
+  container.innerHTML =
+   '<div class="error">'+escapeHTML(error.message)+'</div>';
+  setDiagnostic(name,false,error.message);
+ }
+}
+
+function renderTable(name,search=""){
+ const config = tableConfig[name];
+ const container = $("table-"+name);
+ const rows = tableData[name] || [];
+
+ const filtered = rows.filter(row=>
+  JSON.stringify(row).toLowerCase().includes(search.toLowerCase())
+ );
+
+ if(!filtered.length){
+  container.innerHTML =
+   '<p class="muted">لا توجد بيانات للعرض.</p>';
+  return;
+ }
+
+ const columns = config.columns.filter(column=>
+  filtered.some(row=>Object.hasOwn(row,column))
+ );
+
+ let html = '<div class="table-wrap"><table><thead><tr>';
+
+ columns.forEach(column=>{
+  html += "<th>"+escapeHTML(column)+"</th>";
+ });
+
+ html += "</tr></thead><tbody>";
+
+ filtered.forEach(row=>{
+  html += "<tr>";
+  columns.forEach(column=>{
+   let value = row[column];
+
+   if(typeof value === "boolean"){
+    value = value ? "نعم" : "لا";
+   }
+
+   if(value === null || value === undefined){
+    value = "—";
+   }
+
+   if(typeof value === "object"){
+    value = JSON.stringify(value);
+   }
+
+   html += "<td>"+escapeHTML(value)+"</td>";
+  });
+  html += "</tr>";
+ });
+
+ html += "</tbody></table></div>";
+ container.innerHTML = html;
+}
+
+document.querySelectorAll(".search").forEach(input=>{
+ input.addEventListener("input",()=>{
+  renderTable(input.dataset.table,input.value);
+ });
+});
+
+async function loadSettings(){
+ const result = await db
+  .from("business_settings")
+  .select("office_commission_percent,currency")
+  .eq("id",1)
+  .maybeSingle();
+
+ if(result.error){
+  $("commission").textContent = "خطأ";
+  $("finance-commission").textContent = "غير متاح";
+  $("finance-currency").textContent = "غير متاح";
+
+  setDiagnostic("business_settings",false,result.error.message);
+  return;
+ }
+
+ setDiagnostic("business_settings",true,"تم تحميل إعدادات المكتب.");
+
+ const commission = result.data?.office_commission_percent;
+ const currency = result.data?.currency;
+
+ $("commission").textContent =
+  commission === null || commission === undefined
+   ? "—" : commission+"%";
+
+ $("finance-commission").textContent =
+  commission === null || commission === undefined
+   ? "—" : commission+"%";
+
+ $("finance-currency").textContent = currency || "—";
+}
+
+async function loadStatistics(){
+ const now = new Date();
+ const start = new Date(
+  now.getFullYear(),now.getMonth(),now.getDate()
+ ).toISOString();
+
+ const [orders,drivers,assigned] = await Promise.all([
+  countTable(
+   "orders",
+   db.from("orders")
+    .select("id",{count:"exact",head:true})
+    .gte("created_at",start)
+  ),
+  countTable(
+   "drivers",
+   db.from("drivers")
+    .select("id",{count:"exact",head:true})
+  ),
+  countTable(
+   "assigned orders",
+   db.from("orders")
+    .select("id",{count:"exact",head:true})
+    .not("driver_id","is",null)
+  )
+ ]);
+
+ $("today-orders").textContent =
+  orders.ok ? orders.count : "خطأ";
+
+ $("drivers-count").textContent =
+  drivers.ok ? drivers.count : "خطأ";
+
+ $("assigned-orders").textContent =
+  assigned.ok ? assigned.count : "خطأ";
+
+ $("finance-summary").textContent =
+  "طلبات اليوم: "+(orders.ok?orders.count:"غير متاح")+
+  " | الطلبات المسندة: "+(assigned.ok?assigned.count:"غير متاح");
+
+ const failed = [orders,drivers,assigned].filter(x=>!x.ok).length;
+
+ $("dashboard-message").innerHTML = failed
+  ? '<div class="error">يوجد '+failed+
+    ' استعلامات لم تنجح. افتح قسم فحص النظام لمعرفة التفاصيل.</div>'
+  : '<div class="success">تم تحميل الإحصائيات بنجاح.</div>';
 }
 
 async function loadDashboard(){
-const {data:{user},error:userError}=await db.auth.getUser();
-if(userError||!user)throw new Error("تعذر التحقق من جلسة الدخول.");
+ await verifyAdmin();
+ showApp();
+ showPage("home");
 
-const {data:role,error:roleError}=await db
-.from("user_roles").select("role").eq("user_id",user.id).maybeSingle();
+ diagnostics = {};
+ renderDiagnostics();
 
-if(roleError)throw new Error("تعذر التحقق من صلاحيات الحساب.");
-if(!role||role.role!=="admin"){
-await db.auth.signOut();
-throw new Error("هذا الحساب لا يملك صلاحية مدير المكتب.");
+ await Promise.all([
+  loadStatistics(),
+  loadSettings(),
+  ...Object.keys(tableConfig).map(loadTable)
+ ]);
 }
 
-panel.hidden=true;
-main.hidden=false;
+$("login-button").addEventListener("click",async()=>{
+ const button = $("login-button");
+ button.disabled = true;
+ authMessage.textContent = "جارٍ التحقق من الحساب...";
 
-const now=new Date();
-const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+ try{
+  const {error} = await db.auth.signInWithPassword({
+   email:$("admin-email").value.trim(),
+   password:$("admin-password").value
+  });
 
-const [orders,drivers,assigned,settings]=await Promise.all([
-db.from("orders").select("id",{count:"exact",head:true}).gte("created_at",start),
-db.from("drivers").select("id",{count:"exact",head:true}),
-db.from("orders").select("id",{count:"exact",head:true}).not("driver_id","is",null),
-db.from("business_settings").select("office_commission_percent").eq("id",1).maybeSingle()
-]);
+  if(error) throw error;
 
-const results=[orders,drivers,assigned,settings];
-if(results.some(x=>x.error)){
-throw new Error("تعذر تحميل الإحصاءات. تحقق من صلاحيات قاعدة البيانات.");
-}
+  await loadDashboard();
 
-document.getElementById("today-orders").textContent=orders.count??0;
-document.getElementById("drivers-count").textContent=drivers.count??0;
-document.getElementById("assigned-orders").textContent=assigned.count??0;
-document.getElementById("commission").textContent=
-settings.data?settings.data.office_commission_percent+"%":"—";
-}
-
-loginButton.addEventListener("click",async()=>{
-loginButton.disabled=true;
-message.textContent="جارٍ التحقق من بيانات الدخول...";
-try{
-const {error}=await db.auth.signInWithPassword({
-email:document.getElementById("admin-email").value.trim(),
-password:document.getElementById("admin-password").value
-});
-if(error)throw new Error("بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.");
-await loadDashboard();
-}catch(e){
-showLogin(e.message);
-}finally{
-loginButton.disabled=false;
-}
+ }catch(error){
+  showLogin(error.message || "تعذر تسجيل الدخول.");
+ }finally{
+  button.disabled = false;
+ }
 });
 
-document.getElementById("logout-button").addEventListener("click",async()=>{
-await db.auth.signOut();
-showLogin("تم تسجيل الخروج بنجاح.");
+$("admin-password").addEventListener("keydown",event=>{
+ if(event.key==="Enter") $("login-button").click();
 });
 
-db.auth.getSession().then(({data})=>{
-if(data.session){
-loadDashboard().catch(e=>showLogin(e.message));
-}
+$("logout-button").addEventListener("click",async()=>{
+ await db.auth.signOut();
+ currentUser = null;
+ showLogin("تم تسجيل الخروج بنجاح.");
 });
+
+db.auth.onAuthStateChange((event,session)=>{
+ if(event==="SIGNED_OUT"){
+  showLogin("يرجى تسجيل الدخول.");
+ }
+});
+
+(async()=>{
+ try{
+  const {data,error} = await db.auth.getSession();
+  if(error) throw error;
+
+  if(data.session){
+   await loadDashboard();
+  }else{
+   showLogin("أدخل بيانات حساب المدير المعتمد.");
+  }
+ }catch(error){
+  showLogin(error.message);
+ }
+})();
+
 })();
 </script>
+
 </body>
 </html>
