@@ -692,8 +692,8 @@ async function loadSettings(){
  const result = await db
   .from("business_settings")
   .select("office_commission_percent,currency")
-  .eq("id",1)
-  .maybeSingle();
+  .limit(1)
+.maybeSingle();
 
  if(result.error){
   $("commission").textContent = "خطأ";
