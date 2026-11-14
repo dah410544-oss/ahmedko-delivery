@@ -688,7 +688,7 @@ document.querySelectorAll(".search").forEach(input=>{
  });
 });
 
-async function loadSettings(){
+async  function loadSettings(){
  const result = await db
   .from("business_settings")
   .select("office_commission_percent,currency")
