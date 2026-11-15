@@ -20,6 +20,12 @@ a{color:inherit}button,input{font:inherit}
 .hero>*{position:relative;z-index:1}.eyebrow{display:inline-block;color:var(--yellow);font-weight:bold;letter-spacing:.5px;background:#f5c32b18;border:1px solid #f5c32b55;border-radius:30px;padding:5px 14px}
 .hero h1{font-size:clamp(32px,7vw,54px);line-height:1.35;margin:15px 0}.hero h1 span{color:var(--yellow)}.hero p{color:#dce5f0;max-width:650px;font-size:16px}
 .btn{display:inline-block;text-decoration:none;border:0;border-radius:12px;padding:12px 19px;font-weight:bold;margin:8px 5px 0 0;transition:transform .2s,box-shadow .2s}.btn:hover,.small:hover{transform:translateY(-2px);box-shadow:0 8px 18px #0003}.yellow{background:var(--yellow);color:var(--navy)}.dark{background:#071A35;color:#fff}.light{background:#e7eef7;color:var(--navy)}
+.date-strip{padding:12px 6%;background:#102849;border-bottom:1px solid #294466;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.date-strip .today{color:#f5c32b;font-weight:bold;font-size:14px}
+.date-strip .date-label{color:#dce5f0;font-size:13px}
+.public-announcement{display:none;margin:18px 6% 0;padding:17px 20px;border:1px solid #f5c32b88;border-right:5px solid var(--yellow);border-radius:15px;background:linear-gradient(120deg,#173c68,#102849);box-shadow:0 8px 22px #0002}
+.public-announcement h2{font-size:18px;color:var(--yellow);margin:0 0 5px}
+.public-announcement p{color:#fff;font-size:14px;margin:0;white-space:pre-wrap}
 section{padding:42px 6%;background:var(--bg)}.heading{margin-bottom:20px}.heading h2{margin:0;font-size:25px;color:#fff}.heading h2:after{content:"";display:block;width:54px;height:4px;background:var(--yellow);border-radius:4px;margin-top:8px}.heading p{margin:7px 0;color:var(--muted);font-size:13px}
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card{background:linear-gradient(145deg,#102849,#0c2240);border:1px solid #294466;border-radius:18px;padding:20px;box-shadow:0 10px 25px #0002;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#F5C32B88}.ico{font-size:31px;margin-bottom:8px}.card h3{font-size:17px;margin:0 0 6px;color:#fff}.card p{font-size:13px;color:var(--muted);margin:0}
 .transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.transport .card{padding:18px}
@@ -40,6 +46,8 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
  <nav class="nav" aria-label="التنقل"><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="#contact">تواصل معنا</a></nav>
 </header>
+<div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
+<section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
 <main>
 <section class="hero">
  <div class="eyebrow">أهلاً بك في عالم أحمدكو</div>
@@ -97,6 +105,31 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
 const WHATSAPP = "972598407547";
+function showPublicDate(){
+ const el=document.getElementById("publicDate");
+ if(!el)return;
+ el.textContent=new Intl.DateTimeFormat("ar-PS",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date());
+}
+async function loadPublicAnnouncement(){
+ const box=document.getElementById("publicAnnouncement");
+ try{
+  const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&starts_at=lte."+encodeURIComponent(new Date().toISOString())+"&order=created_at.desc&limit=1";
+  const res=await fetch(url,{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
+  if(!res.ok)throw new Error("announcement read failed");
+  const rows=await res.json();
+  const item=rows.find(x=>!x.ends_at||new Date(x.ends_at)>new Date());
+  if(item){
+   document.getElementById("publicAnnouncementTitle").textContent=item.title||"إعلان من أحمدكو";
+   document.getElementById("publicAnnouncementText").textContent=item.message||"";
+   box.style.display="block";
+  }else{box.style.display="none";}
+ }catch(error){
+  console.warn("تعذر تحميل إعلان أحمدكو:",error);
+  box.style.display="none";
+ }
+}
+showPublicDate();
+loadPublicAnnouncement();
 const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
