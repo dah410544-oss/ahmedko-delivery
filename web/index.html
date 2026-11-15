@@ -123,7 +123,7 @@ function renderMenu(store,holder){
 function storeCard(store){
  const card=document.createElement("article");card.className="store";
  const phone=String(store.phone||"").replace(/[^\d+]/g,"");
- const displayName=normalize(store.store_name)==="فهد"?"مطعم فهد":(store.store_name||"مطعم أو متجر");
+ const normalizedName=normalize(store.store_name);\n const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
  card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(store.store_type||"متجر")+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
  const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
