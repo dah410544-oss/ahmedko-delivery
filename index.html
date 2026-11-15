@@ -58,7 +58,7 @@ section{padding:34px 6%}.heading{margin-bottom:18px}.heading h2{margin:0;font-si
  <a class="btn yellow" href="https://wa.me/972598407547?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D9%86%D9%82%D9%84" target="_blank" rel="noopener">استفسر عن وسيلة نقل</a>
 </section>
 <section id="market">
- <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>البيانات المعروضة تُجلب مباشرة من قاعدة بيانات أحمدكو.</p></div>
+ <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
  <div class="toolbar"><input id="storeSearch" class="search" type="search" placeholder="ابحث عن مطعم أو متجر أو منتج..." aria-label="ابحث عن مطعم أو متجر أو منتج"></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
  <div id="storeGrid" class="store-grid"></div>
@@ -87,6 +87,7 @@ const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
+const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true}];
 
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normalize(v){return String(v ?? "").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");}
@@ -161,6 +162,7 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
+ verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنيو. يرجى مراجعة صلاحيات قراءة التصنيفات والمنتجات.",true);
 }
