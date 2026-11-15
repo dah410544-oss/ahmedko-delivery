@@ -265,6 +265,7 @@ footer{
  <button class="nav-button" data-page="rates">💰 الأسعار</button>
  <button class="nav-button" data-page="branches">🏢 الفروع</button>
  <button class="nav-button" data-page="finance">💳 الحسابات</button>
+ <button class="nav-button" data-page="announcements">📣 العروض والإعلانات</button>
  <button class="nav-button" data-page="diagnostics">🔧 فحص النظام</button>
  <button id="logout-button">تسجيل الخروج</button>
 </aside>
@@ -387,6 +388,30 @@ footer{
   <h3>ملخص الطلبات</h3>
   <p id="finance-summary" class="muted">جارٍ التحميل...</p>
  </div>
+</section>
+
+<section class="page" id="page-announcements">
+ <h2 class="section-title">العروض والإعلانات العامة</h2>
+ <div class="panel">
+  <h3>إضافة أو تعديل إعلان يظهر للزبائن</h3>
+  <p class="muted">هذه الأدوات للمدير بعد تسجيل الدخول فقط. لا تضع هنا أرقام الطلبات أو بيانات الحسابات.</p>
+  <form id="announcement-form">
+   <input type="hidden" id="announcement-id">
+   <label for="announcement-title">عنوان الإعلان</label>
+   <input id="announcement-title" maxlength="90" required placeholder="مثال: عرض خاص من أحمدكو" style="display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid var(--border);border-radius:8px">
+   <label for="announcement-message">نص الإعلان</label>
+   <textarea id="announcement-message" maxlength="700" required rows="4" placeholder="اكتب تفاصيل العرض أو الكلمة التي تريد عرضها للزبائن..." style="display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid var(--border);border-radius:8px;font:inherit"></textarea>
+   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+    <div><label for="announcement-start">يبدأ العرض (اختياري)</label><input id="announcement-start" type="datetime-local" style="width:100%;padding:11px;margin-top:8px;border:1px solid var(--border);border-radius:8px"></div>
+    <div><label for="announcement-end">ينتهي العرض (اختياري)</label><input id="announcement-end" type="datetime-local" style="width:100%;padding:11px;margin-top:8px;border:1px solid var(--border);border-radius:8px"></div>
+   </div>
+   <label style="display:flex;align-items:center;gap:8px;margin:15px 0"><input id="announcement-active" type="checkbox" checked> نشر الإعلان للزبائن</label>
+   <button class="primary" id="announcement-save" type="submit">حفظ الإعلان</button>
+   <button class="primary" id="announcement-cancel" type="button" style="background:#64748b">إلغاء التعديل</button>
+   <p id="announcement-message-status" class="muted" aria-live="polite"></p>
+  </form>
+ </div>
+ <div class="panel"><h3>الإعلانات المحفوظة</h3><div id="announcements-list" class="muted">جارٍ التحميل...</div></div>
 </section>
 
 <section class="page" id="page-diagnostics">
@@ -767,6 +792,92 @@ async function loadStatistics(){
   : '<div class="success">تم تحميل الإحصائيات بنجاح.</div>';
 }
 
+function localDateTimeValue(value){
+ if(!value)return "";
+ const d=new Date(value);
+ const pad=n=>String(n).padStart(2,"0");
+ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
+}
+function resetAnnouncementForm(){
+ $("announcement-id").value="";
+ $("announcement-title").value="";
+ $("announcement-message").value="";
+ $("announcement-start").value="";
+ $("announcement-end").value="";
+ $("announcement-active").checked=true;
+ $("announcement-save").textContent="حفظ الإعلان";
+}
+async function loadAnnouncements(){
+ const box=$("announcements-list");
+ box.textContent="جارٍ تحميل الإعلانات...";
+ const result=await db.from("public_announcements").select("*").order("created_at",{ascending:false}).limit(50);
+ if(result.error){
+  box.innerHTML='<div class="error">تعذر تحميل الإعلانات: '+escapeHTML(result.error.message)+'<br>تأكد من تنفيذ ملف إعداد جدول الإعلانات.</div>';
+  setDiagnostic("public_announcements",false,result.error.message);
+  return;
+ }
+ setDiagnostic("public_announcements",true,"تم تحميل "+result.data.length+" إعلان.");
+ if(!result.data.length){box.textContent="لا توجد إعلانات محفوظة بعد.";return;}
+ box.innerHTML="";
+ result.data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="panel";
+  const state=item.is_active?"منشور":"مخفي";
+  row.innerHTML='<strong>'+escapeHTML(item.title)+'</strong><p>'+escapeHTML(item.message)+'</p><small class="muted">الحالة: '+state+'</small><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" class="primary edit-announcement">تعديل</button><button type="button" class="primary toggle-announcement" style="background:#64748b">'+(item.is_active?"إخفاء":"نشر")+'</button><button type="button" class="primary delete-announcement" style="background:#a93226">حذف</button></div>';
+  row.querySelector(".edit-announcement").addEventListener("click",()=>{
+   $("announcement-id").value=item.id;
+   $("announcement-title").value=item.title||"";
+   $("announcement-message").value=item.message||"";
+   $("announcement-start").value=localDateTimeValue(item.starts_at);
+   $("announcement-end").value=localDateTimeValue(item.ends_at);
+   $("announcement-active").checked=!!item.is_active;
+   $("announcement-save").textContent="حفظ التعديلات";
+   showPage("announcements");
+   $("announcement-title").focus();
+  });
+  row.querySelector(".toggle-announcement").addEventListener("click",async()=>{
+   const update=await db.from("public_announcements").update({is_active:!item.is_active,updated_at:new Date().toISOString()}).eq("id",item.id);
+   if(update.error){alert("تعذر تغيير حالة الإعلان: "+update.error.message);return;}
+   await loadAnnouncements();
+  });
+  row.querySelector(".delete-announcement").addEventListener("click",async()=>{
+   if(!confirm("هل تريد حذف هذا الإعلان نهائياً؟"))return;
+   const del=await db.from("public_announcements").delete().eq("id",item.id);
+   if(del.error){alert("تعذر حذف الإعلان: "+del.error.message);return;}
+   await loadAnnouncements();
+  });
+  box.appendChild(row);
+ });
+}
+$("announcement-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const status=$("announcement-message-status");
+ const button=$("announcement-save");
+ const title=$("announcement-title").value.trim();
+ const message=$("announcement-message").value.trim();
+ if(!title||!message){status.textContent="أدخل عنوان الإعلان ونصه.";return;}
+ const startRaw=$("announcement-start").value;
+ const endRaw=$("announcement-end").value;
+ const starts_at=startRaw?new Date(startRaw).toISOString():new Date().toISOString();
+ const ends_at=endRaw?new Date(endRaw).toISOString():null;
+ if(ends_at&&new Date(ends_at)<=new Date(starts_at)){status.textContent="وقت الانتهاء يجب أن يكون بعد وقت البداية.";return;}
+ const payload={title,message,starts_at,ends_at,is_active:$("announcement-active").checked,updated_at:new Date().toISOString()};
+ button.disabled=true;
+ status.textContent="جارٍ الحفظ...";
+ try{
+  const id=$("announcement-id").value;
+  const result=id
+   ? await db.from("public_announcements").update(payload).eq("id",id)
+   : await db.from("public_announcements").insert({...payload,created_by:currentUser.id});
+  if(result.error)throw result.error;
+  status.textContent="تم حفظ الإعلان بنجاح.";
+  resetAnnouncementForm();
+  await loadAnnouncements();
+ }catch(error){status.textContent="تعذر الحفظ: "+error.message;}
+ finally{button.disabled=false;}
+});
+$("announcement-cancel").addEventListener("click",resetAnnouncementForm);
+
 async function loadDashboard(){
  await verifyAdmin();
  showApp();
@@ -778,6 +889,7 @@ async function loadDashboard(){
  await Promise.all([
   loadStatistics(),
   loadSettings(),
+  loadAnnouncements(),
   ...Object.keys(tableConfig).map(loadTable)
  ]);
 }
