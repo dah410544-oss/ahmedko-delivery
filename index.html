@@ -5,15 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#091a33">
-<title>AHMEDKO DELIVERY | كل خدماتك في مكان واحد</title>
+<title>AHMEDKO DELIVERY | الخدمات اللوجستية والنقل</title>
+
 <style>
-:root {
+:root{
   --navy:#091a33;
   --navy2:#102b50;
   --yellow:#ffc928;
   --white:#fff;
-  --muted:#aab8ca;
+  --muted:#718096;
   --bg:#f4f6fa;
+  --border:#e7edf4;
 }
 *{box-sizing:border-box}
 body{
@@ -23,15 +25,17 @@ body{
   color:var(--navy);
 }
 button,a{font:inherit}
+button{cursor:pointer}
 header{
   background:var(--navy);
   color:white;
-  padding:19px 6%;
+  padding:18px 6%;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
 }
-.logo{font-size:21px;font-weight:900;letter-spacing:.5px}
+.logo{font-size:21px;font-weight:900}
 .logo span{color:var(--yellow)}
 .header-tag{font-size:12px;color:#cbd5e1}
 .hero{
@@ -39,131 +43,137 @@ header{
   color:white;
   padding:48px 7% 55px;
   border-radius:0 0 30px 30px;
-  position:relative;
-  overflow:hidden;
 }
-.hero:after{
-  content:"";
-  position:absolute;
-  width:220px;height:220px;
-  border:35px solid #ffffff0b;
-  border-radius:50%;
-  left:-75px;bottom:-125px;
-}
-.eyebrow{
-  color:var(--yellow);
-  font-size:13px;font-weight:bold;
-}
-h1{
-  font-size:clamp(30px,7vw,46px);
-  line-height:1.35;
-  margin:14px 0;
-}
+.eyebrow{color:var(--yellow);font-size:13px;font-weight:bold}
+h1{font-size:clamp(30px,7vw,46px);line-height:1.35;margin:14px 0}
 h1 span{color:var(--yellow)}
-.hero p{
-  color:#d5dfec;
-  line-height:1.9;
-  max-width:500px;
-  font-size:15px;
-}
+.hero p{color:#d5dfec;line-height:1.9;max-width:520px;font-size:15px}
 .main-btn{
-  display:inline-block;
-  background:var(--yellow);
-  color:var(--navy);
-  padding:14px 23px;
-  border-radius:12px;
-  font-weight:900;
-  text-decoration:none;
-  margin-top:14px;
+  display:inline-block;background:var(--yellow);color:var(--navy);
+  padding:14px 23px;border-radius:12px;font-weight:900;
+  text-decoration:none;margin-top:14px;
 }
-.section{
-  padding:30px 6%;
-}
-.section-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:end;
-  margin-bottom:18px;
-}
+.section{padding:32px 6%}
+.section-head{margin-bottom:20px}
 .section h2{font-size:22px;margin:0 0 7px}
-.section-head p{margin:0;color:#718096;font-size:13px}
+.section-head p{margin:0;color:var(--muted);font-size:13px}
 .services{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:13px;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
 }
 .service{
-  background:white;
-  border-radius:18px;
-  padding:20px 16px;
-  min-height:155px;
-  border:1px solid #e8edf4;
+  background:white;border-radius:18px;padding:20px 16px;
+  min-height:150px;border:1px solid var(--border);
   box-shadow:0 5px 18px #102b5009;
 }
-.service .symbol{
-  width:47px;height:47px;
-  display:grid;place-items:center;
-  background:#fff5d5;
-  border-radius:14px;
-  font-size:25px;
-  margin-bottom:13px;
+.symbol{
+  width:47px;height:47px;display:grid;place-items:center;
+  background:#fff5d5;border-radius:14px;font-size:25px;margin-bottom:13px;
 }
 .service h3{margin:0 0 8px;font-size:16px}
-.service p{
-  color:#748195;
-  font-size:12px;
-  line-height:1.7;
-  margin:0;
-}
-.wide{
-  grid-column:span 2;
-  background:var(--navy2);
-  color:white;
-}
+.service p{color:#748195;font-size:12px;line-height:1.7;margin:0}
+.wide{background:var(--navy2);color:white}
 .wide .symbol{background:#ffffff18}
 .wide p{color:#d2dbea}
+
+/* المطاعم والمتاجر */
+.market-section{padding-top:15px}
+.market-toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;margin:18px 0;
+}
+.search-input{
+  flex:1;min-width:180px;padding:13px 15px;
+  border:1px solid var(--border);border-radius:12px;
+  background:white;outline:none;
+}
+.search-input:focus{border-color:var(--yellow)}
+.store-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
+}
+.store-card,.product-card{
+  background:white;border:1px solid var(--border);
+  border-radius:17px;overflow:hidden;
+}
+.store-card{padding:17px}
+.store-icon{
+  width:52px;height:52px;border-radius:15px;
+  display:grid;place-items:center;background:#fff4d1;
+  font-size:27px;margin-bottom:12px;
+}
+.store-card h3{font-size:16px;margin:0 0 8px}
+.store-meta{font-size:12px;color:var(--muted);line-height:1.8}
+.store-actions{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.small-btn{
+  border:0;border-radius:9px;padding:10px 12px;
+  font-size:12px;font-weight:bold;text-decoration:none;
+  display:inline-block;text-align:center;
+}
+.primary-btn{background:var(--navy);color:white}
+.yellow-btn{background:var(--yellow);color:var(--navy)}
+.secondary-btn{background:#edf1f6;color:var(--navy)}
+.status{
+  padding:15px;background:white;border:1px solid var(--border);
+  border-radius:13px;color:var(--muted);
+  font-size:13px;line-height:1.8;text-align:center;
+}
+.status.error{color:#a12c2c;background:#fff5f5}
+.menu-panel{
+  margin-top:12px;padding:15px;background:#f8faff;
+  border-radius:13px;border:1px solid var(--border);
+}
+.menu-panel h4{margin:0 0 12px;font-size:15px}
+.category-title{
+  margin:16px 0 9px;font-size:14px;color:var(--navy2);
+}
+.product-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+}
+.product-card{padding:10px}
+.product-image{
+  width:100%;height:110px;object-fit:cover;
+  border-radius:10px;background:#edf1f6;
+}
+.product-placeholder{
+  width:100%;height:85px;border-radius:10px;
+  display:grid;place-items:center;background:#fff4d1;font-size:30px;
+}
+.product-card h5{font-size:13px;margin:9px 0 5px}
+.product-card p{font-size:11px;color:var(--muted);line-height:1.6;margin:0 0 8px}
+.product-price{font-size:14px;font-weight:900;color:#173c68}
+.product-order{
+  display:block;margin-top:9px;text-align:center;
+  padding:9px;border-radius:8px;background:var(--yellow);
+  color:var(--navy);text-decoration:none;font-size:11px;font-weight:bold;
+}
 .track{
-  margin:5px 6% 30px;
-  background:white;
-  padding:22px;
-  border-radius:18px;
-  border:1px solid #e7ebf1;
+  margin:5px 6% 30px;background:white;padding:22px;
+  border-radius:18px;border:1px solid var(--border);
 }
 .track h2{font-size:19px;margin:0 0 8px}
-.track p{font-size:13px;color:#718096;line-height:1.7}
+.track p{font-size:13px;color:var(--muted);line-height:1.7}
 .track a{
-  display:block;
-  text-align:center;
-  background:var(--navy);
-  color:white;
-  padding:13px;
-  border-radius:11px;
-  text-decoration:none;
-  font-weight:bold;
+  display:block;text-align:center;background:var(--navy);color:white;
+  padding:13px;border-radius:11px;text-decoration:none;font-weight:bold;
 }
 .promise{
-  margin:0 6% 30px;
-  background:#fff4d1;
-  padding:20px;
-  border-radius:16px;
-  line-height:1.9;
+  margin:0 6% 30px;background:#fff4d1;padding:20px;
+  border-radius:16px;line-height:1.9;
 }
-.promise strong{color:var(--navy)}
-footer{
-  background:var(--navy);
-  color:white;
-  padding:27px 6%;
-  text-align:center;
-}
+footer{background:var(--navy);color:white;padding:27px 6%;text-align:center}
 footer p{font-size:12px;color:#bdc9d8;line-height:1.8}
 footer a{color:var(--yellow);text-decoration:none}
 @media(min-width:700px){
   .services{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .wide{grid-column:span 1}
+  .store-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .hero{padding-top:65px;padding-bottom:70px}
+}
+@media(max-width:360px){
+  .store-grid,.product-grid{grid-template-columns:1fr}
+  .header-tag{display:none}
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -172,6 +182,7 @@ footer a{color:var(--yellow);text-decoration:none}
 </header>
 
 <main>
+
 <section class="hero">
   <div class="eyebrow">أهلاً بك في عالم أحمدكو</div>
   <h1>كل ما تحتاجه<br>يصلك <span>بسهولة.</span></h1>
@@ -185,10 +196,8 @@ footer a{color:var(--yellow);text-decoration:none}
 
 <section class="section" id="services">
   <div class="section-head">
-    <div>
-      <h2>ماذا تريد اليوم؟</h2>
-      <p>اختر الخدمة المناسبة لك</p>
-    </div>
+    <h2>خدمات أحمدكو</h2>
+    <p>منصة متكاملة للنقل والتوصيل والخدمات اللوجستية</p>
   </div>
 
   <div class="services">
@@ -201,13 +210,13 @@ footer a{color:var(--yellow);text-decoration:none}
     <article class="service">
       <div class="symbol">🍔</div>
       <h3>المطاعم والمقاهي</h3>
-      <p>اكتشف المطاعم واطلب وجبتك المفضلة.</p>
+      <p>اكتشف المطاعم وقوائم الطعام واطلب وجبتك.</p>
     </article>
 
     <article class="service">
       <div class="symbol">🛍️</div>
       <h3>المتاجر والتسوق</h3>
-      <p>تسوق من المحلات والمتاجر المحلية.</p>
+      <p>تعرّف على المتاجر والمنتجات المحلية.</p>
     </article>
 
     <article class="service">
@@ -230,10 +239,26 @@ footer a{color:var(--yellow);text-decoration:none}
   </div>
 </section>
 
+<!-- المطاعم والمتاجر من قاعدة البيانات -->
+<section class="section market-section" id="market">
+  <div class="section-head">
+    <h2>المطاعم والمتاجر</h2>
+    <p>اكتشف المتاجر المسجلة لدى أحمدكو وتصفح منتجاتها</p>
+  </div>
+
+  <div class="market-toolbar">
+    <input id="storeSearch" class="search-input"
+      type="search" placeholder="ابحث عن مطعم أو متجر...">
+  </div>
+
+  <div id="storeStatus" class="status">جارٍ تحميل المطاعم والمتاجر...</div>
+  <div id="storeGrid" class="store-grid"></div>
+</section>
+
 <section class="track">
   <h2>هل تريد إرسال طلب الآن؟</h2>
-  <p>تواصل مع فريق أحمدكو عبر واتساب لإرسال تفاصيل طلبك.</p>
-  <a href="https://wa.me/972598407547" target="_blank">
+  <p>تواصل مع فريق أحمدكو عبر واتساب لإرسال تفاصيل طلبك وتحديد رسوم التوصيل بشكل منفصل.</p>
+  <a href="https://wa.me/972598407547" target="_blank" rel="noopener">
     تواصل مع أحمدكو عبر واتساب
   </a>
 </section>
@@ -242,15 +267,325 @@ footer a{color:var(--yellow);text-decoration:none}
   <strong>أحمدكو ديلفري — أكثر من مجرد توصيل.</strong><br>
   وجهتك للخدمات اللوجستية والنقل، اليوم وغداً.
 </div>
+
 </main>
 
 <footer>
   <div class="logo">AHMEDKO <span>DELIVERY</span></div>
-  <p>خدمات لوجستية ونقل متكاملة<br>
-  غزة والجنوب</p>
-  <p>© 2026 AHMEDKO DELIVERY<br>
-  جميع الحقوق محفوظة</p>
+  <p>
+    خدمات لوجستية ونقل متكاملة<br>
+    غزة والجنوب<br>
+    معسكر الشاطئ – شارع حميد
+  </p>
+  <p>
+    واتساب: <a href="https://wa.me/972598407547">0598407547</a><br>
+    هاتف المكتب: 0598463438
+  </p>
+  <p>© 2026 AHMEDKO DELIVERY<br>جميع الحقوق محفوظة</p>
 </footer>
+
+<script>
+/* إعداد الاتصال بقاعدة بيانات أحمدكو */
+const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+const AHMEDKO_WHATSAPP = "972598407547";
+
+const storeGrid = document.getElementById("storeGrid");
+const storeStatus = document.getElementById("storeStatus");
+const storeSearch = document.getElementById("storeSearch");
+
+let allStores = [];
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[char]);
+}
+
+function safeImage(url){
+  try{
+    const parsed = new URL(url);
+    return ["https:","http:"].includes(parsed.protocol) ? parsed.href : "";
+  }catch{
+    return "";
+  }
+}
+
+function apiHeaders(){
+  return {
+    "apikey":SUPABASE_KEY,
+    "Authorization":"Bearer "+SUPABASE_KEY
+  };
+}
+
+async function dbRead(table,query){
+  const response = await fetch(
+    SUPABASE_URL+"/rest/v1/"+table+"?"+query,
+    {headers:apiHeaders()}
+  );
+
+  if(!response.ok){
+    const message = await response.text();
+    throw new Error("خطأ في "+table+": "+message);
+  }
+  return response.json();
+}
+
+function storeIcon(type){
+  const t = String(type || "").toLowerCase();
+  if(t.includes("restaurant") || t.includes("مطعم")) return "🍔";
+  if(t.includes("cafe") || t.includes("مقهى")) return "☕";
+  if(t.includes("market") || t.includes("متجر")) return "🛍️";
+  return "🏪";
+}
+
+function makeWhatsAppMessage(store,product){
+  let message = "مرحباً أحمدكو، أريد الطلب من: "+store.store_name;
+  if(product){
+    message += "\nالمنتج: "+product.name;
+    message += "\nالسعر: "+product.price+" ₪";
+  }
+  message += "\nأرجو التواصل معي لتأكيد الطلب ورسوم التوصيل.";
+  return "https://wa.me/"+AHMEDKO_WHATSAPP+"?text="+encodeURIComponent(message);
+}
+
+function renderStores(list){
+  storeGrid.innerHTML = "";
+
+  if(!list.length){
+    storeGrid.innerHTML =
+      '<div class="status" style="grid-column:1/-1">لا توجد مطاعم أو متاجر مطابقة حالياً.</div>';
+    return;
+  }
+
+  list.forEach(store=>{
+    const card = document.createElement("article");
+    card.className = "store-card";
+
+    const phone = String(store.phone || "").replace(/[^\d+]/g,"");
+    const phoneLink = phone
+      ? '<a class="small-btn secondary-btn" href="tel:'+escapeHTML(phone)+'">اتصال</a>'
+      : "";
+
+    const address = store.address
+      ? '<div>📍 '+escapeHTML(store.address)+'</div>'
+      : "";
+
+    card.innerHTML = `
+      <div class="store-icon">${storeIcon(store.store_type)}</div>
+      <h3>${escapeHTML(store.store_name)}</h3>
+      <div class="store-meta">
+        ${address}
+        ${phone ? '<div>📞 '+escapeHTML(store.phone)+'</div>' : ''}
+      </div>
+      <div class="store-actions">
+        <button class="small-btn primary-btn menu-toggle">عرض المنيو</button>
+        ${phoneLink}
+        <a class="small-btn yellow-btn"
+          href="${makeWhatsAppMessage(store)}"
+          target="_blank" rel="noopener">اطلب عبر أحمدكو</a>
+      </div>
+      <div class="menu-container"></div>
+    `;
+
+    const button = card.querySelector(".menu-toggle");
+    const container = card.querySelector(".menu-container");
+
+    button.addEventListener("click",async()=>{
+      if(container.dataset.loaded === "yes"){
+        container.hidden = !container.hidden;
+        button.textContent = container.hidden ? "عرض المنيو" : "إخفاء المنيو";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "جارٍ تحميل المنيو...";
+      container.innerHTML = '<div class="status">جارٍ تحميل المنتجات...</div>';
+
+      try{
+        await loadStoreMenu(store,container);
+        container.dataset.loaded = "yes";
+        button.textContent = "إخفاء المنيو";
+      }catch(error){
+        console.error(error);
+        container.innerHTML =
+          '<div class="status error">تعذر تحميل المنيو. قد تكون صلاحيات قراءة المنتجات غير مفعلة.</div>';
+        button.textContent = "إعادة المحاولة";
+        container.dataset.loaded = "no";
+      }finally{
+        button.disabled = false;
+      }
+    });
+
+    storeGrid.appendChild(card);
+  });
+}
+
+async function loadStoreMenu(store,container){
+  const id = encodeURIComponent(store.id);
+
+  const [categories,products] = await Promise.all([
+    dbRead("product_categories",
+      "select=id,name&store_id=eq."+id+"&is_active=eq.true&order=name.asc"),
+    dbRead("products",
+      "select=id,name,description,price,image_url,category_id&store_id=eq."+id+"&is_available=eq.true&order=name.asc")
+  ]);
+
+  container.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "menu-panel";
+
+  const heading = document.createElement("h4");
+  heading.textContent = "قائمة المنتجات";
+  panel.appendChild(heading);
+
+  if(!products.length){
+    const empty = document.createElement("div");
+    empty.className = "status";
+    empty.textContent = "لا توجد منتجات متاحة في هذا المتجر حالياً.";
+    panel.appendChild(empty);
+    container.appendChild(panel);
+    return;
+  }
+
+  const groups = categories.length ? categories : [{id:null,name:"المنتجات"}];
+
+  groups.forEach(category=>{
+    const matching = products.filter(product=>
+      category.id === null
+        ? !product.category_id
+        : product.category_id === category.id
+    );
+
+    if(!matching.length) return;
+
+    const title = document.createElement("div");
+    title.className = "category-title";
+    title.textContent = category.name;
+    panel.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "product-grid";
+
+    matching.forEach(product=>{
+      const item = document.createElement("article");
+      item.className = "product-card";
+
+      const imageURL = safeImage(product.image_url);
+      const imageHTML = imageURL
+        ? '<img class="product-image" src="'+escapeHTML(imageURL)+'" alt="'+escapeHTML(product.name)+'" loading="lazy">'
+        : '<div class="product-placeholder">🍽️</div>';
+
+      const description = product.description
+        ? '<p>'+escapeHTML(product.description)+'</p>' : "";
+
+      item.innerHTML = `
+        ${imageHTML}
+        <h5>${escapeHTML(product.name)}</h5>
+        ${description}
+        <div class="product-price">${escapeHTML(product.price)} ₪</div>
+        <a class="product-order" target="_blank" rel="noopener"
+          href="${makeWhatsAppMessage(store,product)}">اطلب هذا المنتج</a>
+      `;
+
+      grid.appendChild(item);
+    });
+
+    panel.appendChild(grid);
+  });
+
+  const uncategorized = products.filter(product=>
+    product.category_id && !categories.some(c=>c.id===product.category_id)
+  );
+
+  if(uncategorized.length){
+    const title = document.createElement("div");
+    title.className = "category-title";
+    title.textContent = "منتجات أخرى";
+    panel.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "product-grid";
+
+    uncategorized.forEach(product=>{
+      const item = document.createElement("article");
+      item.className = "product-card";
+      const imageURL = safeImage(product.image_url);
+
+      item.innerHTML = `
+        ${imageURL
+          ? '<img class="product-image" src="'+escapeHTML(imageURL)+'" alt="'+escapeHTML(product.name)+'" loading="lazy">'
+          : '<div class="product-placeholder">🍽️</div>'}
+        <h5>${escapeHTML(product.name)}</h5>
+        <div class="product-price">${escapeHTML(product.price)} ₪</div>
+        <a class="product-order" target="_blank" rel="noopener"
+          href="${makeWhatsAppMessage(store,product)}">اطلب هذا المنتج</a>
+      `;
+      grid.appendChild(item);
+    });
+    panel.appendChild(grid);
+  }
+
+  container.appendChild(panel);
+}
+
+async function loadStores(){
+  storeStatus.hidden = false;
+  storeStatus.className = "status";
+  storeStatus.textContent = "جارٍ تحميل المطاعم والمتاجر...";
+  storeGrid.innerHTML = "";
+
+  try{
+    const query =
+      "select=id,store_name,phone,address,store_type&is_active=eq.true&order=store_name.asc";
+
+    allStores = await dbRead("stores",query);
+
+    storeStatus.hidden = true;
+    renderStores(allStores);
+
+    if(!allStores.length){
+      storeStatus.hidden = false;
+      storeStatus.textContent =
+        "لا توجد مطاعم أو متاجر مسجلة ونشطة حالياً. ستظهر هنا تلقائياً عند إضافتها إلى قاعدة البيانات.";
+    }
+
+  }catch(error){
+    console.error(error);
+
+    /* محاولة عرض أسماء المتاجر إذا لم تسمح الصلاحيات بقراءة بقية الأعمدة */
+    try{
+      allStores = await dbRead(
+        "stores",
+        "select=id,store_name&is_active=eq.true&order=store_name.asc"
+      );
+
+      storeStatus.hidden = true;
+      renderStores(allStores);
+
+      if(!allStores.length){
+        storeStatus.hidden = false;
+        storeStatus.textContent = "لا توجد متاجر نشطة مسجلة حالياً.";
+      }
+    }catch(secondError){
+      console.error(secondError);
+      storeStatus.className = "status error";
+      storeStatus.textContent =
+        "تعذر الاتصال بقاعدة البيانات. تحقق من اتصال الإنترنت وصلاحيات القراءة العامة في Supabase.";
+    }
+  }
+}
+
+storeSearch.addEventListener("input",()=>{
+  const term = storeSearch.value.trim().toLowerCase();
+  const filtered = allStores.filter(store=>
+    String(store.store_name || "").toLowerCase().includes(term)
+  );
+  renderStores(filtered);
+});
+
+loadStores();
+</script>
 
 </body>
 </html>
