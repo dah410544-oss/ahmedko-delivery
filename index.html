@@ -129,8 +129,9 @@ function renderMenu(store,holder){
 function storeCard(store){
  const card=document.createElement("article");card.className="store";
  const phone=String(store.phone||"").replace(/[^\d+]/g,"");
+ const displayName=normalize(store.store_name)==="فهد"?"مطعم فهد":(store.store_name||"مطعم أو متجر");
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(store.store_name||"مطعم أو متجر")+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(store.store_type||"متجر")+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(store.store_type||"متجر")+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
  const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
  button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
  return card;
@@ -155,7 +156,7 @@ async function init(){
  setStatus("جارٍ الاتصال بقاعدة بيانات أحمدكو…");
  try{
   stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active,created_at",is_active:"eq.true",order:"created_at.desc"});
- }catch(e){console.error(e);setStatus("تعذر تحميل المطاعم والمتاجر. قد تكون سياسة القراءة العامة أو إعدادات الاتصال بحاجة إلى مراجعة. "+e.message,true);return;}
+ }catch(e){console.error(e);stores=[];setStatus("تعذر الاتصال بقاعدة بيانات المطاعم حالياً؛ سنعرض الأماكن المضافة للموقع مؤقتاً.",true);}
  const results=await Promise.allSettled([
   readTable("product_categories",{select:"id,store_id,name,image_url,is_active",is_active:"eq.true"}),
   readTable("products",{select:"id,store_id,category_id,name,description,price,image_url,is_available,created_at",is_available:"eq.true",order:"created_at.asc"})
