@@ -134,7 +134,44 @@ const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
-const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true}];
+const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true}];
+
+const altajStoreId="local-altaj";
+const altajMenuData=[
+ ["شاورما",[
+  ["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]
+ ]],
+ ["شاورما ضاني",[
+  ["شاورما ضاني","35"],["شاورما ضاني دبل عادي","37"],["شاورما ضاني دبل لحمة","45"],["شاورما ضاني دبل دبل","47"],["بيتا ضاني","25"],["سوري ضاني","50"],["صحيفة ضاني","55"],["صاروخ ضاني","60"],["كريب ضاني","60"],["وجبات ضاني","50-60"]
+ ]],
+ ["شاورما حبش",[
+  ["شاورما حبش","30"],["شاورما حبش دبل عادي","32"],["شاورما حبش دبل لحمة","40"],["شاورما حبش صاروخ","55"],["بيتا حبش","20"],["صحيفة حبش","55"],["سوري حبش","48"],["عربية حبش","55"],["وجبات حبش","40-50"]
+ ]],
+ ["ساندويتشات",[
+  ["تشكن بيتزا","30"],["دجاج بالذرة والجبنة","30"],["بانيه عادي","25"],["بانيه بالجبنة","30"],["صحيفة زنجر","35"],["مسحب بالجبنة","35"],["بيف برجر","35"],["تشكن برجر","35"],["كنتاكي برجر دبل","55"],["الفطيرة الذهبية","35"],["كالزوني التاج","35"],["تشيكن ستروجونوف","30"],["تشكن اسكلوبيني","30"],["دجاج بالجبنة","30"],["كريب كرسبي","40"],["كريب مسحب","40"],["كريب مكس","40"],["بيكاتي","30"],["فاهيتا","30"],["مكس غربي","40"]
+ ]],
+ ["مشاوي",[
+  ["وجبة التاج","50","50"],["لفة كباب","17","17"],["لفة شيش طاووق","20","20"],["دجاج مشوي","75","70"],["جناح مشوي","34","35"],["كيلو كباب","80","70"],["كيلو شيش","80","70"],["كيلو دجاج","80","70"],["كيلو مسحب","80","70"],["كبدة عجل","95","75"],["ريش خروف","150","150"],["كبدة دجاج","50","50"],["صينية دجاج مع أرز","70","70"]
+ ]],
+ ["وجبات",[
+  ["وجبة اسكلوبيني","65"],["وجبة كرسبي زنجر","65"],["وجبة بيكاتي","65"],["وجبة ستيك دجاج بالصوص","65"],["وجبة تشكن بيتزا","65"],["وجبة دجاج جبنة و...","65"]
+ ]],
+ ["باستا",[
+  ["باستا كرسبي","30"],["باستا صدر دجاج","30"],["باستا بالبشاميل روم","30"]
+ ]],
+ ["بيتزا",[
+  ["بيتزا خضار (صغير)","15"],["بيتزا خضار (وسط)","25"],["بيتزا خضار (كبير)","45"],["بيتزا بأنواعها (صدر - مارجريتا - شاورما)","25-60"]
+ ]],
+ ["مقبلات",[
+  ["سلطة سخنة","10"],["سلطات مشكل","10"],["شيبس","10"],["صوص (جبنة - كراشي)","10"],["سلطة يوناني","25"],["سلطة سيزر","30"]
+ ]]
+];
+const altajCategories=altajMenuData.map((entry,i)=>({id:"altaj-cat-"+i,store_id:altajStoreId,name:entry[0]}));
+const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
+ id:"altaj-product-"+i+"-"+j,store_id:altajStoreId,category_id:"altaj-cat-"+i,
+ name:item[0],price:item[1],price_display:item.length===3?"صالة: "+item[1]+" ₪ | T.W: "+item[2]+" ₪":item[1]+" ₪"
+})));
+
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normalize(v){return String(v ?? "").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");}
 function setStatus(message,error=false){statusBox.hidden=false;statusBox.className=error?"notice error":"notice";statusBox.textContent=message;}
@@ -153,7 +190,7 @@ function waLink(store,product){
  return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
 }
 function productHTML(store,p){
- const price=(p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪";
+ const price=p.price_display?esc(p.price_display):((p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪");
  return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><a class="small yellow" href="'+waLink(store,p)+'" target="_blank" rel="noopener">اطلب هذا المنتج</a></article>';
 }
 function renderMenu(store,holder){
@@ -204,6 +241,9 @@ async function init(){
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
+ if(!stores.some(s=>String(s.id)===altajStoreId))stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+ categories=categories.concat(altajCategories);
+ products=products.concat(altajProducts);
  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنيو. يرجى مراجعة صلاحيات قراءة التصنيفات والمنتجات.",true);
 }
