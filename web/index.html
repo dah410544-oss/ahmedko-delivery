@@ -241,11 +241,12 @@ async function init(){
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
- if(!stores.some(s=>String(s.id)===altajStoreId))stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+ const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
+ if(tajExisting)tajExisting.id=altajStoreId;else stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
  categories=categories.concat(altajCategories);
  products=products.concat(altajProducts);
  render(stores);
- if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنيو. يرجى مراجعة صلاحيات قراءة التصنيفات والمنتجات.",true);
+ if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
 searchBox.addEventListener("input",search);
 init();
