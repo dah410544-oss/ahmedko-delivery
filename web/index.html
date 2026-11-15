@@ -185,7 +185,7 @@ async function readTable(table,params){
 }
 function waLink(store,product){
  let msg="مرحباً أحمدكو، أريد الطلب من: "+(store.store_name||"");
- if(product)msg+="\nالمنتج: "+(product.name||"")+"\nالسعر: "+(product.price??"")+" ₪";
+ if(product)msg+="\nالمنتج: "+(product.name||"")+"\nالسعر: "+(product.price_display||((product.price??"")+" ₪"));
  msg+="\nأرجو التواصل لتأكيد الطلب ورسوم التوصيل.";
  return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
 }
