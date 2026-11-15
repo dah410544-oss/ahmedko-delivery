@@ -437,10 +437,10 @@ footer a{color:var(--yellow);text-decoration:none}
   <p>© 2026 AHMEDKO DELIVERY<br>جميع الحقوق محفوظة</p>
 </footer>
 
-<script>
+
 "use strict";
 
-/* إعداد الاتصال بقاعدة بيانات أحمدكو */
+/* إعداد اتصال أحمدكو بقاعدة البيانات الحالية */
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
 const AHMEDKO_WHATSAPP = "972598407547";
@@ -450,23 +450,394 @@ const storeStatus = document.getElementById("storeStatus");
 const storeSearch = document.getElementById("storeSearch");
 
 let allStores = [];
+let allCategories = [];
+let allProducts = [];
+let dataReady = false;
 
-function escapeHTML(value){
+function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   })[char]);
 }
 
-function safeImage(url){
-  try{
+function safeImage(url) {
+  try {
     const parsed = new URL(url);
-    return ["https:","http:"].includes(parsed.protocol)
+    return ["https:", "http:"].includes(parsed.protocol)
       ? parsed.href
       : "";
+  } catch {
+    return "";
+  }
+}
+
+function apiHeaders() {
+  return {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + SUPABASE_KEY
+  };
+}
+
+async function dbRead(table, params = {}) {
+  const query = new URLSearchParams(params);
+
+  const response = await fetch(
+    SUPABASE_URL + "/rest/v1/" + table + "?" + query.toString(),
+    {
+      method: "GET",
+      headers: apiHeaders()
+    }
+  );
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error("خطأ في " + table + ": " + message);
+  }
+
+  return response.json();
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى/g, "ي");
+}
+
+function storeIcon(type) {
+  const t = normalizeText(type);
+
+  if (t.includes("restaurant") || t.includes("مطعم")) return "🍔";
+  if (t.includes("cafe") || t.includes("مقهي")) return "☕";
+  if (t.includes("market") || t.includes("متجر")) return "🛍️";
+
+  return "🏪";
+}
+
+function makeWhatsAppMessage(store, product) {
+  let message = "مرحباً أحمدكو، أريد الطلب من: " +
+    (store.store_name || "");
+
+  if (product) {
+    message += "\nالمنتج: " + product.name;
+    message += "\nالسعر: " + product.price + " ₪";
+  }
+
+  message += "\nأرجو التواصل معي لتأكيد الطلب ورسوم التوصيل.";
+
+  return "https://wa.me/" + AHMEDKO_WHATSAPP +
+    "?text=" + encodeURIComponent(message);
+}
+
+function setStatus(message, isError = false) {
+  storeStatus.hidden = false;
+  storeStatus.className = isError ? "status error" : "status";
+  storeStatus.textContent = message;
+}
+
+function findStore(storeId) {
+  return allStores.find(store => store.id === storeId);
+}
+
+/* بطاقة المطعم أو المتجر */
+function createStoreCard(store) {
+  const card = document.createElement("article");
+  card.className = "store-card";
+
+  const phone = String(store.phone || "").replace(/[^\d+]/g, "");
+
+  const address = store.address
+    ? "<div>📍 " + escapeHTML(store.address) + "</div>"
+    : "";
+
+  const phoneLink = phone
+    ? '<a class="small-btn secondary-btn" href="tel:' +
+      escapeHTML(phone) + '">اتصال</a>'
+    : "";
+
+  card.innerHTML = `
+    <div class="store-icon">${storeIcon(store.store_type)}</div>
+    <h3>${escapeHTML(store.store_name)}</h3>
+    <div class="store-meta">
+      ${address}
+      ${phone ? "<div>📞 " + escapeHTML(store.phone) + "</div>" : ""}
+      <div>${escapeHTML(store.store_type || "متجر")}</div>
+    </div>
+    <div class="store-actions">
+      <button type="button" class="small-btn primary-btn menu-toggle">
+        عرض المنيو والمنتجات
+      </button>
+      ${phoneLink}
+      <a class="small-btn yellow-btn"
+         href="${makeWhatsAppMessage(store)}"
+         target="_blank" rel="noopener">اطلب عبر أحمدكو</a>
+    </div>
+    <div class="menu-container"></div>
+  `;
+
+  const button = card.querySelector(".menu-toggle");
+  const container = card.querySelector(".menu-container");
+
+  button.addEventListener("click", () => {
+    if (container.dataset.loaded === "yes") {
+      container.hidden = !container.hidden;
+      button.textContent = container.hidden
+        ? "عرض المنيو والمنتجات"
+        : "إخفاء المنيو";
+      return;
+    }
+
+    renderStoreMenu(store, container);
+    container.dataset.loaded = "yes";
+    button.textContent = "إخفاء المنيو";
+  });
+
+  return card;
+}
+
+/* عرض منيو ومنتجات متجر محدد */
+function renderStoreMenu(store, container) {
+  const categories = allCategories.filter(
+    category => category.store_id === store.id
+  );
+
+  const products = allProducts.filter(
+    product => product.store_id === store.id
+  );
+
+  container.className = "menu-panel";
+
+  if (!products.length) {
+    container.innerHTML =
+      "<p>لا توجد منتجات متاحة لهذا المتجر حالياً.</p>";
+    return;
+  }
+
+  let html = "<h4>المنيو والمنتجات</h4>";
+
+  const groups = categories.map(category => ({
+    name: category.name,
+    id: category.id,
+    products: products.filter(
+      product => product.category_id === category.id
+    )
+  })).filter(group => group.products.length);
+
+  const uncategorized = products.filter(
+    product => !product.category_id ||
+      !categories.some(category => category.id === product.category_id)
+  );
+
+  groups.forEach(group => {
+    html += '<div class="category-title">' +
+      escapeHTML(group.name) + "</div>";
+    html += '<div class="product-grid">';
+
+    group.products.forEach(product => {
+      html += productCardHTML(store, product);
+    });
+
+    html += "</div>";
+  });
+
+  if (uncategorized.length) {
+    html += '<div class="category-title">منتجات أخرى</div>';
+    html += '<div class="product-grid">';
+
+    uncategorized.forEach(product => {
+      html += productCardHTML(store, product);
+    });
+
+    html += "</div>";
+  }
+
+  container.innerHTML = html;
+}
+
+/* تصميم بطاقة المنتج */
+function productCardHTML(store, product) {
+  const image = safeImage(product.image_url);
+
+  const imageHTML = image
+    ? '<img class="product-image" src="' +
+      escapeHTML(image) + '" alt="' +
+      escapeHTML(product.name) + '" loading="lazy">'
+    : '<div class="product-placeholder">🛍️</div>';
+
+  return `
+    <article class="product-card">
+      ${imageHTML}
+      <h5>${escapeHTML(product.name)}</h5>
+      <p>${escapeHTML(product.description || "")}</p>
+      <div class="product-price">
+        ${escapeHTML(product.price)} ₪
+      </div>
+      <a class="product-order"
+         href="${makeWhatsAppMessage(store, product)}"
+         target="_blank" rel="noopener">
+         اطلب هذا المنتج
+      </a>
+    </article>
+  `;
+}
+
+/* عرض المتاجر والمنتجات المطابقة للبحث */
+function searchAll(query) {
+  const term = normalizeText(query);
+  storeGrid.innerHTML = "";
+
+  if (!term) {
+    renderStores(allStores);
+    return;
+  }
+
+  const matchingStores = allStores.filter(store => {
+    const text = normalizeText([
+      store.store_name,
+      store.store_type,
+      store.address,
+      store.contact_name
+    ].join(" "));
+
+    return text.includes(term);
+  });
+
+  const matchingProducts = allProducts.filter(product => {
+    const text = normalizeText([
+      product.name,
+      product.description
+    ].join(" "));
+
+    return text.includes(term);
+  });
+
+  if (!matchingStores.length && !matchingProducts.length) {
+    setStatus("لم نعثر على نتائج مطابقة. جرّب كلمة أخرى.");
+    return;
+  }
+
+  storeStatus.hidden = true;
+
+  if (matchingStores.length) {
+    const heading = document.createElement("div");
+    heading.className = "category-title";
+    heading.textContent = "المطاعم والمتاجر";
+    storeGrid.appendChild(heading);
+
+    matchingStores.forEach(store => {
+      storeGrid.appendChild(createStoreCard(store));
+    });
+  }
+
+  if (matchingProducts.length) {
+    const heading = document.createElement("div");
+    heading.className = "category-title";
+    heading.style.gridColumn = "1 / -1";
+    heading.textContent = "المنتجات المطابقة";
+    storeGrid.appendChild(heading);
+
+    matchingProducts.forEach(product => {
+      const store = findStore(product.store_id);
+      if (!store) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = productCardHTML(store, product);
+
+      const card = wrapper.firstElementChild;
+      const storeName = document.createElement("p");
+      storeName.textContent = "المتجر: " + store.store_name;
+      card.insertBefore(storeName, card.querySelector(".product-price"));
+
+      storeGrid.appendChild(card);
+    });
+  }
+}
+
+function renderStores(list) {
+  storeGrid.innerHTML = "";
+
+  if (!list.length) {
+    setStatus("لا توجد مطاعم أو متاجر مسجلة حالياً.");
+    return;
+  }
+
+  storeStatus.hidden = true;
+
+  list.forEach(store => {
+    storeGrid.appendChild(createStoreCard(store));
+  });
+}
+
+/* تحميل البيانات من جداول Supabase الموجودة */
+async function loadAhmedkoData() {
+  setStatus("جارٍ تحميل المطاعم والمتاجر والمنتجات...");
+
+  try {
+    allStores = await dbRead("stores", {
+      select: "id,store_name,contact_name,phone,address,store_type,is_active,created_at",
+      is_active: "eq.true",
+      order: "created_at.desc"
+    });
+
+    const results = await Promise.allSettled([
+      dbRead("product_categories", {
+        select: "id,store_id,name,image_url,is_active",
+        is_active: "eq.true"
+      }),
+      dbRead("products", {
+        select: "id,store_id,category_id,name,description,price,image_url,is_available",
+        is_available: "eq.true",
+        order: "created_at.asc"
+      })
+    ]);
+
+    if (results[0].status === "fulfilled") {
+      allCategories = results[0].value;
+    } else {
+      console.error("تعذر تحميل التصنيفات:", results[0].reason);
+    }
+
+    if (results[1].status === "fulfilled") {
+      allProducts = results[1].value;
+    } else {
+      console.error("تعذر تحميل المنتجات:", results[1].reason);
+    }
+
+    dataReady = true;
+    renderStores(allStores);
+
+    if (results.some(result => result.status === "rejected")) {
+      setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنتجات أو التصنيفات.");
+    } else if (!allStores.length) {
+      setStatus("قاعدة البيانات لا تحتوي حالياً على متاجر نشطة.");
+    }
+
+  } catch (error) {
+    console.error(error);
+    setStatus(
+      "تعذر تحميل البيانات. تحقق من اتصال قاعدة البيانات وسياسات القراءة العامة. " +
+      error.message,
+      true
+    );
+  }
+}
+
+/* البحث الفوري في المطاعم والمتاجر والمنتجات */
+storeSearch.addEventListener("input", () => {
+  if (!dataReady) return;
+  searchAll(storeSearch.value);
+});
+
+/* تشغيل الموقع */
+loadAhmedkoData();
+</script>
+
   }catch{
     return "";
   }
