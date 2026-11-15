@@ -430,9 +430,13 @@ button:disabled{opacity:.6;cursor:wait}
   </p>
   <p>
     واتساب: <a href="https://wa.me/972598407547">0598407547</a><br>
-    هاتف المكتب: 0598463438
+    هاتف المكتب: 0598463438<br>
+    الإدارة: أحمد سمير الدحبور
   </p>
-  <p>© 2026 AHMEDKO DELIVERY<br>جميع الحقوق محفوظة</p>
+  <p>
+    © 2026 AHMEDKO DELIVERY<br>
+    جميع الحقوق محفوظة
+  </p>
 </footer>
 
 <script>
@@ -471,11 +475,9 @@ function safeImage(url){
 
 function apiHeaders(){
   return {
-    "apikey":SUPABASE_KEY,
-    "Authorization":"Bearer "+SUPABASE_KEY
+    "apikey": SUPABASE_KEY
   };
 }
-
 async function dbRead(table,query){
   const response = await fetch(
     SUPABASE_URL+"/rest/v1/"+table+"?"+query,
