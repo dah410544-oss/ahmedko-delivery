@@ -94,7 +94,7 @@ async function loadOrders(){
   const card=document.createElement("article");card.className="order";
   const nextStatus=o.status==="assigned"?"picked_up":o.status==="picked_up"?"delivered":null;
   const actionLabel=nextStatus==="picked_up"?"تأكيد استلام الطلب":nextStatus==="delivered"?"تأكيد تسليم الطلب":null;
-  const text="طلب أحمدكو رقم: "+o.id+"\\nالزبون: "+(o.customer_name||"—")+"\\nالاستلام: "+(o.pickup_address||"—")+"\\nالتسليم: "+(o.delivery_address||"—")+"\\nالحالة: "+(statusNames[o.status]||o.status);
+  const text="طلب أحمدكو رقم: "+o.id+"\nالزبون: "+(o.customer_name||"—")+"\nالاستلام: "+(o.pickup_address||"—")+"\nالتسليم: "+(o.delivery_address||"—")+"\nالحالة: "+(statusNames[o.status]||o.status);
   card.innerHTML='<h3>طلب توصيل <span class="tag">'+esc(statusNames[o.status]||o.status)+'</span></h3><p>الزبون: '+esc(o.customer_name)+'</p><p>هاتف الزبون: '+esc(o.customer_phone)+'</p><p>الاستلام: '+esc(o.pickup_address)+'</p><p>التسليم: '+esc(o.delivery_address)+'</p><p>نوع الطلب: '+esc(o.order_type)+'</p><p>ملاحظات: '+esc(o.notes)+'</p><p>أجرة التوصيل: '+esc(o.delivery_price)+' ₪</p><div class="actions"><a class="btn yellow" target="_blank" rel="noopener" href="https://wa.me/972598407547?text='+encodeURIComponent(text)+'">إبلاغ المكتب عن الطلب</a></div><div class="message workflow-status" aria-live="polite"></div>';
   const actions=card.querySelector(".actions");
   if(actionLabel){
