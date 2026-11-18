@@ -82,7 +82,6 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
  <div class="toolbar"><input id="storeSearch" class="search" type="search" placeholder="ابحث عن مطعم أو متجر أو منتج..." aria-label="ابحث عن مطعم أو متجر أو منتج"></div>
- <div class="actions"><a class="btn yellow" href="taj-menu.html">🍽️ تصفح منيو مطعم التاج واطلب الآن</a></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
  <div id="storeGrid" class="store-grid"></div>
 </section>
@@ -135,7 +134,7 @@ const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
-const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true}];
+const verifiedLocalPlaces = [{"id":"taj-menu","store_name":"مطعم التاج","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true,"menu_url":"taj-menu.html"},{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true}];
 
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normalize(v){return String(v ?? "").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");}
@@ -181,9 +180,9 @@ function storeCard(store){
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
  const typeName=({restaurant:"مطعم",store:"مطعم",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم";
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
- const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
- button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions">'+(store.menu_url?'<a class="small dark" href="'+esc(store.menu_url)+'">تصفح المنيو</a>':'<button type="button" class="small dark menuButton">عرض المنيو</button>')+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div>'+(store.menu_url?'':'<div class="menuHolder" hidden></div>');
+ if(!store.menu_url){const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
+ button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});}
  return card;
 }
 function render(list){
