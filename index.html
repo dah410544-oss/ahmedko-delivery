@@ -212,7 +212,7 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
+ verifiedLocalPlaces.forEach(place=>{const existing=stores.find(s=>normalize(s.store_name)===normalize(place.store_name));if(existing){if(place.menu_url)existing.menu_url=place.menu_url;}else stores.push(place);});
  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنيو. يرجى مراجعة صلاحيات قراءة التصنيفات والمنتجات.",true);
 }
