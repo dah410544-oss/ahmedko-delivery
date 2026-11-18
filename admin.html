@@ -343,6 +343,7 @@ footer{
 
 <section class="page" id="page-drivers">
  <h2 class="section-title">إدارة السائقين</h2>
+ <div class="panel"><div class="toolbar"><h3>طلبات الانضمام الجديدة</h3><button class="primary" type="button" id="refresh-driver-applications">تحديث الطلبات</button></div><div id="driver-applications" class="muted">جارٍ تحميل طلبات الانضمام...</div></div>
  <div class="panel">
   <div class="toolbar">
    <h3>سجل السائقين</h3>
@@ -885,6 +886,33 @@ const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهرب�
 let workflowOrders=[];
 let workflowDrivers=[];
 
+
+async function loadDriverApplications(){
+ const box=$("driver-applications");if(!box)return;
+ box.textContent="جارٍ تحميل طلبات الانضمام...";
+ const result=await db.from("drivers").select("id,full_name,phone,vehicle_type,created_at,user_id").eq("application_status","pending").order("created_at",{ascending:true});
+ if(result.error){box.innerHTML='<div class="error">تعذر تحميل طلبات السائقين: '+escapeHTML(result.error.message)+'</div>';return;}
+ if(!result.data.length){box.textContent="لا توجد طلبات انضمام معلقة حالياً.";return;}
+ box.innerHTML="";
+ result.data.forEach(driver=>{
+  const card=document.createElement("div");card.className="workflow-card";
+  card.innerHTML='<h4>'+escapeHTML(driver.full_name)+'</h4><div class="workflow-meta">الهاتف: '+escapeHTML(driver.phone)+'<br>وسيلة النقل: '+escapeHTML(vehicleLabels[driver.vehicle_type]||driver.vehicle_type)+'<br>تاريخ الطلب: '+escapeHTML(driver.created_at?new Date(driver.created_at).toLocaleString("ar-PS"):"—")+'</div><div class="workflow-controls"><button type="button" data-action="approve">قبول وتفعيل السائق</button><button type="button" class="secondary" data-action="reject">رفض الطلب</button></div><div class="workflow-status" aria-live="polite"></div>';
+  const act=async(status)=>{
+   const buttons=card.querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
+   const statusBox=card.querySelector(".workflow-status");statusBox.textContent="جارٍ حفظ القرار...";
+   const payload={application_status:status,is_active:status==="approved",application_reviewed_at:new Date().toISOString(),application_reviewed_by:currentUser.id};
+   const update=await db.from("drivers").update(payload).eq("id",driver.id);
+   if(update.error){statusBox.textContent="تعذر حفظ القرار: "+update.error.message;buttons.forEach(b=>b.disabled=false);return;}
+   statusBox.textContent=status==="approved"?"تم قبول السائق وتفعيل حسابه.":"تم رفض طلب السائق.";
+   await loadDriverApplications();await loadTable("drivers");await loadOrderWorkflow();await loadStatistics();
+  };
+  card.querySelector('[data-action="approve"]').addEventListener("click",()=>act("approved"));
+  card.querySelector('[data-action="reject"]').addEventListener("click",()=>{if(confirm("هل تريد رفض طلب الانضمام؟"))act("rejected");});
+  box.appendChild(card);
+ });
+}
+$("refresh-driver-applications")?.addEventListener("click",loadDriverApplications);
+
 async function loadOrderWorkflow(){
  const box=$("orders-workflow");
  box.textContent="جارٍ تحميل الطلبات والسائقين...";
@@ -1004,6 +1032,7 @@ async function loadDashboard(){
   loadSettings(),
   loadAnnouncements(),
   loadOrderWorkflow(),
+  loadDriverApplications(),
   loadFinanceEarnings(),
   ...Object.keys(tableConfig).map(loadTable)
  ]);
