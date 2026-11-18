@@ -263,7 +263,6 @@ footer{
  <button class="nav-button" data-page="stores">🏪 المتاجر</button>
  <button class="nav-button" data-page="regions">📍 المناطق</button>
  <button class="nav-button" data-page="rates">💰 الأسعار</button>
- <button class="nav-button" data-page="branches">🏢 الفروع</button>
  <button class="nav-button" data-page="finance">💳 الحسابات</button>
  <button class="nav-button" data-page="announcements">📣 العروض والإعلانات</button>
  <button class="nav-button" data-page="diagnostics">🔧 فحص النظام</button>
@@ -293,9 +292,9 @@ footer{
    <small>السائقون المسجلون</small>
   </div>
   <div class="stat">
-   <p>🚚 الطلبات المسندة</p>
-   <h2 id="assigned-orders">—</h2>
-   <small>الطلبات المرتبطة بسائق</small>
+   <p>📋 إجمالي الطلبات</p>
+   <h2 id="total-orders">—</h2>
+   <small>كل الطلبات المسجلة</small>
   </div>
   <div class="stat">
    <p>💰 عمولة المكتب</p>
@@ -361,34 +360,7 @@ footer{
  </div>
 </section>
 
-<section class="page" id="page-branches">
- <h2 class="section-title">إدارة الفروع</h2>
- <div class="panel">
-  <h3>الفروع المسجلة</h3>
-  <div id="table-branches" class="muted">جارٍ التحميل...</div>
- </div>
- <div class="panel">
-  <h3>ربط مديري الفروع</h3>
-  <div id="table-branch_users" class="muted">جارٍ التحميل...</div>
- </div>
-</section>
 
-<section class="page" id="page-finance">
- <h2 class="section-title">الحسابات والعمولات</h2>
- <div class="panel">
-  <h3>إعدادات العمولة</h3>
-  <p>عمولة المكتب: <strong id="finance-commission">—</strong></p>
-  <p>العملة: <strong id="finance-currency">—</strong></p>
-  <p class="muted">
-   يتم عرض نسبة العمولة من إعدادات النشاط التجاري.
-   لا يتم تعديل سجلات الأرباح تلقائياً من هذه الصفحة.
-  </p>
- </div>
- <div class="panel">
-  <h3>ملخص الطلبات</h3>
-  <p id="finance-summary" class="muted">جارٍ التحميل...</p>
- </div>
-</section>
 
 <section class="page" id="page-announcements">
  <h2 class="section-title">العروض والإعلانات العامة</h2>
@@ -466,7 +438,7 @@ const tableConfig = {
   columns:[
    "id","customer_name","customer_phone",
    "pickup_address","delivery_address",
-   "status","delivery_price","driver_id","created_at"
+   "status","delivery_price","created_at"
   ]
  },
  drivers:{
@@ -494,14 +466,7 @@ const tableConfig = {
    "vehicle_type","price","currency","is_active"
   ]
  },
- branches:{
-  title:"الفروع",
-  columns:["id","branch_name","address","is_active","created_at"]
- },
- branch_users:{
-  title:"مديرو الفروع",
-  columns:["user_id","branch_id","created_at"]
- }
+
 };
 
 function escapeHTML(value){
@@ -746,50 +711,46 @@ async  function loadSettings(){
 }
 
 async function loadStatistics(){
- const now = new Date();
- const start = new Date(
-  now.getFullYear(),now.getMonth(),now.getDate()
- ).toISOString();
+  const now = new Date();
+  const start = new Date(
+    now.getFullYear(),now.getMonth(),now.getDate()
+  ).toISOString();
 
- const [orders,drivers,assigned] = await Promise.all([
-  countTable(
-   "orders",
-   db.from("orders")
-    .select("id",{count:"exact",head:true})
-    .gte("created_at",start)
-  ),
-  countTable(
-   "drivers",
-   db.from("drivers")
-    .select("id",{count:"exact",head:true})
-  ),
-  countTable(
-   "assigned orders",
-   db.from("orders")
-    .select("id",{count:"exact",head:true})
-    .not("driver_id","is",null)
-  )
- ]);
+  const [todayOrders,totalOrders,drivers] = await Promise.all([
+    countTable(
+      "orders today",
+      db.from("orders")
+        .select("id",{count:"exact",head:true})
+        .gte("created_at",start)
+    ),
+    countTable(
+      "all orders",
+      db.from("orders")
+        .select("id",{count:"exact",head:true})
+    ),
+    countTable(
+      "drivers",
+      db.from("drivers")
+        .select("id",{count:"exact",head:true})
+    )
+  ]);
 
- $("today-orders").textContent =
-  orders.ok ? orders.count : "خطأ";
+  $("today-orders").textContent =
+    todayOrders.ok ? todayOrders.count : "خطأ";
+  $("total-orders").textContent =
+    totalOrders.ok ? totalOrders.count : "خطأ";
+  $("drivers-count").textContent =
+    drivers.ok ? drivers.count : "خطأ";
 
- $("drivers-count").textContent =
-  drivers.ok ? drivers.count : "خطأ";
+  $("finance-summary").textContent =
+    "طلبات اليوم: "+(todayOrders.ok?todayOrders.count:"غير متاح")+
+    " | إجمالي الطلبات: "+(totalOrders.ok?totalOrders.count:"غير متاح");
 
- $("assigned-orders").textContent =
-  assigned.ok ? assigned.count : "خطأ";
-
- $("finance-summary").textContent =
-  "طلبات اليوم: "+(orders.ok?orders.count:"غير متاح")+
-  " | الطلبات المسندة: "+(assigned.ok?assigned.count:"غير متاح");
-
- const failed = [orders,drivers,assigned].filter(x=>!x.ok).length;
-
- $("dashboard-message").innerHTML = failed
-  ? '<div class="error">يوجد '+failed+
-    ' استعلامات لم تنجح. افتح قسم فحص النظام لمعرفة التفاصيل.</div>'
-  : '<div class="success">تم تحميل الإحصائيات بنجاح.</div>';
+  const failed = [todayOrders,totalOrders,drivers].filter(x=>!x.ok).length;
+  $("dashboard-message").innerHTML = failed
+    ? '<div class="error">يوجد '+failed+
+      ' استعلامات لم تنجح. افتح قسم فحص النظام لمعرفة التفاصيل.</div>'
+    : '<div class="success">تم تحميل الإحصائيات بنجاح.</div>';
 }
 
 function localDateTimeValue(value){
