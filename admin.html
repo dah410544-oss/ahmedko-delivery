@@ -230,6 +230,20 @@ footer{
  .stat{padding:13px}
  .stat h2{font-size:23px}
 }
+
+.workflow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.workflow-card{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;margin:10px 0}
+.workflow-card h4{margin:0 0 8px;font-size:14px}
+.workflow-meta{font-size:12px;color:var(--muted);line-height:1.9}
+.workflow-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.workflow-controls select,.workflow-controls button{font:inherit;padding:9px;border:1px solid var(--border);border-radius:8px}
+.workflow-controls select{min-width:130px;max-width:100%;background:#fff}
+.workflow-controls button{background:var(--navy);color:#fff;cursor:pointer}
+.workflow-controls button.secondary{background:#64748b}
+.workflow-controls button:disabled{opacity:.55;cursor:not-allowed}
+.workflow-status{font-size:12px;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.workflow-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -314,6 +328,11 @@ footer{
 <section class="page" id="page-orders">
  <h2 class="section-title">إدارة الطلبات</h2>
  <div class="panel">
+  <h3>مركز تشغيل الطلبات</h3>
+  <p class="muted">إسناد الطلبات للسائقين المعتمدين وتحديث مراحل التنفيذ. عند اختيار «تم التسليم» تُنشأ مستحقات الطلب مرة واحدة إذا لم تكن موجودة.</p>
+  <div id="orders-workflow" class="muted">جارٍ تحميل مركز تشغيل الطلبات...</div>
+ </div>
+ <div class="panel">
   <div class="toolbar">
    <h3>سجل الطلبات</h3>
    <input class="search" data-table="orders" placeholder="بحث في الطلبات">
@@ -376,6 +395,10 @@ footer{
  <div class="panel">
   <h3>ملخص الطلبات</h3>
   <p id="finance-summary" class="muted">جارٍ التحميل...</p>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>مستحقات السائقين والمدفوعات</h3><button class="primary" type="button" id="refresh-earnings">تحديث السجلات</button></div>
+  <div id="earnings-workflow" class="muted">جارٍ تحميل المستحقات...</div>
  </div>
 </section>
 
@@ -856,6 +879,118 @@ $("announcement-form").addEventListener("submit",async event=>{
 });
 $("announcement-cancel").addEventListener("click",resetAnnouncementForm);
 
+
+const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
+const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص",jeep:"جيب"};
+let workflowOrders=[];
+let workflowDrivers=[];
+
+async function loadOrderWorkflow(){
+ const box=$("orders-workflow");
+ box.textContent="جارٍ تحميل الطلبات والسائقين...";
+ const [ordersResult,driversResult]=await Promise.all([
+  db.from("orders").select("*").order("created_at",{ascending:false}).limit(100),
+  db.from("drivers").select("id,full_name,phone,vehicle_type,is_active,application_status").eq("is_active",true).eq("application_status","approved").order("full_name")
+ ]);
+ if(ordersResult.error){box.innerHTML='<div class="error">تعذر تحميل الطلبات: '+escapeHTML(ordersResult.error.message)+'</div>';return;}
+ if(driversResult.error){box.innerHTML='<div class="error">تعذر تحميل السائقين: '+escapeHTML(driversResult.error.message)+'</div>';return;}
+ workflowOrders=ordersResult.data||[];
+ workflowDrivers=driversResult.data||[];
+ if(!workflowOrders.length){box.innerHTML='<p class="muted">لا توجد طلبات مسجلة حالياً.</p>';return;}
+ box.innerHTML="";
+ workflowOrders.forEach(order=>{
+  const driver=workflowDrivers.find(d=>d.id===order.driver_id);
+  const card=document.createElement("div");
+  card.className="workflow-card";
+  const driverOptions=['<option value="">اختر السائق المعتمد</option>'].concat(workflowDrivers.map(d=>'<option value="'+escapeHTML(d.id)+'" '+(d.id===order.driver_id?'selected':'')+'>'+escapeHTML(d.full_name)+' — '+escapeHTML(vehicleLabels[d.vehicle_type]||d.vehicle_type||'')+'</option>')).join("");
+  const statusOptions=Object.entries(orderStatusLabels).map(([value,label])=>'<option value="'+value+'" '+(order.status===value?'selected':'')+'>'+label+'</option>').join("");
+  const created=order.created_at?new Date(order.created_at).toLocaleString("ar-PS"):"—";
+  card.innerHTML=
+   '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
+   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
+   '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
+   (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
+   '<div class="workflow-status" aria-live="polite"></div>';
+  card.querySelector('[data-action="assign"]').addEventListener("click",async()=>{
+   const select=card.querySelector(".assign-driver");
+   const driverId=select.value;
+   const statusBox=card.querySelector(".workflow-status");
+   if(!driverId){statusBox.textContent="اختر سائقاً معتمداً أولاً.";return;}
+   const button=card.querySelector('[data-action="assign"]');button.disabled=true;statusBox.textContent="جارٍ إسناد الطلب...";
+   const result=await db.from("orders").update({driver_id:driverId,status:"assigned"}).eq("id",order.id);
+   button.disabled=false;
+   if(result.error){statusBox.textContent="تعذر الإسناد: "+result.error.message;return;}
+   statusBox.textContent="تم إسناد الطلب وتحديث حالته.";
+   await loadOrderWorkflow();await loadTable("orders");await loadStatistics();
+  });
+  card.querySelector('[data-action="status"]').addEventListener("click",async()=>{
+   const nextStatus=card.querySelector(".change-status").value;
+   const statusBox=card.querySelector(".workflow-status");
+   if(nextStatus==="assigned"&&!order.driver_id){statusBox.textContent="يجب إسناد سائق قبل اختيار حالة «تم إسناده».";return;}
+   if(nextStatus==="delivered"&&!order.driver_id){statusBox.textContent="لا يمكن إغلاق الطلب دون سائق مسند.";return;}
+   const button=card.querySelector('[data-action="status"]');button.disabled=true;statusBox.textContent="جارٍ تحديث حالة الطلب...";
+   const result=await db.from("orders").update({status:nextStatus}).eq("id",order.id);
+   button.disabled=false;
+   if(result.error){statusBox.textContent="تعذر تحديث الحالة: "+result.error.message;return;}
+   if(nextStatus==="delivered"){
+    try{await ensureOrderEarning({...order,status:nextStatus});statusBox.textContent="تم التسليم وإنشاء/التحقق من مستحقات السائق.";}
+    catch(error){statusBox.textContent="تم تحديث الطلب إلى تم التسليم، لكن تعذر إنشاء المستحقات: "+error.message+" — استخدم زر مراجعة المستحقات بعد معالجة السبب.";}
+   }else{statusBox.textContent="تم تحديث حالة الطلب.";}
+   await loadOrderWorkflow();await loadTable("orders");await loadFinanceEarnings();await loadStatistics();
+  });
+  const earningButton=card.querySelector('[data-action="earning"]');
+  if(earningButton)earningButton.addEventListener("click",async()=>{
+   const statusBox=card.querySelector(".workflow-status");earningButton.disabled=true;statusBox.textContent="جارٍ فحص سجل المستحقات...";
+   try{await ensureOrderEarning(order);statusBox.textContent="تم التحقق من سجل مستحقات هذا الطلب دون تكرار.";await loadFinanceEarnings();}
+   catch(error){statusBox.textContent="تعذر إنشاء المستحقات: "+error.message;}
+   earningButton.disabled=false;
+  });
+  box.appendChild(card);
+ });
+}
+
+async function ensureOrderEarning(order){
+ if(!order.driver_id)throw new Error("لا يوجد سائق مسند لهذا الطلب.");
+ const amount=Number(order.delivery_price);
+ if(!Number.isFinite(amount)||amount<=0)throw new Error("أجرة التوصيل غير محددة أو غير صحيحة.");
+ const existing=await db.from("driver_earnings").select("id").eq("order_id",order.id).limit(1);
+ if(existing.error)throw new Error(existing.error.message);
+ if(existing.data&&existing.data.length)return existing.data[0];
+ const inserted=await db.from("driver_earnings").insert({
+  driver_id:order.driver_id,
+  order_id:order.id,
+  delivery_amount:amount,
+  payment_status:"pending",
+  notes:"تم إنشاؤه من لوحة إدارة أحمدكو عند إتمام الطلب"
+ });
+ if(inserted.error)throw new Error(inserted.error.message);
+ return true;
+}
+
+async function loadFinanceEarnings(){
+ const box=$("earnings-workflow");if(!box)return;
+ box.textContent="جارٍ تحميل المستحقات...";
+ const result=await db.from("driver_earnings").select("id,driver_id,order_id,delivery_amount,office_commission,driver_amount,payment_status,notes,created_at").order("created_at",{ascending:false}).limit(200);
+ if(result.error){box.innerHTML='<div class="error">تعذر قراءة المستحقات: '+escapeHTML(result.error.message)+'</div>';return;}
+ if(!result.data.length){box.innerHTML='<p class="muted">لا توجد سجلات مستحقات بعد. تُنشأ عند تأكيد تسليم الطلب من مركز تشغيل الطلبات.</p>';return;}
+ const driverIds=[...new Set(result.data.map(x=>x.driver_id).filter(Boolean))];
+ let names={};
+ if(driverIds.length){const d=await db.from("drivers").select("id,full_name").in("id",driverIds);if(!d.error)(d.data||[]).forEach(x=>names[x.id]=x.full_name);}
+ let html='<div class="table-wrap"><table><thead><tr><th>السائق</th><th>رقم الطلب</th><th>قيمة التوصيل</th><th>عمولة المكتب</th><th>مستحق السائق</th><th>الدفع</th><th>الإجراء</th></tr></thead><tbody>';
+ result.data.forEach(item=>{
+  html+='<tr><td>'+escapeHTML(names[item.driver_id]||item.driver_id)+'</td><td>'+escapeHTML(item.order_id||"—")+'</td><td>'+escapeHTML(item.delivery_amount)+' ₪</td><td>'+escapeHTML(item.office_commission)+' ₪</td><td>'+escapeHTML(item.driver_amount)+' ₪</td><td>'+escapeHTML(item.payment_status==="paid"?"مدفوع":"قيد الدفع")+'</td><td>'+(item.payment_status==="pending"?'<button type="button" class="primary mark-paid" data-id="'+escapeHTML(item.id)+'" style="padding:7px 10px">تسجيل الدفع</button>':"—")+'</td></tr>';
+ });
+ html+='</tbody></table></div>';box.innerHTML=html;
+ box.querySelectorAll(".mark-paid").forEach(button=>button.addEventListener("click",async()=>{
+  if(!confirm("تأكيد تسجيل دفع مستحقات هذا السائق؟"))return;
+  button.disabled=true;
+  const update=await db.from("driver_earnings").update({payment_status:"paid"}).eq("id",button.dataset.id);
+  if(update.error){alert("تعذر تسجيل الدفع: "+update.error.message);button.disabled=false;return;}
+  await loadFinanceEarnings();
+ }));
+}
+$("refresh-earnings")?.addEventListener("click",loadFinanceEarnings);
+
 async function loadDashboard(){
  await verifyAdmin();
  showApp();
@@ -868,6 +1003,8 @@ async function loadDashboard(){
   loadStatistics(),
   loadSettings(),
   loadAnnouncements(),
+  loadOrderWorkflow(),
+  loadFinanceEarnings(),
   ...Object.keys(tableConfig).map(loadTable)
  ]);
 }
