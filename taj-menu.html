@@ -8,6 +8,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif}
 header{background:linear-gradient(130deg,var(--n),var(--n2));color:white;text-align:center;padding:27px 14px 23px;border-bottom:5px solid var(--y)}
 .brand{font-weight:900;color:var(--y);font-size:14px}.logo{font-size:28px;font-weight:900;margin:9px}.sub{color:#d7e1ef;font-size:13px}
+.home-link{display:inline-block;margin-top:13px;padding:8px 13px;border:1px solid #ffffff66;border-radius:10px;color:#fff;text-decoration:none;font-size:12px;font-weight:bold}
 main{max-width:1100px;margin:auto;padding:18px 14px 105px}.search{width:100%;padding:14px;border:1px solid var(--line);border-radius:13px;font:inherit;font-size:16px}
 .tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tab{white-space:nowrap;border:1px solid var(--line);background:white;color:var(--n);border-radius:25px;padding:10px 14px;font-weight:bold}.tab.active{background:var(--y);border-color:var(--y)}
 h2{font-size:21px;color:var(--n);margin:17px 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
@@ -19,7 +20,7 @@ select{width:100%;padding:9px;border:1px solid var(--line);border-radius:9px;bac
 @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.item{padding:11px}.item h3{font-size:13px}.price{font-size:14px}.add{font-size:12px;padding:10px 5px}.logo{font-size:24px}}
 </style></head>
 <body>
-<header><div class="brand">AHMEDKO DELIVERY</div><div class="logo">مطعم التاج</div><div class="sub">المنيو والطلبات عبر أحمدكو ديلفري · الأسعار بالشيكل ₪</div></header>
+<header><div class="brand">AHMEDKO DELIVERY</div><div class="logo">مطعم التاج</div><div class="sub">المنيو والطلبات عبر أحمدكو ديلفري · الأسعار بالشيكل ₪</div><a class="home-link" href="index.html">العودة إلى موقع أحمدكو</a></header>
 <main>
 <input id="search" class="search" placeholder="ابحث عن صنف..." autocomplete="off">
 <nav id="tabs" class="tabs"></nav><h2 id="heading">شاورما</h2><section id="items" class="grid"></section>
