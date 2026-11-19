@@ -2,9 +2,67 @@
 -- Run this file once in Supabase SQL Editor as project owner.
 -- Drivers can change ONLY their own assigned order status through this RPC.
 
--- Set the approved Ahmedko office commission rate to 16%.
+-- Production prerequisites: keep existing records and add only missing fields.
+alter table public.orders
+  add column if not exists driver_id uuid;
+
+alter table public.drivers
+  add column if not exists created_at timestamptz not null default now(),
+  add column if not exists application_reviewed_at timestamptz,
+  add column if not exists application_reviewed_by uuid references auth.users(id) on delete set null;
+
+create index if not exists orders_driver_id_created_at_idx
+  on public.orders (driver_id, created_at desc);
+
+do $
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.orders'::regclass
+      and conname = 'orders_driver_id_fkey'
+  ) then
+    alter table public.orders
+      add constraint orders_driver_id_fkey
+      foreign key (driver_id) references public.drivers(id) on delete set null;
+  end if;
+end;
+$;
+
+-- A driver may read only orders assigned to their own approved account.
+drop policy if exists "Driver reads assigned orders" on public.orders;
+create policy "Driver reads assigned orders"
+  on public.orders for select to authenticated
+  using (
+    driver_id in (
+      select d.id from public.drivers d
+      where d.user_id = (select auth.uid())
+        and d.is_active is true
+        and d.application_status = 'approved'
+    )
+  );
+
+-- Public customer checkout may display only approved, active drivers.
+create or replace function public.get_available_drivers()
+returns table(driver_id uuid, full_name text, vehicle_type text)
+language sql
+stable
+security definer
+set search_path = pg_catalog, public
+as $
+  select d.id, d.full_name, d.vehicle_type
+  from public.drivers d
+  where d.is_active is true
+    and d.application_status = 'approved'
+  order by d.full_name;
+$;
+
+revoke all on function public.get_available_drivers() from public;
+grant execute on function public.get_available_drivers() to anon, authenticated;
+
+-- The office commission is 15%; drivers receive the remaining 85%.
 update public.business_settings
-set office_commission_percent = 16;
+set office_commission_percent = 15
+where office_commission_percent is distinct from 15;
 
 
 do $$
@@ -89,7 +147,7 @@ begin
     from public.business_settings as bs
     limit 1;
 
-    v_commission_rate := coalesce(v_commission_rate, 16);
+    v_commission_rate := coalesce(v_commission_rate, 15);
 
     if v_commission_rate < 0 or v_commission_rate > 100 then
       raise exception 'نسبة عمولة المكتب في الإعدادات غير صحيحة.';
