@@ -36,6 +36,9 @@ declare
   v_order_driver_id uuid;
   v_current_status text;
   v_delivery_price numeric;
+  v_commission_rate numeric;
+  v_office_commission numeric;
+  v_driver_amount numeric;
 begin
   if auth.uid() is null then
     raise exception 'يجب تسجيل الدخول أولاً.';
@@ -71,21 +74,44 @@ begin
     raise exception 'هذا الطلب غير مسند إلى حسابك.';
   end if;
 
-  -- Idempotent retry: a repeated request does not duplicate earnings.
+  if p_new_status = 'delivered' then
+    if v_delivery_price is null or v_delivery_price <= 0 then
+      raise exception 'أجرة التوصيل غير محددة؛ تواصل مع الإدارة.';
+    end if;
+
+    select bs.office_commission_percent
+      into v_commission_rate
+    from public.business_settings as bs
+    limit 1;
+
+    v_commission_rate := coalesce(v_commission_rate, 15);
+
+    if v_commission_rate < 0 or v_commission_rate > 100 then
+      raise exception 'نسبة عمولة المكتب في الإعدادات غير صحيحة.';
+    end if;
+
+    v_office_commission := round(v_delivery_price * v_commission_rate / 100, 2);
+    v_driver_amount := round(v_delivery_price - v_office_commission, 2);
+  end if;
+
+  -- Safe retry: do not create duplicate earnings for an already delivered order.
   if v_current_status = p_new_status then
     if p_new_status = 'delivered' then
-      if v_delivery_price is null or v_delivery_price <= 0 then
-        raise exception 'أجرة التوصيل غير محددة؛ تواصل مع الإدارة.';
-      end if;
-
       insert into public.driver_earnings (
-        driver_id, order_id, delivery_amount, payment_status, notes
+        driver_id, order_id, delivery_amount, office_commission,
+        driver_amount, payment_status, notes
       )
       values (
-        v_driver_id, p_order_id, v_delivery_price, 'pending',
-        'تم إنشاؤه تلقائياً عند تأكيد السائق تسليم الطلب'
+        v_driver_id, p_order_id, v_delivery_price, v_office_commission,
+        v_driver_amount, 'pending',
+        'عمولة المكتب ' || v_commission_rate || '% ومستحق السائق ' || (100 - v_commission_rate) || '%'
       )
-      on conflict (order_id) where order_id is not null do nothing;
+      on conflict (order_id) where order_id is not null do update
+      set delivery_amount = excluded.delivery_amount,
+          office_commission = excluded.office_commission,
+          driver_amount = excluded.driver_amount,
+          driver_id = excluded.driver_id
+      where public.driver_earnings.payment_status <> 'paid';
     end if;
 
     return jsonb_build_object('success', true, 'status', v_current_status, 'unchanged', true);
@@ -99,24 +125,26 @@ begin
     raise exception 'تسلسل الحالة غير صحيح. يجب استلام الطلب أولاً ثم تسليمه.';
   end if;
 
-  if p_new_status = 'delivered'
-     and (v_delivery_price is null or v_delivery_price <= 0) then
-    raise exception 'أجرة التوصيل غير محددة؛ تواصل مع الإدارة قبل إغلاق الطلب.';
-  end if;
-
   update public.orders
   set status = p_new_status
   where id = p_order_id;
 
   if p_new_status = 'delivered' then
     insert into public.driver_earnings (
-      driver_id, order_id, delivery_amount, payment_status, notes
+      driver_id, order_id, delivery_amount, office_commission,
+      driver_amount, payment_status, notes
     )
     values (
-      v_driver_id, p_order_id, v_delivery_price, 'pending',
-      'تم إنشاؤه تلقائياً عند تأكيد السائق تسليم الطلب'
+      v_driver_id, p_order_id, v_delivery_price, v_office_commission,
+      v_driver_amount, 'pending',
+      'عمولة المكتب ' || v_commission_rate || '% ومستحق السائق ' || (100 - v_commission_rate) || '%'
     )
-    on conflict (order_id) where order_id is not null do nothing;
+    on conflict (order_id) where order_id is not null do update
+    set delivery_amount = excluded.delivery_amount,
+        office_commission = excluded.office_commission,
+        driver_amount = excluded.driver_amount,
+        driver_id = excluded.driver_id
+    where public.driver_earnings.payment_status <> 'paid';
   end if;
 
   return jsonb_build_object('success', true, 'status', p_new_status, 'unchanged', false);
