@@ -280,14 +280,26 @@ async function init(){
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
- const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
+ const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
   const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
-  if(!tajExisting)stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
-  // Preserve the real database store ID so existing menu records remain linked.
-  categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
-  products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
-  categories=categories.concat(autoCategories);
-  products=products.concat(autoProducts);
+  if(!tajExisting){
+   const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);
+   if(localTaj)stores.push(localTaj);
+  }
+  if(!categories.some(c=>String(c.store_id)===String(tajStoreId))&&!products.some(p=>String(p.store_id)===String(tajStoreId))){
+   categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
+   products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+  }
+  const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+  const autoRealId=autoExisting?autoExisting.id:autoStoreId;
+  if(!autoExisting){
+   const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);
+   if(localAuto)stores.push(localAuto);
+  }
+  if(!categories.some(c=>String(c.store_id)===String(autoRealId))&&!products.some(p=>String(p.store_id)===String(autoRealId))){
+   categories=categories.concat(autoCategories.map(c=>({...c,store_id:autoRealId})));
+   products=products.concat(autoProducts.map(p=>({...p,store_id:autoRealId})));
+  }
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
