@@ -5,12 +5,12 @@ create table if not exists public.public_announcements (
   title text not null check (char_length(title) between 1 and 90),
   message text not null check (char_length(message) between 1 and 700),
   is_active boolean not null default true,
-  starts_at timestamptz not null default now(),
+  starts_at timestamptz null default null,
   ends_at timestamptz,
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint announcement_valid_dates check (ends_at is null or ends_at > starts_at)
+  constraint announcement_valid_dates check (starts_at is null or ends_at is null or ends_at > starts_at)
 );
 
 alter table public.public_announcements enable row level security;
@@ -21,8 +21,8 @@ on public.public_announcements for select
 to anon, authenticated
 using (
   is_active = true
-  and starts_at <= now()
-  and (ends_at is null or ends_at > now())
+  and (starts_at is null or starts_at <= now())
+  and (ends_at is null or ends_at >= now())
 );
 
 drop policy if exists "Admins can read all announcements" on public.public_announcements;
