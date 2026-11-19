@@ -169,42 +169,6 @@ const altajMenuData=[
  ]]
 ];
 
-const autoMenuData=[
- ["البيتزا الإيطالية",[
-  ["كالزوني خضار",20],["بيتزا مكسيكي دجاج",25],["بيتزا بالخضار والذرة والمايونيز",20],
-  ["بيتزا صلصة روز بالأناناس",20],["بيتزا سلامي",25],["تالولي",20],["مارغريتا",20],
-  ["علبة صوص إكسترا",3]
- ]],
- ["السندويشات الغربية",[
-  ["زنجر (صاج + فينو)",30],["بيج زنجر",40],["بيف برجر",30],["تشيكن برجر",30],
-  ["بيج ماك (حسب الوصف الظاهر بالصورة)",40],["تشيكن بيتزا",30],["شيش طاووق",30],
-  ["فطيرة ذهبية",30],["بالستيك",30],["باربيكيو",30],["ستيك دجاج مشوي",30],
-  ["تشيكن فرايز",30]
- ]],
- ["الشاورما",[
-  ["فرشوحة عادي",15],["فرشوحة دبل",17],["فرشوحة دبل لحمة",25],
-  ["فرشوحة دبل دبل",27],["سوري",30],["صفيحة",35],["بيجي",30],["باشكا",40],
-  ["شاورما عربي",30],["شاورما نابلسي",35],["صحن شاورما",20],["صحن شاورما",30]
- ]],
- ["المشروبات الباردة",[
-  ["عصير الموسم",12],["عصير الأناناس",10],["عصير ليمون ونعناع",12],
-  ["عصير أفوكاتو",15],["شوكو رد",10],["آيس لاتيه",10],["آيس كافي",10],
-  ["ميلك شيك سبشل",20],["موهيتو",20]
- ]],
- ["المشروبات الساخنة",[
-  ["نسكافيه",5],["كابتشينو",5],["قهوة تركي دبل",10],["قهوة تركي سنجل",5],["شاي",3]
- ]],
- ["حلويات البار",[
-  ["كنافة نوتيلا",15],["كنافة دبي",20],["مولتن كيك",20],["فوت كيك",20],
-  ["براونيز كيك",20],["تشيز كيك",25]
- ]]
-];
-const autoCategories=autoMenuData.map((entry,i)=>({id:"auto-cat-"+i,store_id:autoStoreId,name:entry[0]}));
-const autoProducts=autoMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
- id:"auto-product-"+i+"-"+j,store_id:autoStoreId,category_id:"auto-cat-"+i,
- name:item[0],price:item[1],price_display:item[1]+" ₪"
-})));
-
 const altajCategories=altajMenuData.map((entry,i)=>({id:"altaj-cat-"+i,store_id:altajStoreId,name:entry[0]}));
 const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
  id:"altaj-product-"+i+"-"+j,store_id:altajStoreId,category_id:"altaj-cat-"+i,
@@ -291,14 +255,9 @@ async function init(){
    products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
   }
   const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
-  const autoRealId=autoExisting?autoExisting.id:autoStoreId;
   if(!autoExisting){
    const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);
    if(localAuto)stores.push(localAuto);
-  }
-  if(!categories.some(c=>String(c.store_id)===String(autoRealId))&&!products.some(p=>String(p.store_id)===String(autoRealId))){
-   categories=categories.concat(autoCategories.map(c=>({...c,store_id:autoRealId})));
-   products=products.concat(autoProducts.map(p=>({...p,store_id:autoRealId})));
   }
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
