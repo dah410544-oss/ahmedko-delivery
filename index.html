@@ -259,6 +259,12 @@ async function init(){
    const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);
    if(localAuto)stores.push(localAuto);
   }
+  // Keep a single public card for Auto O2; prefer the real database record over any local fallback.
+  const autoMatches=stores.filter(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+  if(autoMatches.length>1){
+   const preferred=autoMatches.find(s=>s.id==="d404b052-08e6-4f99-9749-dac2226d5968")||autoMatches.find(s=>s.id&&!String(s.id).startsWith("local-"))||autoMatches[0];
+   stores=stores.filter(s=>!(normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"))||s===preferred);
+  }
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
