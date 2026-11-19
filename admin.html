@@ -581,6 +581,7 @@ function showPage(name){
 document.querySelectorAll(".nav-button").forEach(button=>{
  button.addEventListener("click",()=>{
   showPage(button.dataset.page);
+  if(button.dataset.page==="menus")loadMenuManager();
  });
 });
 
@@ -940,17 +941,32 @@ async function loadMenuManager(){
  const box=$("menu-manager-list");
  box.textContent="جارٍ تحميل المتاجر...";
  menuStores=[];menuCategories=[];menuProducts=[];
+ const publicRead=async(table,params)=>{
+  const url=new URL(SUPABASE_URL+"/rest/v1/"+table);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const response=await fetch(url.toString(),{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY,Accept:"application/json"}});
+  if(!response.ok)throw new Error(table+" ("+response.status+"): "+(await response.text()).slice(0,180));
+  return response.json();
+ };
  try{
-  // Load stores first so the store dropdowns do not depend on menu/product queries.
+  let storeError=null;
   const s=await db.from("stores").select("id,store_name,is_active").order("store_name");
-  if(s.error){
-   fillMenuStoreSelects();
-   box.innerHTML='<div class="error">تعذر تحميل المتاجر: '+escapeHTML(s.error.message)+'</div>';
-   setDiagnostic("تحميل المتاجر",false,s.error.message);
+  if(s.error)storeError=s.error.message;
+  else menuStores=s.data||[];
+  // Fallback to the public active-store policy if the authenticated query returns no rows.
+  if(!menuStores.length){
+   try{menuStores=await publicRead("stores",{select:"id,store_name,is_active",is_active:"eq.true",order:"store_name.asc"});}
+   catch(fallbackError){if(!storeError)storeError=fallbackError.message;}
+  }
+  fillMenuStoreSelects();
+  if(!menuStores.length){
+   const detail=storeError||"لم تُرجع قاعدة البيانات أي متاجر. تحقق من تفعيل المتاجر وسياسة القراءة.";
+   box.innerHTML='<div class="error">لم نتمكن من تحميل المتاجر لقوائم الاختيار: '+escapeHTML(detail)+'</div>';
+   $("category-store").innerHTML='<option value="">تعذر تحميل المتاجر</option>';
+   $("product-store").innerHTML='<option value="">تعذر تحميل المتاجر</option>';
+   setDiagnostic("تحميل متاجر القوائم",false,detail);
    return;
   }
-  menuStores=s.data||[];
-  fillMenuStoreSelects();
   const [cats,prods]=await Promise.all([
    db.from("product_categories").select("id,store_id,name,is_active").order("name"),
    db.from("products").select("id,store_id,category_id,name,description,price,is_available").order("name")
@@ -959,14 +975,15 @@ async function loadMenuManager(){
   menuProducts=prods.error?[]:(prods.data||[]);
   fillProductCategories();
   renderMenuManager();
-  const errors=[cats.error&&("الأقسام: "+cats.error.message),prods.error&&("المنتجات: "+prods.error.message)].filter(Boolean);
+  const errors=[storeError&&("ملاحظة المتاجر: "+storeError),cats.error&&("الأقسام: "+cats.error.message),prods.error&&("المنتجات: "+prods.error.message)].filter(Boolean);
   if(errors.length){
-   box.insertAdjacentHTML("afterbegin",'<div class="error">تم تحميل المتاجر، لكن توجد مشكلة في تحميل بعض البيانات: '+escapeHTML(errors.join(" | "))+'</div>');
+   box.insertAdjacentHTML("afterbegin",'<div class="error">تم تحميل '+menuStores.length+' متجراً. '+escapeHTML(errors.join(" | "))+'</div>');
    setDiagnostic("تحميل القوائم",false,errors.join(" | "));
   }else{
    setDiagnostic("قوائم الطعام والمنتجات",true,"تم تحميل "+menuStores.length+" متجراً و"+menuCategories.length+" قسماً و"+menuProducts.length+" منتجاً.");
   }
  }catch(error){
+  fillMenuStoreSelects();
   box.innerHTML='<div class="error">حدث خطأ أثناء تحميل المتاجر: '+escapeHTML(error.message||String(error))+'</div>';
   setDiagnostic("تحميل المتاجر",false,error.message||String(error));
  }
