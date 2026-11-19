@@ -1,12 +1,6 @@
-const CACHE_NAME = "ahmedko-shell-v1";
-const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/admin.html",
-  "/driver.html",
-  "/manifest.webmanifest",
-  "/icon.svg"
-];
+const CACHE_NAME = "ahmedko-shell-v2";
+const appUrl = path => new URL(path, self.registration.scope).toString();
+const APP_SHELL = ["", "index.html", "admin.html", "driver.html", "manifest.webmanifest", "icon.svg"].map(appUrl);
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -27,7 +21,6 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
-
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
@@ -39,7 +32,7 @@ self.addEventListener("fetch", event => {
           caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
           return response;
         })
-        .catch(async () => (await caches.match(request)) || (await caches.match("/index.html")))
+        .catch(async () => (await caches.match(request)) || (await caches.match(appUrl("index.html"))))
     );
     return;
   }
