@@ -136,7 +136,7 @@ const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
 const altajStoreId="local-altaj";
-const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true}];
+const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true},{"id":autoStoreId,"store_name":"مطعم أوتو","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true}];
 
 const altajMenuData=[
  ["شاورما",[
@@ -167,6 +167,44 @@ const altajMenuData=[
   ["سلطة سخنة","10"],["سلطات مشكل","10"],["شيبس","10"],["صوص (جبنة - كراشي)","10"],["سلطة يوناني","25"],["سلطة سيزر","30"]
  ]]
 ];
+
+const autoStoreId="local-auto";
+const autoMenuData=[
+ ["البيتزا الإيطالية",[
+  ["كالزوني خضار",20],["بيتزا مكسيكي دجاج",25],["بيتزا بالخضار والذرة والمايونيز",20],
+  ["بيتزا صلصة روز بالأناناس",20],["بيتزا سلامي",25],["تالولي",20],["مارغريتا",20],
+  ["علبة صوص إكسترا",3]
+ ]],
+ ["السندويشات الغربية",[
+  ["زنجر (صاج + فينو)",30],["بيج زنجر",40],["بيف برجر",30],["تشيكن برجر",30],
+  ["بيج ماك (حسب الوصف الظاهر بالصورة)",40],["تشيكن بيتزا",30],["شيش طاووق",30],
+  ["فطيرة ذهبية",30],["بالستيك",30],["باربيكيو",30],["ستيك دجاج مشوي",30],
+  ["تشيكن فرايز",30]
+ ]],
+ ["الشاورما",[
+  ["فرشوحة عادي",15],["فرشوحة دبل",17],["فرشوحة دبل لحمة",25],
+  ["فرشوحة دبل دبل",27],["سوري",30],["صفيحة",35],["بيجي",30],["باشكا",40],
+  ["شاورما عربي",30],["شاورما نابلسي",35],["صحن شاورما",20],["صحن شاورما",30]
+ ]],
+ ["المشروبات الباردة",[
+  ["عصير الموسم",12],["عصير الأناناس",10],["عصير ليمون ونعناع",12],
+  ["عصير أفوكاتو",15],["شوكو رد",10],["آيس لاتيه",10],["آيس كافي",10],
+  ["ميلك شيك سبشل",20],["موهيتو",20]
+ ]],
+ ["المشروبات الساخنة",[
+  ["نسكافيه",5],["كابتشينو",5],["قهوة تركي دبل",10],["قهوة تركي سنجل",5],["شاي",3]
+ ]],
+ ["حلويات البار",[
+  ["كنافة نوتيلا",15],["كنافة دبي",20],["مولتن كيك",20],["فوت كيك",20],
+  ["براونيز كيك",20],["تشيز كيك",25]
+ ]]
+];
+const autoCategories=autoMenuData.map((entry,i)=>({id:"auto-cat-"+i,store_id:autoStoreId,name:entry[0]}));
+const autoProducts=autoMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
+ id:"auto-product-"+i+"-"+j,store_id:autoStoreId,category_id:"auto-cat-"+i,
+ name:item[0],price:item[1],price_display:item[1]+" ₪"
+})));
+
 const altajCategories=altajMenuData.map((entry,i)=>({id:"altaj-cat-"+i,store_id:altajStoreId,name:entry[0]}));
 const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
  id:"altaj-product-"+i+"-"+j,store_id:altajStoreId,category_id:"altaj-cat-"+i,
@@ -248,6 +286,8 @@ async function init(){
   // Preserve the real database store ID so existing menu records remain linked.
   categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
   products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+  categories=categories.concat(autoCategories);
+  products=products.concat(autoProducts);
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
