@@ -414,7 +414,21 @@ footer{
 <section class="page" id="page-rates">
  <h2 class="section-title">أسعار التوصيل</h2>
  <div class="panel">
-  <h3>جدول الأسعار</h3>
+  <h3>إضافة أو تحديث سعر توصيل معتمد</h3>
+  <p class="muted">يُحدد السعر حسب منطقة الاستلام ومنطقة التسليم ووسيلة النقل. لا يقبل النظام الطلب إذا لم يوجد سعر نشط وحيد لهذا المسار.</p>
+  <form id="delivery-rate-form" class="workflow-controls">
+   <select id="rate-pickup-region" required aria-label="منطقة الاستلام"><option value="">منطقة الاستلام</option></select>
+   <select id="rate-delivery-region" required aria-label="منطقة التسليم"><option value="">منطقة التسليم</option></select>
+   <select id="rate-vehicle" required aria-label="وسيلة النقل">
+    <option value="">وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة</option><option value="bus">باص</option>
+   </select>
+   <input id="rate-price" type="number" min="0.01" step="0.01" required placeholder="السعر بالشيكل">
+   <button type="submit" class="primary">حفظ السعر</button>
+  </form>
+  <p id="delivery-rate-message" class="workflow-status" aria-live="polite"></p>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>جدول الأسعار</h3><button type="button" class="primary" id="refresh-rates">تحديث الأسعار</button></div>
   <div id="table-delivery_rates" class="muted">جارٍ التحميل...</div>
  </div>
 </section>
@@ -758,6 +772,42 @@ document.querySelectorAll(".search").forEach(input=>{
   renderTable(input.dataset.table,input.value);
  });
 });
+
+async function loadRateFormOptions(){
+ const pickup=$("rate-pickup-region"),delivery=$("rate-delivery-region");
+ try{
+  const result=await db.from("regions").select("id,name").eq("is_active",true).order("name");
+  if(result.error)throw result.error;
+  const options='<option value="">اختر المنطقة</option>'+(result.data||[]).map(r=>'<option value="'+escapeHTML(r.id)+'">'+escapeHTML(r.name)+'</option>').join("");
+  pickup.innerHTML=options;delivery.innerHTML=options;
+  if(!result.data?.length)$("delivery-rate-message").textContent="لا توجد مناطق مفعّلة. راجع جدول المناطق أولاً.";
+ }catch(error){$("delivery-rate-message").textContent="تعذر تحميل المناطق: "+error.message;}
+}
+$("delivery-rate-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const message=$("delivery-rate-message"),button=event.currentTarget.querySelector('[type="submit"]');
+ const pickup=$("rate-pickup-region").value,delivery=$("rate-delivery-region").value;
+ const vehicle=$("rate-vehicle").value,price=Number($("rate-price").value);
+ if(!pickup||!delivery||!vehicle||!Number.isFinite(price)||price<=0){message.textContent="أكمل جميع الحقول بسعر صحيح أكبر من صفر.";return;}
+ button.disabled=true;message.textContent="جارٍ حفظ السعر...";
+ try{
+  const existing=await db.from("delivery_rates").select("id").eq("pickup_region_id",pickup).eq("delivery_region_id",delivery).eq("vehicle_type",vehicle).eq("is_active",true);
+  if(existing.error)throw existing.error;
+  if(existing.data.length>1)throw new Error("يوجد أكثر من سعر نشط لهذا المسار. عالج التكرار في جدول الأسعار قبل الحفظ.");
+  let result;
+  if(existing.data.length===1){
+   result=await db.from("delivery_rates").update({price,currency:"ILS",is_active:true}).eq("id",existing.data[0].id);
+  }else{
+   result=await db.from("delivery_rates").insert({pickup_region_id:pickup,delivery_region_id:delivery,vehicle_type:vehicle,price,currency:"ILS",is_active:true});
+  }
+  if(result.error)throw result.error;
+  message.textContent="تم حفظ السعر المعتمد بالشيكل بنجاح.";
+  $("rate-price").value="";
+  await loadTable("delivery_rates");
+ }catch(error){message.textContent="تعذر حفظ السعر: "+error.message;}
+ finally{button.disabled=false;}
+});
+$("refresh-rates")?.addEventListener("click",()=>loadTable("delivery_rates"));
 
 async  function loadSettings(){
  const result = await db
@@ -1341,6 +1391,7 @@ async function loadDashboard(){
   loadDriverApplications(),
   loadFinanceEarnings(),
   loadMenuManager(),
+  loadRateFormOptions(),
   ...Object.keys(tableConfig).map(loadTable)
  ]);
 }
