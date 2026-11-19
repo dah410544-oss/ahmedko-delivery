@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#091a33">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="أحمدكو">
 <meta name="description" content="أحمدكو ديلفري — التوصيل والشحن والنقل والخدمات اللوجستية في غزة والجنوب.">
 <title>أحمدكو ديلفري | AHMEDKO DELIVERY</title>
 <style>
@@ -379,6 +384,15 @@ async function init(){
 }
 searchBox.addEventListener("input",search);
 init();
+</script>
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch(error => {
+      console.warn("تعذر تسجيل خدمة التطبيق:", error);
+    });
+  });
+}
 </script>
 </body>
 </html>
