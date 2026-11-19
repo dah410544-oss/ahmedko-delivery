@@ -398,7 +398,7 @@ footer{
   </form>
  </div>
  <div class="panel">
-  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
+  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="import-auto-menu">استيراد منيو أوتو O2</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
   <div id="menu-manager-list" class="muted">جارٍ تحميل القوائم...</div>
  </div>
 </section>
@@ -1122,6 +1122,61 @@ $("import-taj-menu").addEventListener("click",()=>{
 
 
 
+
+
+async function importAutoO2Menu(){
+ const button=$("import-auto-menu"),status=$("menu-import-status");
+ const storeId="d404b052-08e6-4f99-9749-dac2226d5968";
+ button.disabled=true;status.textContent="جارٍ قراءة منيو أوتو O2 والتحقق من الأصناف الموجودة...";
+ let addedCategories=0,addedProducts=0,skippedProducts=0;
+ try{
+  const storeCheck=await db.from("stores").select("id,store_name").eq("id",storeId).maybeSingle();
+  if(storeCheck.error)throw new Error(storeCheck.error.message);
+  if(!storeCheck.data)throw new Error("لم يتم العثور على متجر أوتو O2 في قاعدة البيانات.");
+  const response=await fetch("auto-o2-menu.js",{cache:"no-store"});
+  if(!response.ok)throw new Error("تعذر قراءة ملف المنيو ("+response.status+").");
+  const source=await response.text();
+  const match=source.match(/const\s+menu\s*=\s*(\[[\s\S]*?\]);/);
+  if(!match)throw new Error("لم أتمكن من قراءة أقسام المنيو.");
+  const menu=(new Function("return ("+match[1]+")"))();
+  if(!Array.isArray(menu)||!menu.length)throw new Error("ملف المنيو فارغ.");
+  const catsResult=await db.from("product_categories").select("id,name").eq("store_id",storeId);
+  if(catsResult.error)throw new Error(catsResult.error.message);
+  const knownCats=new Map((catsResult.data||[]).map(c=>[c.name.trim(),c]));
+  for(const [categoryName,items] of menu){
+   let category=knownCats.get(categoryName);
+   if(!category){
+    const inserted=await db.from("product_categories").insert({store_id:storeId,name:categoryName,is_active:true}).select("id,name").single();
+    if(inserted.error)throw new Error("تعذر إنشاء قسم "+categoryName+": "+inserted.error.message);
+    category=inserted.data;knownCats.set(categoryName,category);addedCategories++;
+   }
+   const existing=await db.from("products").select("name").eq("store_id",storeId).eq("category_id",category.id);
+   if(existing.error)throw new Error("تعذر قراءة منتجات قسم "+categoryName+": "+existing.error.message);
+   const names=new Set((existing.data||[]).map(p=>(p.name||"").trim()));
+   const rows=[];
+   for(const item of items){
+    const name=String(item[0]||"").trim(),price=Number(item[1]);
+    if(!name||names.has(name)){skippedProducts++;continue;}
+    if(!Number.isFinite(price)||price<0){skippedProducts++;continue;}
+    rows.push({store_id:storeId,category_id:category.id,name,price,description:null,is_available:true});
+    names.add(name);
+   }
+   if(rows.length){
+    const inserted=await db.from("products").insert(rows);
+    if(inserted.error)throw new Error("تعذر حفظ منتجات قسم "+categoryName+": "+inserted.error.message);
+    addedProducts+=rows.length;
+   }
+   status.textContent="تمت معالجة قسم "+categoryName+"؛ أضيف حتى الآن "+addedProducts+" صنفاً...";
+  }
+  await loadMenuManager();
+  status.textContent="اكتمل استيراد منيو أوتو O2: "+addedCategories+" أقسام جديدة و"+addedProducts+" أصناف جديدة. تم تجاوز "+skippedProducts+" صنفاً موجوداً لتجنب التكرار.";
+ }catch(error){
+  status.textContent="توقف الاستيراد: "+error.message+" — ما تم حفظه يبقى محفوظاً، ويمكن إعادة المحاولة دون تكرار الأصناف الموجودة.";
+ }finally{button.disabled=false;}
+}
+$("import-auto-menu").addEventListener("click",()=>{
+ if(confirm("سيتم استيراد الأصناف المقروءة بوضوح فقط من صورة منيو أوتو O2. الأصناف غير الواضحة مستبعدة، والموجود لن يتكرر. هل تريد المتابعة؟"))importAutoO2Menu();
+});
 
 const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
 const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص",jeep:"جيب"};
