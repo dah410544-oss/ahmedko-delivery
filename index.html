@@ -132,12 +132,19 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
    <input id="buyerName" required maxlength="100" placeholder="اسمك الكامل">
    <input id="buyerPhone" required inputmode="tel" maxlength="20" placeholder="رقم الهاتف">
    <input id="buyerAddress" required maxlength="250" placeholder="عنوان التسليم">
-   <input id="buyerPickup" maxlength="250" placeholder="عنوان الاستلام (اختياري)">
-   <select id="buyerDriver" aria-label="اختر السائق" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختيار السائق (اختياري)</option></select>
+   <input id="buyerPickup" required maxlength="250" placeholder="عنوان الاستلام من المطعم أو المتجر">
+   <select id="buyerPickupRegion" required aria-label="منطقة الاستلام" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة الاستلام</option></select>
+   <select id="buyerDeliveryRegion" required aria-label="منطقة التسليم" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة التسليم</option></select>
+   <select id="buyerVehicle" required aria-label="وسيلة النقل" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit">
+    <option value="">اختر وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة</option><option value="bus">باص</option>
+   </select>
+   <select id="buyerDriver" aria-label="السائق المفضل (اختياري)" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">لا يوجد تفضيل لسائق معين</option></select>
    <textarea id="buyerNotes" maxlength="500" placeholder="ملاحظات على الطلب (اختياري)"></textarea>
-   <button class="cart-submit" type="submit">إرسال تفاصيل الطلب إلى أحمدكو</button>
+   <button class="cart-submit" type="submit">تأكيد الطلب وحفظه لدى أحمدكو</button>
+   <p id="checkoutStatus" role="status" aria-live="polite" style="grid-column:1/-1;font-size:13px;color:#17243a"></p>
+   <a id="checkoutWhatsApp" hidden class="cart-submit" style="grid-column:1/-1;text-align:center;text-decoration:none" target="_blank" rel="noopener">إرسال إشعار الطلب عبر واتساب</a>
   </form>
-  <p style="font-size:12px;color:#64748b">يتم إرسال تفاصيل السلة عبر واتساب لتأكيد التوفر والسعر ورسوم التوصيل. حفظ الطلب إلكترونياً في قاعدة البيانات لم يُفعّل بعد.</p>
+  <p style="font-size:12px;color:#64748b">يتم حفظ الطلب ورسوم التوصيل المعتمدة في نظام أحمدكو أولاً، ثم يمكنك إرسال إشعار واتساب للمكتب.</p>
  </div>
 </div>
 
@@ -295,8 +302,14 @@ document.addEventListener("click",e=>{
   const s=stores.find(x=>String(x.id)===add.dataset.storeId);
   if(!p||!s){alert("تعذر تحديد المنتج أو المتجر. حدّث الصفحة وحاول مجدداً.");return;}
   const n=Number(p.price),fixed=p.price!==null&&p.price!==""&&Number.isFinite(n)&&n>=0;
+  if(shoppingCart.length&&String(shoppingCart[0].storeId)!==String(s.id)){
+   alert("لضمان دقة الاستلام، أنشئ طلباً منفصلاً لكل مطعم أو متجر.");
+   return;
+  }
   const old=shoppingCart.find(x=>String(x.id)===String(p.id));
-  if(old)old.qty++;else shoppingCart.push({id:p.id,name:p.name,store:s.store_name,price:fixed?n:null,qty:1});
+  if(old)old.qty++;else shoppingCart.push({id:p.id,name:p.name,store:s.store_name,storeId:s.id,storeAddress:s.address||"",price:fixed?n:null,qty:1});
+  const pickupField=document.getElementById("buyerPickup");
+  if(shoppingCart.length===1&&!pickupField.value&&s.address)pickupField.value=s.address;
   drawCart();add.textContent="تمت الإضافة ✓";
  }
  const rem=e.target.closest("[data-remove-cart]");
@@ -305,21 +318,73 @@ document.addEventListener("click",e=>{
 document.getElementById("cartOpen").addEventListener("click",()=>document.getElementById("cartPanel").classList.add("open"));
 document.getElementById("cartClose").addEventListener("click",()=>document.getElementById("cartPanel").classList.remove("open"));
 document.getElementById("cartPanel").addEventListener("click",e=>{if(e.target.id==="cartPanel")e.currentTarget.classList.remove("open");});
-document.getElementById("checkoutForm").addEventListener("submit",e=>{
+async function loadOrderRegions(){
+ const pickup=document.getElementById("buyerPickupRegion");
+ const delivery=document.getElementById("buyerDeliveryRegion");
+ try{
+  const rows=await readTable("regions",{select:"id,name,is_active",is_active:"eq.true",order:"name.asc"});
+  [pickup,delivery].forEach(select=>{
+   rows.forEach(region=>{
+    const option=document.createElement("option");
+    option.value=region.id;option.textContent=region.name;
+    select.appendChild(option);
+   });
+  });
+  if(!rows.length)throw new Error("لا توجد مناطق مفعّلة في قاعدة البيانات.");
+ }catch(error){
+  document.getElementById("checkoutStatus").textContent="تعذر تحميل المناطق: "+error.message;
+ }
+}
+loadOrderRegions();
+
+document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  e.preventDefault();
- if(!shoppingCart.length){alert("السلة فارغة.");return;}
+ const status=document.getElementById("checkoutStatus");
+ const button=e.currentTarget.querySelector('[type="submit"]');
+ const whatsappLink=document.getElementById("checkoutWhatsApp");
+ whatsappLink.hidden=true;
+ if(!shoppingCart.length){status.textContent="السلة فارغة.";return;}
+ if(new Set(shoppingCart.map(x=>String(x.storeId))).size!==1){status.textContent="لا يمكن جمع منتجات من أكثر من متجر في طلب واحد.";return;}
  const name=document.getElementById("buyerName").value.trim();
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
  const pickup=document.getElementById("buyerPickup").value.trim();
+ const pickupRegion=document.getElementById("buyerPickupRegion").value;
+ const deliveryRegion=document.getElementById("buyerDeliveryRegion").value;
+ const vehicle=document.getElementById("buyerVehicle").value;
  const driverSelect=document.getElementById("buyerDriver");
- const selectedDriver=driverSelect&&driverSelect.value?driverSelect.options[driverSelect.selectedIndex].textContent:"لم يتم اختيار سائق";
- const notes=document.getElementById("buyerNotes").value.trim();
- if(!name||!phone||!address){alert("يرجى إدخال الاسم ورقم الهاتف وعنوان التسليم.");return;}
- const lines=shoppingCart.map((x,i)=>(i+1)+". "+x.name+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")+" × "+x.qty+" — "+x.store).join("\n");
- const total=shoppingCart.every(x=>x.price!==null)?money(shoppingCart.reduce((n,x)=>n+x.price*x.qty,0))+" ₪":"يحتاج تأكيداً";
- const msg="طلب جديد من متجر أحمدكو\nالاسم: "+name+"\nالهاتف: "+phone+"\nعنوان الاستلام: "+(pickup||"يحدد لاحقاً")+"\nعنوان التسليم: "+address+"\nالسائق المفضل: "+selectedDriver+"\n\nالمنتجات:\n"+lines+"\n\nالإجمالي المبدئي: "+total+"\nملاحظات: "+(notes||"لا يوجد")+"\n\nيرجى تأكيد توفر السائق والطلب ورسوم التوصيل قبل الاعتماد.";
- window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank","noopener");
+ const preferredDriver=driverSelect&&driverSelect.value?driverSelect.options[driverSelect.selectedIndex].textContent:"لا يوجد";
+ const customerNotes=document.getElementById("buyerNotes").value.trim();
+ if(!name||!phone||!address||!pickup||!pickupRegion||!deliveryRegion||!vehicle){
+  status.textContent="أكمل الاسم والهاتف وعنواني الاستلام والتسليم والمنطقتين ووسيلة النقل.";
+  return;
+ }
+ const lines=shoppingCart.map((x,i)=>(i+1)+". "+x.name+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")+" × "+x.qty).join("\n");
+ const itemsNote="المتجر: "+shoppingCart[0].store+"\nالأصناف:\n"+lines+"\nالسائق المفضل (طلب تفضيل فقط): "+preferredDriver+"\nملاحظات الزبون: "+(customerNotes||"لا يوجد");
+ button.disabled=true;status.textContent="جارٍ التحقق من سعر التوصيل وحفظ طلبك...";
+ try{
+  const response=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_customer_order",{
+   method:"POST",
+   headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+   body:JSON.stringify({
+    p_customer_name:name,p_customer_phone:phone,p_pickup_address:pickup,p_delivery_address:address,
+    p_pickup_region_id:pickupRegion,p_delivery_region_id:deliveryRegion,p_vehicle_type:vehicle,
+    p_order_type:"restaurant_order",p_notes:itemsNote
+   })
+  });
+  const body=await response.json().catch(()=>null);
+  if(!response.ok)throw new Error(body?.message||body?.details||("تعذر حفظ الطلب ("+response.status+")."));
+  const saved=Array.isArray(body)?body[0]:body;
+  if(!saved?.order_id)throw new Error("لم يرجع النظام رقم الطلب؛ لم نعرض تأكيداً غير موثوق.");
+  const total=shoppingCart.every(x=>x.price!==null)?money(shoppingCart.reduce((n,x)=>n+x.price*x.qty,0))+" ₪":"يحتاج تأكيد المطعم";
+  const message="طلب أحمدكو رقم: "+saved.order_id+"\nالاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل المعتمدة: "+saved.delivery_price+" ₪\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nالسائق المفضل: "+preferredDriver+"\nملاحظات: "+(customerNotes||"لا يوجد");
+  whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
+  whatsappLink.hidden=false;
+  status.textContent="تم حفظ طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل "+money(saved.delivery_price)+" ₪. يمكنك الآن إرسال إشعار للمكتب.";
+  shoppingCart=[];drawCart();
+ }catch(error){
+  status.textContent="لم يتم تأكيد الطلب: "+error.message;
+ }finally{button.disabled=false;}
 });
 
 function storeCard(store){
