@@ -44,7 +44,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <nav class="nav" aria-label="التنقل"><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="./driver.html">بوابة السائقين</a><a href="#contact">تواصل معنا</a></nav>
+ <nav class="nav" aria-label="التنقل"><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
 <section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
@@ -134,7 +134,43 @@ const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
-const verifiedLocalPlaces = [{"id":"taj-menu","store_name":"مطعم التاج","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true,"menu_url":"taj-menu.html"},{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true}];
+const altajStoreId="local-altaj";
+const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true}];
+
+const altajMenuData=[
+ ["شاورما",[
+  ["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]
+ ]],
+ ["شاورما ضاني",[
+  ["شاورما ضاني","35"],["شاورما ضاني دبل عادي","37"],["شاورما ضاني دبل لحمة","45"],["شاورما ضاني دبل دبل","47"],["بيتا ضاني","25"],["سوري ضاني","50"],["صحيفة ضاني","55"],["صاروخ ضاني","60"],["كريب ضاني","60"],["وجبات ضاني","50-60"]
+ ]],
+ ["شاورما حبش",[
+  ["شاورما حبش","30"],["شاورما حبش دبل عادي","32"],["شاورما حبش دبل لحمة","40"],["شاورما حبش صاروخ","55"],["بيتا حبش","20"],["صحيفة حبش","55"],["سوري حبش","48"],["عربية حبش","55"],["وجبات حبش","40-50"]
+ ]],
+ ["ساندويتشات",[
+  ["تشكن بيتزا","30"],["دجاج بالذرة والجبنة","30"],["بانيه عادي","25"],["بانيه بالجبنة","30"],["صحيفة زنجر","35"],["مسحب بالجبنة","35"],["بيف برجر","35"],["تشكن برجر","35"],["كنتاكي برجر دبل","55"],["الفطيرة الذهبية","35"],["كالزوني التاج","35"],["تشيكن ستروجونوف","30"],["تشكن اسكلوبيني","30"],["دجاج بالجبنة","30"],["كريب كرسبي","40"],["كريب مسحب","40"],["كريب مكس","40"],["بيكاتي","30"],["فاهيتا","30"],["مكس غربي","40"]
+ ]],
+ ["مشاوي",[
+  ["وجبة التاج","50","50"],["لفة كباب","17","17"],["لفة شيش طاووق","20","20"],["دجاج مشوي","75","70"],["جناح مشوي","34","35"],["كيلو كباب","80","70"],["كيلو شيش","80","70"],["كيلو دجاج","80","70"],["كيلو مسحب","80","70"],["كبدة عجل","95","75"],["ريش خروف","150","150"],["كبدة دجاج","50","50"],["صينية دجاج مع أرز","70","70"]
+ ]],
+ ["وجبات",[
+  ["وجبة اسكلوبيني","65"],["وجبة كرسبي زنجر","65"],["وجبة بيكاتي","65"],["وجبة ستيك دجاج بالصوص","65"],["وجبة تشكن بيتزا","65"],["وجبة دجاج جبنة و...","65"]
+ ]],
+ ["باستا",[
+  ["باستا كرسبي","30"],["باستا صدر دجاج","30"],["باستا بالبشاميل روم","30"]
+ ]],
+ ["بيتزا",[
+  ["بيتزا خضار (صغير)","15"],["بيتزا خضار (وسط)","25"],["بيتزا خضار (كبير)","45"],["بيتزا بأنواعها (صدر - مارجريتا - شاورما)","25-60"]
+ ]],
+ ["مقبلات",[
+  ["سلطة سخنة","10"],["سلطات مشكل","10"],["شيبس","10"],["صوص (جبنة - كراشي)","10"],["سلطة يوناني","25"],["سلطة سيزر","30"]
+ ]]
+];
+const altajCategories=altajMenuData.map((entry,i)=>({id:"altaj-cat-"+i,store_id:altajStoreId,name:entry[0]}));
+const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
+ id:"altaj-product-"+i+"-"+j,store_id:altajStoreId,category_id:"altaj-cat-"+i,
+ name:item[0],price:item[1],price_display:item.length===3?"صالة: "+item[1]+" ₪ | T.W: "+item[2]+" ₪":item[1]+" ₪"
+})));
 
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normalize(v){return String(v ?? "").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");}
@@ -149,12 +185,12 @@ async function readTable(table,params){
 }
 function waLink(store,product){
  let msg="مرحباً أحمدكو، أريد الطلب من: "+(store.store_name||"");
- if(product)msg+="\nالمنتج: "+(product.name||"")+"\nالسعر: "+(product.price??"")+" ₪";
+ if(product)msg+="\nالمنتج: "+(product.name||"")+"\nالسعر: "+(product.price_display||((product.price??"")+" ₪"));
  msg+="\nأرجو التواصل لتأكيد الطلب ورسوم التوصيل.";
  return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
 }
 function productHTML(store,p){
- const price=(p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪";
+ const price=p.price_display?esc(p.price_display):((p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪");
  return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><a class="small yellow" href="'+waLink(store,p)+'" target="_blank" rel="noopener">اطلب هذا المنتج</a></article>';
 }
 function renderMenu(store,holder){
@@ -162,30 +198,22 @@ function renderMenu(store,holder){
  const list=products.filter(p=>String(p.store_id)===String(store.id));
  holder.className="menu";
  if(!list.length){holder.innerHTML="<p>لا توجد منتجات أو أصناف منشورة لهذا المكان حالياً. تواصل معنا لطلب المساعدة.</p>";return;}
- let html="<h4>المنيو والمنتجات</h4>";
- const grouped=new Set();
- cats.forEach(c=>{
-  const items=list.filter(p=>String(p.category_id)===String(c.id));
-  if(!items.length)return;
-  grouped.add(String(c.id));html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';
- });
+ let html="<h4>المنيو والمنتجات</h4>";const grouped=new Set();
+ cats.forEach(c=>{const items=list.filter(p=>String(p.category_id)===String(c.id));if(!items.length)return;grouped.add(String(c.id));html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';});
  const rest=list.filter(p=>!p.category_id||!grouped.has(String(p.category_id)));
  if(rest.length)html+='<h5>أصناف أخرى</h5><div class="products">'+rest.map(p=>productHTML(store,p)).join("")+'</div>';
  holder.innerHTML=html;
 }
-function storeCard(store,expandMenu=false){
+function storeCard(store){
  const card=document.createElement("article");card.className="store";
  const phone=String(store.phone||"").replace(/[^\d+]/g,"");
  const normalizedName=normalize(store.store_name);
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
  const typeName=({restaurant:"مطعم",store:"مطعم",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم";
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions">'+(store.menu_url?'<a class="small dark" href="'+esc(store.menu_url)+'">تصفح المنيو والأصناف</a>':'<button type="button" class="small dark menuButton">عرض المنيو والأصناف</button>')+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div>'+(store.menu_url?'':'<div class="menuHolder" hidden></div>');
- if(!store.menu_url){const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
- const openMenu=()=>{if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";};
- button.addEventListener("click",()=>{if(holder.hidden){openMenu();}else{holder.hidden=true;button.textContent="عرض المنيو والأصناف";}});
- if(expandMenu)openMenu();
- }
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
+ button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
  return card;
 }
 function render(list){
@@ -194,30 +222,31 @@ function render(list){
  statusBox.hidden=true;list.forEach(s=>grid.appendChild(storeCard(s)));
 }
 function search(){
- const q=normalize(searchBox.value);
- if(!q){render(stores);return;}
+ const q=normalize(searchBox.value);if(!q){render(stores);return;}
  const matchingStores=stores.filter(s=>normalize([s.store_name,s.store_type,s.address,s.contact_name].join(" ")).includes(q));
  const matchingProducts=products.filter(p=>normalize([p.name,p.description].join(" ")).includes(q));
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لا توجد نتائج مطابقة. جرّب كلمة أخرى.");return;}
- statusBox.hidden=true;
- matchingStores.forEach(s=>grid.appendChild(storeCard(s,true)));
+ statusBox.hidden=true;matchingStores.forEach(s=>grid.appendChild(storeCard(s)));
  matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المتجر: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
 }
 async function init(){
  setStatus("جارٍ الاتصال بقاعدة بيانات أحمدكو…");
- try{
-  stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active,created_at",is_active:"eq.true",order:"created_at.desc"});
- }catch(e){console.error(e);stores=[];setStatus("تعذر الاتصال بقاعدة بيانات المطاعم حالياً؛ سنعرض الأماكن المضافة للموقع مؤقتاً.",true);}
+ try{stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active,created_at",is_active:"eq.true",order:"created_at.desc"});}
+ catch(e){console.error(e);stores=[];setStatus("تعذر الاتصال بقاعدة بيانات المطاعم حالياً؛ سنعرض الأماكن المضافة للموقع مؤقتاً.",true);}
  const results=await Promise.allSettled([
   readTable("product_categories",{select:"id,store_id,name,image_url,is_active",is_active:"eq.true"}),
   readTable("products",{select:"id,store_id,category_id,name,description,price,image_url,is_available,created_at",is_available:"eq.true",order:"created_at.asc"})
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- verifiedLocalPlaces.forEach(place=>{const existing=stores.find(s=>normalize(s.store_name)===normalize(place.store_name));if(existing){if(place.menu_url)existing.menu_url=place.menu_url;}else stores.push(place);});
+ verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
+ const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
+ if(tajExisting)tajExisting.id=altajStoreId;else stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+ categories=categories.concat(altajCategories);
+ products=products.concat(altajProducts);
  render(stores);
- if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المتاجر، لكن تعذر تحميل بعض بيانات المنيو. يرجى مراجعة صلاحيات قراءة التصنيفات والمنتجات.",true);
+ if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
 searchBox.addEventListener("input",search);
 init();
