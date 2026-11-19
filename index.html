@@ -243,10 +243,12 @@ async function init(){
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
  const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
- if(tajExisting)tajExisting.id=altajStoreId;else stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
- categories=categories.concat(altajCategories);
- products=products.concat(altajProducts);
- render(stores);
+  const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
+  if(!tajExisting)stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+  // Preserve the real database store ID so existing menu records remain linked.
+  categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
+  products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
 searchBox.addEventListener("input",search);
