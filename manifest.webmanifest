@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "أحمدكو ديلفري | AHMEDKO DELIVERY",
+  "short_name": "أحمدكو",
+  "description": "تطبيق أحمدكو ديلفري للطلبات والتوصيل والخدمات اللوجستية",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#071A35",
+  "theme_color": "#071A35",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
