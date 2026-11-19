@@ -41,6 +41,20 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 @media(min-width:760px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.transport{grid-template-columns:repeat(3,minmax(0,1fr))}.store-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.products{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{padding-top:88px;padding-bottom:95px}}
 @media(max-width:520px){.top{align-items:flex-start;flex-direction:column;padding:12px 5%}.nav{gap:12px}.contact-grid{grid-template-columns:1fr}.products{grid-template-columns:1fr}.hero{padding:55px 6% 60px}.hero:after{left:2%;top:68%;font-size:100px;opacity:.1}section{padding:34px 5%}.contact{margin-left:5%;margin-right:5%}}
 [hidden]{display:none!important}
+
+.cart-fab{position:fixed;bottom:18px;left:18px;z-index:30;border:0;border-radius:999px;background:var(--yellow);color:var(--navy);font-weight:900;padding:13px 18px;box-shadow:0 8px 24px #0005;cursor:pointer}
+.cart-count{display:inline-grid;place-items:center;background:var(--navy);color:#fff;border-radius:50%;min-width:23px;height:23px;margin-right:7px;font-size:12px}
+.cart-panel{position:fixed;inset:0;z-index:40;background:#0009;display:none;align-items:flex-end;justify-content:center;padding:12px}
+.cart-panel.open{display:flex}.cart-box{width:min(680px,100%);max-height:92vh;overflow:auto;background:#fff;color:#17243a;border-radius:20px;padding:20px}
+.cart-head{display:flex;justify-content:space-between;align-items:center}.cart-head h2{margin:0;color:#071A35}
+.cart-close{border:0;background:#edf1f6;border-radius:10px;padding:8px 12px}
+.cart-lines{display:grid;gap:9px;margin:15px 0}.cart-line{display:flex;justify-content:space-between;gap:12px;border:1px solid #e2e8f0;border-radius:12px;padding:11px}
+.cart-line small{display:block;color:#64748b}.cart-line button{border:0;background:#fff0ef;color:#a93226;border-radius:8px;padding:7px 9px}
+.cart-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cart-form input,.cart-form textarea{width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;font:inherit}.cart-form textarea{grid-column:1/-1;min-height:75px}
+.cart-total{font-weight:900;color:#071A35;font-size:18px;margin:12px 0}.cart-submit{width:100%;border:0;border-radius:12px;background:#159b55;color:white;padding:14px;font-weight:900;font:inherit}
+.add-cart{display:block;width:100%;border:0;border-radius:9px;padding:10px;background:var(--yellow);color:var(--navy);font-weight:900;cursor:pointer;margin-top:8px}
+@media(max-width:520px){.cart-form{grid-template-columns:1fr}.cart-form textarea{grid-column:auto}.cart-box{padding:16px}}
+
 </style>
 </head>
 <body>
@@ -101,6 +115,25 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <a class="btn yellow" href="https://wa.me/972598407547" target="_blank" rel="noopener">ابدأ محادثة واتساب</a>
 </section>
 </main>
+
+<button class="cart-fab" id="cartOpen" type="button">🛒 سلة الطلب <span class="cart-count" id="cartCount">0</span></button>
+<div class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-label="سلة المشتريات">
+ <div class="cart-box">
+  <div class="cart-head"><h2>سلة أحمدكو</h2><button class="cart-close" id="cartClose" type="button">إغلاق ✕</button></div>
+  <div class="cart-lines" id="cartLines"><p>السلة فارغة حالياً.</p></div>
+  <div class="cart-total" id="cartTotal">الإجمالي: 0 ₪</div>
+  <form id="checkoutForm" class="cart-form">
+   <input id="buyerName" required maxlength="100" placeholder="اسمك الكامل">
+   <input id="buyerPhone" required inputmode="tel" maxlength="20" placeholder="رقم الهاتف">
+   <input id="buyerAddress" required maxlength="250" placeholder="عنوان التسليم">
+   <input id="buyerPickup" maxlength="250" placeholder="عنوان الاستلام (اختياري)">
+   <textarea id="buyerNotes" maxlength="500" placeholder="ملاحظات على الطلب (اختياري)"></textarea>
+   <button class="cart-submit" type="submit">إرسال تفاصيل الطلب إلى أحمدكو</button>
+  </form>
+  <p style="font-size:12px;color:#64748b">يتم إرسال تفاصيل السلة عبر واتساب لتأكيد التوفر والسعر ورسوم التوصيل. حفظ الطلب إلكترونياً في قاعدة البيانات لم يُفعّل بعد.</p>
+ </div>
+</div>
+
 <footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
 <script>
 "use strict";
@@ -194,10 +227,12 @@ function waLink(store,product){
  msg+="\nأرجو التواصل لتأكيد الطلب ورسوم التوصيل.";
  return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
 }
+
 function productHTML(store,p){
  const price=p.price_display?esc(p.price_display):((p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪");
- return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><a class="small yellow" href="'+waLink(store,p)+'" target="_blank" rel="noopener">اطلب هذا المنتج</a></article>';
+ return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><button type="button" class="add-cart" data-product-id="'+esc(p.id)+'" data-store-id="'+esc(p.store_id)+'">أضف إلى السلة</button></article>';
 }
+
 function renderMenu(store,holder){
  const cats=categories.filter(c=>String(c.store_id)===String(store.id));
  const list=products.filter(p=>String(p.store_id)===String(store.id));
@@ -209,6 +244,51 @@ function renderMenu(store,holder){
  if(rest.length)html+='<h5>أصناف أخرى</h5><div class="products">'+rest.map(p=>productHTML(store,p)).join("")+'</div>';
  holder.innerHTML=html;
 }
+
+let shoppingCart=[];
+function money(v){return Number(v||0).toLocaleString("ar-PS",{maximumFractionDigits:2});}
+function drawCart(){
+ const count=shoppingCart.reduce((n,x)=>n+x.qty,0);
+ document.getElementById("cartCount").textContent=count;
+ const lines=document.getElementById("cartLines");
+ if(!shoppingCart.length) lines.innerHTML="<p>السلة فارغة حالياً. اختر منتجات من المطاعم والمتاجر.</p>";
+ else lines.innerHTML=shoppingCart.map((x,i)=>'<div class="cart-line"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.store)+' · '+(x.price===null?'السعر عند التواصل':money(x.price)+' ₪')+' · الكمية: '+x.qty+'</small></div><button type="button" data-remove-cart="'+i+'">حذف</button></div>').join("");
+ const total=shoppingCart.reduce((n,x)=>n+(x.price===null?0:x.price*x.qty),0);
+ const allPriced=shoppingCart.every(x=>x.price!==null);
+ document.getElementById("cartTotal").textContent=(allPriced?"الإجمالي: ":"الإجمالي المبدئي: ")+money(total)+" ₪"+(allPriced?"":" — توجد أصناف تحتاج تأكيد السعر");
+}
+document.addEventListener("click",e=>{
+ const add=e.target.closest(".add-cart");
+ if(add){
+  const p=products.find(x=>String(x.id)===add.dataset.productId);
+  const s=stores.find(x=>String(x.id)===add.dataset.storeId);
+  if(!p||!s){alert("تعذر تحديد المنتج أو المتجر. حدّث الصفحة وحاول مجدداً.");return;}
+  const n=Number(p.price),fixed=p.price!==null&&p.price!==""&&Number.isFinite(n)&&n>=0;
+  const old=shoppingCart.find(x=>String(x.id)===String(p.id));
+  if(old)old.qty++;else shoppingCart.push({id:p.id,name:p.name,store:s.store_name,price:fixed?n:null,qty:1});
+  drawCart();add.textContent="تمت الإضافة ✓";
+ }
+ const rem=e.target.closest("[data-remove-cart]");
+ if(rem){shoppingCart.splice(Number(rem.dataset.removeCart),1);drawCart();}
+});
+document.getElementById("cartOpen").addEventListener("click",()=>document.getElementById("cartPanel").classList.add("open"));
+document.getElementById("cartClose").addEventListener("click",()=>document.getElementById("cartPanel").classList.remove("open"));
+document.getElementById("cartPanel").addEventListener("click",e=>{if(e.target.id==="cartPanel")e.currentTarget.classList.remove("open");});
+document.getElementById("checkoutForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if(!shoppingCart.length){alert("السلة فارغة.");return;}
+ const name=document.getElementById("buyerName").value.trim();
+ const phone=document.getElementById("buyerPhone").value.trim();
+ const address=document.getElementById("buyerAddress").value.trim();
+ const pickup=document.getElementById("buyerPickup").value.trim();
+ const notes=document.getElementById("buyerNotes").value.trim();
+ if(!name||!phone||!address){alert("يرجى إدخال الاسم ورقم الهاتف وعنوان التسليم.");return;}
+ const lines=shoppingCart.map((x,i)=>(i+1)+". "+x.name+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")+" × "+x.qty+" — "+x.store).join("\n");
+ const total=shoppingCart.every(x=>x.price!==null)?money(shoppingCart.reduce((n,x)=>n+x.price*x.qty,0))+" ₪":"يحتاج تأكيداً";
+ const msg="طلب جديد من متجر أحمدكو\nالاسم: "+name+"\nالهاتف: "+phone+"\nعنوان الاستلام: "+(pickup||"يحدد لاحقاً")+"\nعنوان التسليم: "+address+"\n\nالمنتجات:\n"+lines+"\n\nالإجمالي المبدئي: "+total+"\nملاحظات: "+(notes||"لا يوجد")+"\n\nيرجى تأكيد التوفر ورسوم التوصيل.";
+ window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank","noopener");
+});
+
 function storeCard(store){
  const card=document.createElement("article");card.className="store";
  const phone=String(store.phone||"").replace(/[^\d+]/g,"");
