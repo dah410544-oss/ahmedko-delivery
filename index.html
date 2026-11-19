@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#091a33">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="أحمدكو">
@@ -463,23 +463,47 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 <script>
 let deferredInstallPrompt = null;
 const installAppButton = document.getElementById("installAppButton");
+const isAppInstalled = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+if (installAppButton) {
+  installAppButton.hidden = false;
+  if (isAppInstalled()) {
+    installAppButton.textContent = "✓ تطبيق أحمدكو مثبت";
+    installAppButton.disabled = true;
+    installAppButton.setAttribute("aria-label", "تطبيق أحمدكو مثبت بالفعل");
+  }
+}
 window.addEventListener("beforeinstallprompt", event => {
   event.preventDefault();
   deferredInstallPrompt = event;
-  if (installAppButton) installAppButton.hidden = false;
+  if (installAppButton && !isAppInstalled()) {
+    installAppButton.hidden = false;
+    installAppButton.textContent = "تثبيت تطبيق أحمدكو";
+    installAppButton.disabled = false;
+  }
 });
 if (installAppButton) {
   installAppButton.addEventListener("click", async () => {
-    if (!deferredInstallPrompt) return;
+    if (isAppInstalled()) return;
+    if (!deferredInstallPrompt) {
+      alert("لتثبيت أحمدكو كتطبيق: افتح الموقع في Google Chrome، ثم اضغط ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» إذا ظهر الخيار. إذا ظهر «فتح التطبيق» فهو مثبت بالفعل.");
+      return;
+    }
     deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
+    const choice = await deferredInstallPrompt.userChoice;
     deferredInstallPrompt = null;
-    installAppButton.hidden = true;
+    if (choice && choice.outcome === "accepted") {
+      installAppButton.textContent = "✓ جارٍ تثبيت أحمدكو";
+      installAppButton.disabled = true;
+    }
   });
 }
 window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null;
-  if (installAppButton) installAppButton.hidden = true;
+  if (installAppButton) {
+    installAppButton.textContent = "✓ تطبيق أحمدكو مثبت";
+    installAppButton.disabled = true;
+    installAppButton.hidden = false;
+  }
 });
 </script>
 </body>
