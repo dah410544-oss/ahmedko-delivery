@@ -111,7 +111,7 @@ begin
           office_commission = excluded.office_commission,
           driver_amount = excluded.driver_amount,
           driver_id = excluded.driver_id
-      where public.driver_earnings.payment_status <> 'paid';
+      where driver_earnings.payment_status <> 'paid';
     end if;
 
     return jsonb_build_object('success', true, 'status', v_current_status, 'unchanged', true);
@@ -144,7 +144,7 @@ begin
         office_commission = excluded.office_commission,
         driver_amount = excluded.driver_amount,
         driver_id = excluded.driver_id
-    where public.driver_earnings.payment_status <> 'paid';
+    where driver_earnings.payment_status <> 'paid';
   end if;
 
   return jsonb_build_object('success', true, 'status', p_new_status, 'unchanged', false);
