@@ -355,11 +355,23 @@ footer{
 </section>
 
 <section class="page" id="page-stores">
- <h2 class="section-title">إدارة المتاجر</h2>
+ <h2 class="section-title">إدارة المطاعم والشركات والمتاجر</h2>
+ <div class="panel">
+  <h3>تسجيل شريك تجاري جديد</h3>
+  <form id="store-form" class="workflow-controls">
+   <input id="store-name" required maxlength="150" placeholder="اسم المطعم أو الشركة أو المتجر">
+   <input id="store-contact" maxlength="100" placeholder="اسم مسؤول التواصل">
+   <input id="store-phone" maxlength="30" placeholder="رقم الهاتف">
+   <input id="store-address" maxlength="250" placeholder="العنوان">
+   <select id="store-type" required aria-label="نوع النشاط"><option value="restaurant">مطعم</option><option value="cafe">مقهى</option><option value="store">متجر / شركة</option></select>
+   <button type="submit" class="primary">تسجيل الشريك</button>
+  </form>
+  <p id="store-form-message" class="workflow-status" aria-live="polite"></p>
+ </div>
  <div class="panel">
   <div class="toolbar">
-   <h3>المتاجر المسجلة</h3>
-   <input class="search" data-table="stores" placeholder="بحث عن متجر">
+   <h3>المتاجر والشركاء المسجلون</h3>
+   <input class="search" data-table="stores" placeholder="بحث عن شريك">
   </div>
   <div id="table-stores" class="muted">جارٍ التحميل...</div>
  </div>
@@ -771,6 +783,29 @@ document.querySelectorAll(".search").forEach(input=>{
  input.addEventListener("input",()=>{
   renderTable(input.dataset.table,input.value);
  });
+});
+
+$("store-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const button=event.currentTarget.querySelector('[type="submit"]'),message=$("store-form-message");
+ const payload={
+  store_name:$("store-name").value.trim(),
+  contact_name:$("store-contact").value.trim()||null,
+  phone:$("store-phone").value.trim()||null,
+  address:$("store-address").value.trim()||null,
+  store_type:$("store-type").value,
+  is_active:true
+ };
+ if(payload.store_name.length<2){message.textContent="أدخل اسماً صحيحاً للنشاط.";return;}
+ button.disabled=true;message.textContent="جارٍ تسجيل الشريك...";
+ try{
+  const result=await db.from("stores").insert(payload);
+  if(result.error)throw result.error;
+  message.textContent="تم تسجيل الشريك بنجاح. يمكنك الآن إضافة أقسامه ومنتجاته من إدارة القوائم.";
+  event.currentTarget.reset();
+  await loadTable("stores");await loadMenuManager();
+ }catch(error){message.textContent="تعذر تسجيل الشريك: "+error.message;}
+ finally{button.disabled=false;}
 });
 
 async function loadRateFormOptions(){
