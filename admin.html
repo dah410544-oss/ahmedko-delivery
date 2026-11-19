@@ -275,6 +275,7 @@ footer{
  <button class="nav-button" data-page="orders">📦 الطلبات</button>
  <button class="nav-button" data-page="drivers">🛵 السائقون</button>
  <button class="nav-button" data-page="stores">🏪 المتاجر</button>
+ <button class="nav-button" data-page="menus">🍽️ القوائم والمنتجات</button>
  <button class="nav-button" data-page="regions">📍 المناطق</button>
  <button class="nav-button" data-page="rates">💰 الأسعار</button>
  <button class="nav-button" data-page="finance">💳 الحسابات</button>
@@ -361,6 +362,44 @@ footer{
    <input class="search" data-table="stores" placeholder="بحث عن متجر">
   </div>
   <div id="table-stores" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-menus">
+ <h2 class="section-title">إدارة قوائم الطعام والمنتجات</h2>
+ <div class="panel">
+  <h3>إضافة قسم جديد</h3>
+  <form id="category-form" class="workflow-controls">
+   <select id="category-store" required aria-label="اختر المتجر"><option value="">اختر المتجر</option></select>
+   <input id="category-name" required maxlength="100" placeholder="اسم القسم" style="padding:10px;border:1px solid var(--border);border-radius:8px;flex:1;min-width:150px">
+   <button type="submit" class="primary">إضافة القسم</button>
+  </form>
+  <p id="category-message" class="workflow-status" aria-live="polite"></p>
+ </div>
+ <div class="panel">
+  <h3 id="product-form-title">إضافة منتج جديد</h3>
+  <form id="product-form">
+   <input type="hidden" id="product-id">
+   <div class="workflow-controls">
+    <select id="product-store" required aria-label="اختر المتجر"><option value="">اختر المتجر</option></select>
+    <select id="product-category" required aria-label="اختر القسم"><option value="">اختر القسم</option></select>
+   </div>
+   <div class="workflow-controls">
+    <input id="product-name" required maxlength="150" placeholder="اسم المنتج" style="padding:10px;border:1px solid var(--border);border-radius:8px;flex:1;min-width:160px">
+    <input id="product-price" required type="number" min="0" step="0.01" placeholder="السعر بالشيكل" style="padding:10px;border:1px solid var(--border);border-radius:8px;width:150px">
+   </div>
+   <textarea id="product-description" maxlength="700" rows="2" placeholder="وصف المنتج (اختياري)" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:10px;font:inherit"></textarea>
+   <label style="display:flex;gap:8px;align-items:center;margin:12px 0"><input id="product-available" type="checkbox" checked> المنتج متاح للطلب</label>
+   <div class="workflow-controls">
+    <button type="submit" class="primary" id="product-save">حفظ المنتج</button>
+    <button type="button" class="secondary" id="product-cancel">إلغاء التعديل</button>
+   </div>
+   <p id="product-message" class="workflow-status" aria-live="polite"></p>
+  </form>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div>
+  <div id="menu-manager-list" class="muted">جارٍ تحميل القوائم...</div>
  </div>
 </section>
 
@@ -881,6 +920,109 @@ $("announcement-form").addEventListener("submit",async event=>{
 $("announcement-cancel").addEventListener("click",resetAnnouncementForm);
 
 
+const menuStoreSelects=["category-store","product-store"];
+let menuStores=[],menuCategories=[],menuProducts=[];
+function menuMessage(id,message,error=false){const el=$(id);el.textContent=message;el.className=error?"workflow-status error":"workflow-status";}
+function fillMenuStoreSelects(){
+ menuStoreSelects.forEach(id=>{
+  const el=$(id),previous=el.value;
+  el.innerHTML='<option value="">اختر المتجر</option>'+menuStores.map(s=>'<option value="'+escapeHTML(s.id)+'">'+escapeHTML(s.store_name)+'</option>').join("");
+  if(menuStores.some(s=>s.id===previous))el.value=previous;
+ });
+}
+function fillProductCategories(){
+ const storeId=$("product-store").value,previous=$("product-category").value;
+ const list=menuCategories.filter(c=>c.store_id===storeId&&c.is_active!==false);
+ $("product-category").innerHTML='<option value="">اختر القسم</option>'+list.map(c=>'<option value="'+escapeHTML(c.id)+'">'+escapeHTML(c.name)+'</option>').join("");
+ if(list.some(c=>c.id===previous))$("product-category").value=previous;
+}
+async function loadMenuManager(){
+ const box=$("menu-manager-list");box.textContent="جارٍ تحميل المتاجر والقوائم...";
+ const [s,cats,prods]=await Promise.all([
+  db.from("stores").select("id,store_name,is_active").order("store_name"),
+  db.from("product_categories").select("id,store_id,name,is_active").order("name"),
+  db.from("products").select("id,store_id,category_id,name,description,price,is_available").order("name")
+ ]);
+ const failed=[s,cats,prods].find(x=>x.error);
+ if(failed){box.innerHTML='<div class="error">تعذر تحميل بيانات القوائم: '+escapeHTML(failed.error.message)+'</div>';return;}
+ menuStores=s.data||[];menuCategories=cats.data||[];menuProducts=prods.data||[];
+ fillMenuStoreSelects();fillProductCategories();renderMenuManager();
+ setDiagnostic("قوائم الطعام والمنتجات",true,"تم تحميل "+menuCategories.length+" قسماً و"+menuProducts.length+" منتجاً.");
+}
+function renderMenuManager(){
+ const box=$("menu-manager-list");
+ if(!menuStores.length){box.textContent="لا توجد متاجر مسجلة.";return;}
+ let html="";
+ menuStores.forEach(store=>{
+  const cats=menuCategories.filter(c=>c.store_id===store.id);
+  const products=menuProducts.filter(p=>p.store_id===store.id);
+  html+='<div class="workflow-card"><h4>'+escapeHTML(store.store_name)+' <span class="status">'+products.length+' منتج · '+cats.length+' قسم</span></h4>';
+  if(!cats.length)html+='<p class="muted">لا توجد أقسام بعد.</p>';
+  cats.forEach(cat=>{
+   const items=products.filter(p=>p.category_id===cat.id);
+   html+='<div style="padding:10px 0;border-top:1px solid var(--border)"><strong>'+escapeHTML(cat.name)+'</strong> <span class="status">'+items.length+' منتج</span> '+(cat.is_active===false?'<span class="status">قسم مخفي</span>':'')+'<div class="workflow-controls"><button type="button" class="secondary category-toggle" data-id="'+escapeHTML(cat.id)+'" data-active="'+String(cat.is_active!==false)+'">'+(cat.is_active===false?'إظهار القسم':'إخفاء القسم')+'</button></div>';
+   items.forEach(p=>{
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-top:1px dashed var(--border)"><span>'+escapeHTML(p.name)+' — '+escapeHTML(p.price)+' ₪ '+(p.is_available?'':'(غير متاح)')+'</span><div class="workflow-controls"><button type="button" class="secondary product-edit" data-id="'+escapeHTML(p.id)+'">تعديل</button><button type="button" class="secondary product-toggle" data-id="'+escapeHTML(p.id)+'" data-active="'+String(!!p.is_available)+'">'+(p.is_available?'إيقاف':'إتاحة')+'</button></div></div>';
+   });
+   html+='</div>';
+  });
+  html+='</div>';
+ });
+ box.innerHTML=html;
+ box.querySelectorAll(".category-toggle").forEach(btn=>btn.addEventListener("click",async()=>{
+  btn.disabled=true;const active=btn.dataset.active==="true";
+  const r=await db.from("product_categories").update({is_active:!active}).eq("id",btn.dataset.id);
+  if(r.error){alert("تعذر تحديث القسم: "+r.error.message);btn.disabled=false;return;}await loadMenuManager();
+ }));
+ box.querySelectorAll(".product-toggle").forEach(btn=>btn.addEventListener("click",async()=>{
+  btn.disabled=true;const active=btn.dataset.active==="true";
+  const r=await db.from("products").update({is_available:!active}).eq("id",btn.dataset.id);
+  if(r.error){alert("تعذر تحديث المنتج: "+r.error.message);btn.disabled=false;return;}await loadMenuManager();
+ }));
+ box.querySelectorAll(".product-edit").forEach(btn=>btn.addEventListener("click",()=>{
+  const p=menuProducts.find(x=>x.id===btn.dataset.id);if(!p)return;
+  $("product-id").value=p.id;$("product-store").value=p.store_id;fillProductCategories();$("product-category").value=p.category_id||"";
+  $("product-name").value=p.name||"";$("product-price").value=p.price??"";$("product-description").value=p.description||"";$("product-available").checked=!!p.is_available;
+  $("product-form-title").textContent="تعديل المنتج";$("product-save").textContent="حفظ التعديلات";$("product-message").textContent="";
+  $("product-form").scrollIntoView({behavior:"smooth",block:"center"});
+ }));
+}
+$("category-store").addEventListener("change",()=>{});
+$("product-store").addEventListener("change",fillProductCategories);
+$("category-form").addEventListener("submit",async event=>{
+ event.preventDefault();const storeId=$("category-store").value,name=$("category-name").value.trim();
+ if(!storeId||!name){menuMessage("category-message","اختر المتجر واكتب اسم القسم.",true);return;}
+ const btn=event.submitter;btn.disabled=true;menuMessage("category-message","جارٍ حفظ القسم...");
+ const r=await db.from("product_categories").insert({store_id:storeId,name,is_active:true});
+ btn.disabled=false;
+ if(r.error){menuMessage("category-message","تعذر إضافة القسم: "+r.error.message,true);return;}
+ $("category-name").value="";menuMessage("category-message","تمت إضافة القسم بنجاح.");await loadMenuManager();
+});
+function resetProductForm(){
+ $("product-id").value="";$("product-store").value="";fillProductCategories();$("product-category").value="";
+ $("product-name").value="";$("product-price").value="";$("product-description").value="";$("product-available").checked=true;
+ $("product-form-title").textContent="إضافة منتج جديد";$("product-save").textContent="حفظ المنتج";$("product-message").textContent="";
+}
+$("product-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const id=$("product-id").value,storeId=$("product-store").value,categoryId=$("product-category").value;
+ const name=$("product-name").value.trim(),price=Number($("product-price").value),description=$("product-description").value.trim();
+ if(!storeId||!categoryId||!name||!Number.isFinite(price)||price<0){menuMessage("product-message","أكمل المتجر والقسم واسم المنتج والسعر الصحيح.",true);return;}
+ const cat=menuCategories.find(x=>x.id===categoryId&&x.store_id===storeId&&x.is_active!==false);
+ if(!cat){menuMessage("product-message","القسم المختار لا يتبع المتجر المحدد أو أنه مخفي.",true);return;}
+ const payload={store_id:storeId,category_id:categoryId,name,price,description:description||null,is_available:$("product-available").checked};
+ const btn=$("product-save");btn.disabled=true;menuMessage("product-message","جارٍ حفظ المنتج...");
+ const r=id?await db.from("products").update(payload).eq("id",id):await db.from("products").insert(payload);
+ btn.disabled=false;
+ if(r.error){menuMessage("product-message","تعذر حفظ المنتج: "+r.error.message,true);return;}
+ resetProductForm();menuMessage("product-message",id?"تم تحديث المنتج بنجاح.":"تمت إضافة المنتج بنجاح.");await loadMenuManager();
+});
+$("product-cancel").addEventListener("click",resetProductForm);
+$("refresh-menus").addEventListener("click",loadMenuManager);
+
+
+
+
 const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
 const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص",jeep:"جيب"};
 let workflowOrders=[];
@@ -1034,6 +1176,7 @@ async function loadDashboard(){
   loadOrderWorkflow(),
   loadDriverApplications(),
   loadFinanceEarnings(),
+  loadMenuManager(),
   ...Object.keys(tableConfig).map(loadTable)
  ]);
 }
