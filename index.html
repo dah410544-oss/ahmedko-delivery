@@ -349,11 +349,11 @@ function search(){
 }
 async function init(){
  setStatus("جارٍ الاتصال بقاعدة بيانات أحمدكو…");
- try{stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active,created_at",is_active:"eq.true",order:"created_at.desc"});}
+ try{stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active",is_active:"eq.true",order:"store_name.asc"});}
  catch(e){console.error(e);stores=[];setStatus("تعذر الاتصال بقاعدة بيانات المطاعم حالياً؛ سنعرض الأماكن المضافة للموقع مؤقتاً.",true);}
  const results=await Promise.allSettled([
-  readTable("product_categories",{select:"id,store_id,name,image_url,is_active",is_active:"eq.true"}),
-  readTable("products",{select:"id,store_id,category_id,name,description,price,image_url,is_available,created_at",is_available:"eq.true",order:"created_at.asc"})
+  readTable("product_categories",{select:"id,store_id,name,is_active",is_active:"eq.true",order:"name.asc"}),
+  readTable("products",{select:"id,store_id,category_id,name,description,price,is_available",is_available:"eq.true",order:"name.asc"})
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
