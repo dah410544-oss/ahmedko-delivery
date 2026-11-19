@@ -99,7 +99,13 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <a class="btn yellow" href="https://wa.me/972598407547" target="_blank" rel="noopener">ابدأ محادثة واتساب</a>
 </section>
 </main>
-<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
+<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة
+ <div style="margin-top:10px;font-size:12px">
+  <a href="./driver.html" style="color:inherit;margin:0 8px">بوابة السائقين</a>
+  <span aria-hidden="true">|</span>
+  <a href="./admin.html" style="color:inherit;margin:0 8px">دخول الإدارة</a>
+ </div>
+</footer>
 <script>
 "use strict";
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
@@ -242,9 +248,11 @@ async function init(){
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
  const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
- if(tajExisting)tajExisting.id=altajStoreId;else stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
- categories=categories.concat(altajCategories);
- products=products.concat(altajProducts);
+ const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
+ if(!tajExisting)stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+ // Keep the real database store ID so its existing categories/products remain linked.
+ categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
+ products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
