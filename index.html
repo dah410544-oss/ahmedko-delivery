@@ -99,13 +99,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <a class="btn yellow" href="https://wa.me/972598407547" target="_blank" rel="noopener">ابدأ محادثة واتساب</a>
 </section>
 </main>
-<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة
- <div style="margin-top:10px;font-size:12px">
-  <a href="./driver.html" style="color:inherit;margin:0 8px">بوابة السائقين</a>
-  <span aria-hidden="true">|</span>
-  <a href="./admin.html" style="color:inherit;margin:0 8px">دخول الإدارة</a>
- </div>
-</footer>
+<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
 <script>
 "use strict";
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
@@ -119,12 +113,12 @@ function showPublicDate(){
 async function loadPublicAnnouncement(){
  const box=document.getElementById("publicAnnouncement");
  try{
-  const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&order=created_at.desc&limit=50";
+  const startsFilter=encodeURIComponent("(starts_at.is.null,starts_at.lte."+new Date().toISOString()+")");
+  const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&or="+startsFilter+"&order=created_at.desc&limit=50";
   const res=await fetch(url,{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
   if(!res.ok)throw new Error("announcement read failed");
   const rows=await res.json();
-  const now=Date.now();
-   const item=rows.find(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now));
+  const item=rows.find(x=>!x.ends_at||new Date(x.ends_at)>new Date());
   if(item){
    document.getElementById("publicAnnouncementTitle").textContent=item.title||"إعلان من أحمدكو";
    document.getElementById("publicAnnouncementText").textContent=item.message||"";
@@ -249,11 +243,9 @@ async function init(){
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
  const tajExisting=stores.find(s=>normalize(s.store_name)===normalize("مطعم ومطبخ التاج"));
- const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
- if(!tajExisting)stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
- // Keep the real database store ID so its existing categories/products remain linked.
- categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
- products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+ if(tajExisting)tajExisting.id=altajStoreId;else stores.push(verifiedLocalPlaces[verifiedLocalPlaces.length-1]);
+ categories=categories.concat(altajCategories);
+ products=products.concat(altajProducts);
  render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
