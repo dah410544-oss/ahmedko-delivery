@@ -113,7 +113,8 @@ function showPublicDate(){
 async function loadPublicAnnouncement(){
  const box=document.getElementById("publicAnnouncement");
  try{
-  const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&starts_at=lte."+encodeURIComponent(new Date().toISOString())+"&order=created_at.desc&limit=1";
+  const startsFilter=encodeURIComponent("(starts_at.is.null,starts_at.lte."+new Date().toISOString()+")");
+  const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&or="+startsFilter+"&order=created_at.desc&limit=50";
   const res=await fetch(url,{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
   if(!res.ok)throw new Error("announcement read failed");
   const rows=await res.json();
