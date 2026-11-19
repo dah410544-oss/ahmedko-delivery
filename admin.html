@@ -860,9 +860,9 @@ $("announcement-form").addEventListener("submit",async event=>{
  if(!title||!message){status.textContent="أدخل عنوان الإعلان ونصه.";return;}
  const startRaw=$("announcement-start").value;
  const endRaw=$("announcement-end").value;
- const starts_at=startRaw?new Date(startRaw).toISOString():new Date().toISOString();
+ const starts_at=startRaw?new Date(startRaw).toISOString():null;
  const ends_at=endRaw?new Date(endRaw).toISOString():null;
- if(ends_at&&new Date(ends_at)<=new Date(starts_at)){status.textContent="وقت الانتهاء يجب أن يكون بعد وقت البداية.";return;}
+ if(ends_at&&new Date(ends_at)<=new Date(starts_at||Date.now())){status.textContent="وقت الانتهاء يجب أن يكون بعد وقت البداية أو الوقت الحالي.";return;}
  const payload={title,message,starts_at,ends_at,is_active:$("announcement-active").checked,updated_at:new Date().toISOString()};
  button.disabled=true;
  status.textContent="جارٍ الحفظ...";
