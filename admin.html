@@ -1278,16 +1278,24 @@ async function ensureOrderEarning(order){
  if(!order.driver_id)throw new Error("لا يوجد سائق مسند لهذا الطلب.");
  const amount=Number(order.delivery_price);
  if(!Number.isFinite(amount)||amount<=0)throw new Error("أجرة التوصيل غير محددة أو غير صحيحة.");
- const existing=await db.from("driver_earnings").select("id").eq("order_id",order.id).limit(1);
+ const settings=await db.from("business_settings").select("office_commission_percent").limit(1).maybeSingle();
+ if(settings.error)throw new Error("تعذر قراءة نسبة عمولة المكتب: "+settings.error.message);
+ const rate=Number(settings.data?.office_commission_percent ?? 15);
+ if(!Number.isFinite(rate)||rate<0||rate>100)throw new Error("نسبة عمولة المكتب غير صحيحة.");
+ const officeCommission=Number((amount*rate/100).toFixed(2));
+ const driverAmount=Number((amount-officeCommission).toFixed(2));
+ const existing=await db.from("driver_earnings").select("id,delivery_amount,office_commission,driver_amount,driver_id").eq("order_id",order.id).limit(1);
  if(existing.error)throw new Error(existing.error.message);
- if(existing.data&&existing.data.length)return existing.data[0];
- const inserted=await db.from("driver_earnings").insert({
-  driver_id:order.driver_id,
-  order_id:order.id,
-  delivery_amount:amount,
-  payment_status:"pending",
-  notes:"تم إنشاؤه من لوحة إدارة أحمدكو عند إتمام الطلب"
- });
+ const values={driver_id:order.driver_id,delivery_amount:amount,office_commission:officeCommission,driver_amount:driverAmount};
+ if(existing.data&&existing.data.length){
+  const row=existing.data[0];
+  if(Number(row.delivery_amount)!==amount||Number(row.office_commission)!==officeCommission||Number(row.driver_amount)!==driverAmount||row.driver_id!==order.driver_id){
+   const fixed=await db.from("driver_earnings").update(values).eq("id",row.id);
+   if(fixed.error)throw new Error("تعذر تصحيح توزيع المستحقات: "+fixed.error.message);
+  }
+  return row.id;
+ }
+ const inserted=await db.from("driver_earnings").insert({...values,order_id:order.id,payment_status:"pending",notes:"تم احتساب عمولة المكتب "+rate+"% ومستحق السائق "+(100-rate)+"% تلقائياً"});
  if(inserted.error)throw new Error(inserted.error.message);
  return true;
 }
