@@ -398,7 +398,7 @@ footer{
   </form>
  </div>
  <div class="panel">
-  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div>
+  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
   <div id="menu-manager-list" class="muted">جارٍ تحميل القوائم...</div>
  </div>
 </section>
@@ -1057,7 +1057,68 @@ $("product-form").addEventListener("submit",async event=>{
  resetProductForm();menuMessage("product-message",id?"تم تحديث المنتج بنجاح.":"تمت إضافة المنتج بنجاح.");await loadMenuManager();
 });
 $("product-cancel").addEventListener("click",resetProductForm);
+
 $("refresh-menus").addEventListener("click",loadMenuManager);
+
+async function importTajMenu(){
+ const button=$("import-taj-menu"),status=$("menu-import-status");
+ const storeId="f9a58bca-a274-43c9-965a-da299201f3a7";
+ button.disabled=true;status.textContent="جارٍ قراءة المنيو والتحقق من بيانات مطبخ التاج...";
+ let addedCategories=0,addedProducts=0,skippedProducts=0;
+ try{
+  const storeCheck=await db.from("stores").select("id,store_name").eq("id",storeId).maybeSingle();
+  if(storeCheck.error)throw new Error(storeCheck.error.message);
+  if(!storeCheck.data)throw new Error("لم يتم العثور على متجر مطبخ التاج في قاعدة البيانات.");
+  const response=await fetch("taj-menu.html",{cache:"no-store"});
+  if(!response.ok)throw new Error("تعذر قراءة ملف منيو التاج ("+response.status+").");
+  const html=await response.text();
+  const match=html.match(/const\s+menu\s*=\s*(\[[\s\S]*?\]);\s*\nlet\s+active/);
+  if(!match)throw new Error("لم أتمكن من استخراج أقسام المنيو من الملف.");
+  const menu=(new Function("return ("+match[1]+")"))();
+  if(!Array.isArray(menu)||!menu.length)throw new Error("بيانات المنيو فارغة.");
+  const catsResult=await db.from("product_categories").select("id,name").eq("store_id",storeId);
+  if(catsResult.error)throw new Error(catsResult.error.message);
+  const knownCats=new Map((catsResult.data||[]).map(c=>[c.name.trim(),c]));
+  for(const [categoryName,items] of menu){
+   let category=knownCats.get(categoryName);
+   if(!category){
+    const inserted=await db.from("product_categories").insert({store_id:storeId,name:categoryName,is_active:true}).select("id,name").single();
+    if(inserted.error)throw new Error("تعذر إنشاء قسم "+categoryName+": "+inserted.error.message);
+    category=inserted.data;knownCats.set(categoryName,category);addedCategories++;
+   }
+   const existing=await db.from("products").select("name").eq("store_id",storeId).eq("category_id",category.id);
+   if(existing.error)throw new Error("تعذر قراءة منتجات قسم "+categoryName+": "+existing.error.message);
+   const names=new Set((existing.data||[]).map(p=>(p.name||"").trim()));
+   const rows=[];
+   for(const item of items){
+    const name=String(item[0]||"").trim();
+    if(!name||names.has(name)){skippedProducts++;continue;}
+    const raw=String(item[1]??"").trim();
+    const price=Number.parseFloat(raw.replace(",","."));
+    if(!Number.isFinite(price)||price<0){skippedProducts++;continue;}
+    let details=[];
+    if(item.length===3)details.push("السعر حسب الخيار: صالة "+item[1]+" ₪، وT.W "+item[2]+" ₪.");
+    else if(raw.includes("-"))details.push("السعر ضمن النطاق "+raw+" ₪؛ يؤكد السعر النهائي عند الطلب.");
+    rows.push({store_id:storeId,category_id:category.id,name,price,description:details.join(" ")||null,is_available:true});
+    names.add(name);
+   }
+   if(rows.length){
+    const inserted=await db.from("products").insert(rows);
+    if(inserted.error)throw new Error("تعذر حفظ منتجات قسم "+categoryName+": "+inserted.error.message);
+    addedProducts+=rows.length;
+   }
+   status.textContent="تمت معالجة قسم "+categoryName+"؛ أضيف حتى الآن "+addedProducts+" صنفاً...";
+  }
+  await loadMenuManager();
+  status.textContent="اكتمل استيراد منيو مطبخ التاج: "+addedCategories+" أقسام جديدة و"+addedProducts+" أصناف جديدة. تم تجاوز "+skippedProducts+" صنفاً موجوداً أو غير صالح دون تكرار.";
+ }catch(error){
+  status.textContent="توقف الاستيراد: "+error.message+" — الأصناف التي حُفظت قبل الخطأ تبقى محفوظة، ويمكن إعادة المحاولة بأمان دون تكرار.";
+ }finally{button.disabled=false;}
+}
+$("import-taj-menu").addEventListener("click",()=>{
+ if(confirm("سيتم استيراد الأقسام والأصناف الموثقة من منيو مطبخ التاج فقط، مع تخطي الموجود وعدم تكراره. هل تريد المتابعة؟"))importTajMenu();
+});
+
 
 
 
