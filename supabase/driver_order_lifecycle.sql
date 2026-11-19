@@ -2,6 +2,11 @@
 -- Run this file once in Supabase SQL Editor as project owner.
 -- Drivers can change ONLY their own assigned order status through this RPC.
 
+-- Set the approved Ahmedko office commission rate to 16%.
+update public.business_settings
+set office_commission_percent = 16;
+
+
 do $$
 begin
   if exists (
@@ -84,7 +89,7 @@ begin
     from public.business_settings as bs
     limit 1;
 
-    v_commission_rate := coalesce(v_commission_rate, 15);
+    v_commission_rate := coalesce(v_commission_rate, 16);
 
     if v_commission_rate < 0 or v_commission_rate > 100 then
       raise exception 'نسبة عمولة المكتب في الإعدادات غير صحيحة.';
