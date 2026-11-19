@@ -186,7 +186,7 @@ async function loadAvailableDrivers(){
   drivers.forEach(d=>{
    const option=document.createElement("option");
    option.value=d.driver_id;
-   option.textContent=(d.full_name||"سائق")+(d.vehicle_type?" — "+({bicycle:"دراجة هوائية",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص"})[d.vehicle_type]||"");
+   option.textContent=(d.full_name||"سائق")+(d.vehicle_type?" — "+(({bicycle:"دراجة هوائية",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص"})[d.vehicle_type]||d.vehicle_type):"");
    select.appendChild(option);
   });
   if(!drivers.length)select.options[0].textContent="لا يوجد سائقون متاحون حالياً";
