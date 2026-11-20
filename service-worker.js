@@ -1,14 +1,15 @@
-const CACHE_NAME = "ahmedko-shell-v14";
+const CACHE_NAME = "ahmedko-shell-v15";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
   "index.html",
   "admin.html",
   "driver.html",
+  "customer.html",
   "taj-menu.html",
   "auto-o2-menu.js",
   "manifest.webmanifest",
-  "icon.svg?v=14"
+  "icon.svg?v=15"
 ].map(appUrl);
 
 self.addEventListener("install", event => {
