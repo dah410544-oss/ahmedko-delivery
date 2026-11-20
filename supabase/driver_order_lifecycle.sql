@@ -76,7 +76,7 @@ begin
      or length(trim(coalesce(p_delivery_address, ''))) < 3 then
     raise exception 'عنوان الاستلام والتسليم مطلوبان.';
   end if;
-  if p_vehicle_type not in ('car','tuk_tuk','bus','electric_bicycle','bicycle','motorcycle') then
+  if p_vehicle_type is null or p_vehicle_type not in ('car','tuk_tuk','bus','electric_bicycle','bicycle','motorcycle') then
     raise exception 'وسيلة النقل المختارة غير صحيحة.';
   end if;
 
