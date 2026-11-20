@@ -29,7 +29,7 @@ permissions:
 jobs:
   build-debug-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -48,11 +48,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare web app
+      - name: Prepare web app and Android artwork
         run: |
           npm run build:web
+          npm install --no-save --no-package-lock sharp
           mkdir -p assets
-          cp icon.svg assets/logo.svg
+          node --input-type=module <<'NODE'
+          import sharp from 'sharp';
+          await sharp('icon.svg').resize(1024, 1024).png().toFile('assets/icon.png');
+          const splashMark = await sharp('icon.svg').resize(1200, 1200).png().toBuffer();
+          await sharp({
+            create: {
+              width: 2732,
+              height: 2732,
+              channels: 4,
+              background: '#071A35'
+            }
+          }).composite([{ input: splashMark, gravity: 'centre' }]).png().toFile('assets/splash.png');
+          NODE
 
       - name: Create Android project
         run: npx cap add android
