@@ -7,7 +7,8 @@
     "build:web": "node scripts/prepare-web.mjs",
     "validate:release": "node scripts/validate-release.mjs",
     "android:sync": "npx cap sync android",
-    "android:debug": "cd android && ./gradlew assembleDebug"
+    "android:debug": "cd android && ./gradlew assembleDebug",
+    "check:javascript": "node scripts/check-inline-js.mjs"
   },
   "dependencies": {
     "@capacitor/android": "8.6.2",
