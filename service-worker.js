@@ -1,10 +1,11 @@
-const CACHE_NAME = "ahmedko-shell-v20";
+const CACHE_NAME = "ahmedko-shell-v21";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
   "index.html",
   "admin.html",
   "driver.html",
+  "restaurant.html",
   "customer.html",
   "privacy.html",
   "taj-menu.html",
