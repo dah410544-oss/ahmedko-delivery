@@ -6,7 +6,7 @@
 create index if not exists orders_driver_id_created_at_idx
   on public.orders (driver_id, created_at desc);
 
-do $
+do $$
 begin
   if not exists (
     select 1 from pg_constraint
@@ -28,7 +28,7 @@ begin
       foreign key (driver_id) references public.drivers(id) on delete set null;
   end if;
 end;
-$;
+$$;
 
 create or replace function public.create_customer_order(
   p_customer_name text,
