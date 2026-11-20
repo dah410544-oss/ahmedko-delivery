@@ -1268,7 +1268,7 @@ $("import-auto-menu").addEventListener("click",()=>{
 
 const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"استلم السائق الطلب – في الطريق",delivered:"تم التسليم",cancelled:"ملغي"};
 function whatsappNumber(value){
- let digits=String(value||"").replace(/\\D/g,"");
+ let digits=String(value||"").replace(/\D/g,"");
  if(digits.startsWith("00"))digits=digits.slice(2);
  if(digits.startsWith("970")||digits.startsWith("972"))return digits;
  if(digits.startsWith("0"))return "970"+digits.slice(1);
@@ -1331,7 +1331,7 @@ async function loadOrderWorkflow(){
    '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
    '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
    (whatsappNumber(order.customer_phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(order.customer_phone)+'?text='+encodeURIComponent("مرحباً "+(order.customer_name||"بك")+"، تحديث من أحمدكو ديلفري لطلبك رقم "+order.id+": "+(orderStatusLabels[order.status]||order.status)+". للاستفسار تواصل معنا على 0598407547.")+'">إبلاغ الزبون عبر واتساب</a>':"")+
-   (driver&&whatsappNumber(driver.phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(driver.phone)+'?text='+encodeURIComponent("مهمة توصيل جديدة من أحمدكو ديلفري. رقم الطلب: "+order.id+"\\nالزبون: "+(order.customer_name||"—")+"\\nهاتف الزبون: "+(order.customer_phone||"—")+"\\nالاستلام: "+(order.pickup_address||"—")+"\\nالتسليم: "+(order.delivery_address||"—")+"\\nالأجرة: "+(order.delivery_price??"—")+" ₪")+'">إرسال المهمة للسائق عبر واتساب</a>':"")+
+   (driver&&whatsappNumber(driver.phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(driver.phone)+'?text='+encodeURIComponent("مهمة توصيل جديدة من أحمدكو ديلفري. رقم الطلب: "+order.id+"\nالزبون: "+(order.customer_name||"—")+"\nهاتف الزبون: "+(order.customer_phone||"—")+"\nالاستلام: "+(order.pickup_address||"—")+"\nالتسليم: "+(order.delivery_address||"—")+"\nالأجرة: "+(order.delivery_price??"—")+" ₪")+'">إرسال المهمة للسائق عبر واتساب</a>':"")+
    (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
    '<div class="workflow-status" aria-live="polite"></div>';
   card.querySelector('[data-action="assign"]').addEventListener("click",async()=>{
