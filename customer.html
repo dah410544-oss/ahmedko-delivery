@@ -29,7 +29,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <div class="grid">
 <section class="panel">
 <h2>إنشاء طلب توصيل</h2>
-<p class="muted">لا تحتاج إلى تسجيل الدخول. سيحسب النظام أجرة التوصيل من الأسعار المعتمدة في أحمدكو.</p>
+<p class="muted">لا تحتاج إلى تسجيل الدخول. يستقبل المكتب طلبك أولاً، ثم يتواصل معك للاتفاق على أجرة التوصيل قبل تأكيدها.</p>
 <form id="orderForm">
 <label for="customerName">الاسم الكامل</label><input id="customerName" maxlength="100" required autocomplete="name" placeholder="اسمك">
 <label for="customerPhone">رقم الهاتف</label><input id="customerPhone" maxlength="20" required inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx">
@@ -51,7 +51,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 </select>
 <label for="orderNotes">تفاصيل إضافية (اختياري)</label><textarea id="orderNotes" maxlength="1000" placeholder="نوع الطلب أو أي تعليمات للسائق"></textarea>
 <button id="submitOrder" class="yellow full" type="submit">إرسال الطلب وحفظه لدى أحمدكو</button>
-<div id="orderMessage" class="message" role="status" aria-live="polite">سيظهر رقم طلبك وأجرة التوصيل بعد تأكيد الحفظ في قاعدة البيانات.</div>
+<div id="orderMessage" class="message" role="status" aria-live="polite">سيظهر رقم طلبك بعد الحفظ. أجرة التوصيل تُحدد بالاتفاق مع مكتب أحمدكو.</div>
 <a id="sendOrderWhatsapp" class="button yellow full" hidden target="_blank" rel="noopener" style="text-align:center" href="#">إرسال تفاصيل الطلب إلى أحمدكو عبر واتساب</a>
 <a id="returnHomeLink" class="button full" hidden style="text-align:center" href="./index.html#home">العودة إلى الصفحة الرئيسية</a>
 </form>
@@ -108,7 +108,7 @@ async function loadRegions(){
 $("orderForm").addEventListener("submit",async event=>{
  event.preventDefault();
  const button=$("submitOrder");button.disabled=true;
- setMessage("orderMessage","جارٍ التحقق من السعر وحفظ الطلب في قاعدة بيانات أحمدكو...");
+ setMessage("orderMessage","جارٍ حفظ طلبك لدى أحمدكو. سيتم الاتفاق على أجرة التوصيل مع المكتب قبل التأكيد...");
  const payload={
   p_customer_name:$("customerName").value.trim(),
   p_customer_phone:$("customerPhone").value.trim(),
@@ -125,8 +125,10 @@ $("orderForm").addEventListener("submit",async event=>{
   if(result.error)throw result.error;
   const saved=Array.isArray(result.data)?result.data[0]:result.data;
   if(!saved||!saved.order_id)throw new Error("لم يرجع النظام رقم الطلب؛ لم نعرض تأكيداً غير موثوق.");
-  setMessage("orderMessage","تم حفظ طلبك بنجاح.\nرقم الطلب: "+saved.order_id+"\nأجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪\nيمكنك الآن إرسال تفاصيل الطلب إلى مكتب أحمدكو عبر واتساب.","success");
-  const whatsappText="مرحباً أحمدكو ديلفري، تم تسجيل طلب توصيل جديد.\nرقم الطلب: "+saved.order_id+"\nالاسم: "+payload.p_customer_name+"\nالهاتف: "+payload.p_customer_phone+"\nالاستلام: "+payload.p_pickup_address+" ("+$("pickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+payload.p_delivery_address+" ("+$("deliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+$("vehicleType").selectedOptions[0].textContent+"\nالأجرة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪";
+  const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
+  const feeText=feeIsSet?("أجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪"):"أجرة التوصيل: قيد الاتفاق مع مكتب أحمدكو";
+  setMessage("orderMessage","تم استلام طلبك وحفظه بنجاح.\nرقم الطلب: "+saved.order_id+"\n"+feeText+"\nسيتواصل معك المكتب لتأكيد الأجرة والتفاصيل.","success");
+  const whatsappText="مرحباً أحمدكو ديلفري، تم تسجيل طلب توصيل جديد.\nرقم الطلب: "+saved.order_id+"\nالاسم: "+payload.p_customer_name+"\nالهاتف: "+payload.p_customer_phone+"\nالاستلام: "+payload.p_pickup_address+" ("+$("pickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+payload.p_delivery_address+" ("+$("deliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+$("vehicleType").selectedOptions[0].textContent+"\nالأجرة: "+(feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع المكتب");
   const whatsappLink=$("sendOrderWhatsapp");whatsappLink.href="https://wa.me/972598407547?text="+encodeURIComponent(whatsappText);whatsappLink.hidden=false;
   const homeLink=document.getElementById("returnHomeLink");if(homeLink)homeLink.hidden=false;
   $("trackingPhone").value=payload.p_customer_phone;
