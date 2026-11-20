@@ -31,3 +31,6 @@ jobs:
         run: npm run validate:release
       - name: Check JavaScript syntax
         run: npm run check:javascript
+
+      - name: Lint GitHub Actions workflows
+        uses: rhysd/actionlint@v1
