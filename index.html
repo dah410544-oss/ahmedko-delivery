@@ -339,7 +339,7 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  }
  const lines=shoppingCart.map((x,i)=>(i+1)+". "+x.name+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")+" × "+x.qty).join("\n");
  const itemsNote="المتجر: "+shoppingCart[0].store+"\nالأصناف:\n"+lines+"\nملاحظات الزبون: "+(customerNotes||"لا يوجد");
- button.disabled=true;status.textContent="جارٍ التحقق من سعر التوصيل وحفظ طلبك...";
+ button.disabled=true;status.textContent="جارٍ حفظ طلبك لدى أحمدكو. سيتم الاتفاق على أجرة التوصيل مع المكتب قبل التأكيد...";
  try{
   const response=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_customer_order",{
    method:"POST",
@@ -355,10 +355,12 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   const saved=Array.isArray(body)?body[0]:body;
   if(!saved?.order_id)throw new Error("لم يرجع النظام رقم الطلب؛ لم نعرض تأكيداً غير موثوق.");
   const total=shoppingCart.every(x=>x.price!==null)?money(shoppingCart.reduce((n,x)=>n+x.price*x.qty,0))+" ₪":"يحتاج تأكيد المطعم";
-  const message="طلب أحمدكو رقم: "+saved.order_id+"\nالاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل المعتمدة: "+saved.delivery_price+" ₪\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
+  const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
+  const feeText=feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع مكتب أحمدكو";
+  const message="طلب أحمدكو رقم: "+saved.order_id+"\nالاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
   whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
   whatsappLink.hidden=false;
-  status.textContent="تم حفظ طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل "+money(saved.delivery_price)+" ₪. يمكنك الآن إرسال إشعار للمكتب.";
+  status.textContent="تم استلام طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل: "+feeText+". سيتواصل معك المكتب لتأكيدها.";
   shoppingCart=[];drawCart();
   // Keep the customer in Ahmedko home after successful checkout.
   document.getElementById("cartPanel").classList.remove("open");
