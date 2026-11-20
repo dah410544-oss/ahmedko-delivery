@@ -14,10 +14,10 @@ let checked = 0;
 
 for (const file of htmlFiles) {
   const source = await readFile(file, "utf8");
-  const scripts = source.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script\\s*>/gi);
+  const scripts = source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi);
   let index = 0;
   for (const match of scripts) {
-    if (/\\bsrc\\s*=/.test(match[1])) continue;
+    if (/\bsrc\s*=/.test(match[1])) continue;
     const code = match[2].trim();
     if (!code) continue;
     new vm.Script(code, { filename: file + "#inline-script-" + (++index) });
