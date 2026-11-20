@@ -85,6 +85,9 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           BUILD_NUMBER: ${{ github.run_number }}
           AHMEDKO_KEYSTORE_PATH: ${{ runner.temp }}/ahmedko-release.keystore
+          AHMEDKO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          AHMEDKO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          AHMEDKO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         shell: bash
         run: |
           set -euo pipefail
@@ -115,20 +118,20 @@ jobs:
           """
           source = source.replace("android {", "android {\n" + signing, 1)
           source, signing_count = re.subn(
-              r"(buildTypes\\s*\\{\\s*release\\s*\\{)",
-              r"\\1\n            signingConfig signingConfigs.release",
+              r"(buildTypes\s*\{\s*release\s*\{)",
+              r"\1\n            signingConfig signingConfigs.release",
               source,
               count=1,
           )
           source, code_count = re.subn(
-              r"^\\s*versionCode\\s+\\d+\\s*$",
+              r"^\s*versionCode\s+\\d+\s*$",
               "        versionCode " + os.environ["BUILD_NUMBER"],
               source,
               count=1,
               flags=re.M,
           )
           source, name_count = re.subn(
-              r'^\\s*versionName\\s+"[^"]+"\\s*$',
+              r'^\s*versionName\s+"[^"]+"\s*$',
               '        versionName "1.0.0"',
               source,
               count=1,
@@ -141,10 +144,6 @@ jobs:
               )
           gradle.write_text(source)
           PY
-        env:
-          AHMEDKO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          AHMEDKO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          AHMEDKO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Build and verify signed APK and Play Store AAB
         env:
