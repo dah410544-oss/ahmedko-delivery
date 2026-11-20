@@ -192,7 +192,7 @@ begin
     from public.business_settings as bs
     limit 1;
 
-    v_commission_rate := coalesce(v_commission_rate, 16);
+    v_commission_rate := coalesce(v_commission_rate, 15);
     if v_commission_rate < 0 or v_commission_rate > 100 then
       raise exception 'إعدادات توزيع أجرة التوصيل غير صحيحة.';
     end if;
