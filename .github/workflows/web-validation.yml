@@ -1,0 +1,33 @@
+name: Validate AHMEDKO web release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ahmedko-web-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Prepare web bundle
+        run: npm run build:web
+      - name: Validate release bundle
+        run: npm run validate:release
+      - name: Check JavaScript syntax
+        run: npm run check:javascript
