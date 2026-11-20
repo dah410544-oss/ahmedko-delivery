@@ -1,4 +1,5 @@
 name: Build AHMEDKO Android APK
+# Rebuild APK for the latest WhatsApp-enabled customer and admin workflows.
 
 on:
   workflow_dispatch:
