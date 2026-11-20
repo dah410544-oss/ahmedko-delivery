@@ -38,7 +38,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px}
  <h2>طلب الانضمام إلى فريق السائقين</h2>
  <p class="muted">أدخل بياناتك الصحيحة. سيبقى الطلب قيد المراجعة حتى موافقة الإدارة.</p>
  <label for="full-name">الاسم الكامل</label><input id="full-name" maxlength="100" placeholder="الاسم كما تريد ظهوره في النظام">
- <div class="row"><div><label for="phone">رقم الهاتف</label><input id="phone" type="tel" maxlength="20" placeholder="05xxxxxxxx"></div><div><label for="vehicle">وسيلة النقل</label><select id="vehicle"><option value="">اختر وسيلة النقل</option><option value="bicycle">دراجة عادية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="motorcycle">دراجة نارية</option><option value="car">سيارة</option><option value="jeep">جيب</option><option value="tuk_tuk">توك توك</option><option value="bus">باص</option></select></div></div>
+ <div class="row"><div><label for="phone">رقم الهاتف</label><input id="phone" type="tel" maxlength="20" placeholder="05xxxxxxxx"></div><div><label for="vehicle">وسيلة النقل</label><select id="vehicle"><option value="">اختر وسيلة النقل</option><option value="bicycle">دراجة عادية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="motorcycle">دراجة نارية</option><option value="car">سيارة / جيب</option><option value="tuk_tuk">توك توك</option><option value="bus">باص</option></select></div></div>
  <button id="submit-application" class="yellow" style="margin-top:14px">إرسال طلب الانضمام</button><div id="application-message" class="message" aria-live="polite"></div>
 </section>
 <section class="panel hidden" id="profile-panel">
@@ -59,7 +59,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px}
 const db=window.supabase.createClient("https://pqulzfhisidcatrakxsx.supabase.co","sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x");
 const $=id=>document.getElementById(id);
 let user=null,driver=null;
-const vehicleNames={bicycle:"دراجة عادية",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص",jeep:"جيب"};
+const vehicleNames={bicycle:"دراجة عادية",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة / جيب",tuk_tuk:"توك توك",bus:"باص"};
 const statusNames={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده إليك",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function msg(id,text,type){const el=$(id);el.textContent=text;el.className="message"+(type?" "+type:"");}
