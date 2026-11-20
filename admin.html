@@ -1331,7 +1331,7 @@ async function loadOrderWorkflow(){
    : "";
   card.innerHTML=
    '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
-   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
+   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع العميل":escapeHTML(order.delivery_price)+" ₪")+'<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
    pricePanel+
    '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
    (whatsappNumber(order.customer_phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(order.customer_phone)+'?text='+encodeURIComponent("مرحباً "+(order.customer_name||"بك")+"، تحديث من أحمدكو ديلفري لطلبك رقم "+order.id+": "+(orderStatusLabels[order.status]||order.status)+". للاستفسار تواصل معنا على 0598407547.")+'">إبلاغ الزبون عبر واتساب</a>':"")+
@@ -1369,8 +1369,10 @@ async function loadOrderWorkflow(){
   card.querySelector('[data-action="status"]').addEventListener("click",async()=>{
    const nextStatus=card.querySelector(".change-status").value;
    const statusBox=card.querySelector(".workflow-status");
+   if(nextStatus!=="new"&&nextStatus!=="cancelled"&&(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0)){statusBox.textContent="لا يمكن تأكيد الطلب أو تحريكه قبل الاتفاق على أجرة التوصيل واعتمادها من زر «اعتماد السعر وتأكيد الطلب».";return;}
    if(nextStatus==="assigned"&&!order.driver_id){statusBox.textContent="يجب إسناد سائق قبل اختيار حالة «تم إسناده».";return;}
    if(nextStatus==="delivered"&&!order.driver_id){statusBox.textContent="لا يمكن إغلاق الطلب دون سائق مسند.";return;}
+   if(nextStatus==="picked_up"&&!order.driver_id){statusBox.textContent="لا يمكن تسجيل استلام الطلب قبل إسناده إلى سائق.";return;}
    const button=card.querySelector('[data-action="status"]');button.disabled=true;statusBox.textContent="جارٍ تحديث حالة الطلب...";
    const result=await db.from("orders").update({status:nextStatus}).eq("id",order.id);
    button.disabled=false;
