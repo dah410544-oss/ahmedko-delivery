@@ -1282,7 +1282,7 @@ async function loadDriverApplications(){
   const act=async(status)=>{
    const buttons=card.querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
    const statusBox=card.querySelector(".workflow-status");statusBox.textContent="جارٍ حفظ القرار...";
-   const payload={application_status:status,is_active:status==="approved",application_reviewed_at:new Date().toISOString(),application_reviewed_by:currentUser.id};
+   const payload={application_status:status,is_active:status==="approved"};
    const update=await db.from("drivers").update(payload).eq("id",driver.id);
    if(update.error){statusBox.textContent="تعذر حفظ القرار: "+update.error.message;buttons.forEach(b=>b.disabled=false);return;}
    statusBox.textContent=status==="approved"?"تم قبول السائق وتفعيل حسابه.":"تم رفض طلب السائق.";
