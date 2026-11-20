@@ -67,7 +67,15 @@ jobs:
           node --input-type=module <<'NODE'
           import sharp from 'sharp';
           await sharp('icon.svg').resize(1024, 1024).png().toFile('assets/icon.png');
-          await sharp('icon.svg').resize(1200, 1200).png().toFile('assets/splash.png');
+          const splashMark = await sharp('icon.svg').resize(1200, 1200).png().toBuffer();
+          await sharp({
+            create: {
+              width: 2732,
+              height: 2732,
+              channels: 4,
+              background: '#071A35'
+            }
+          }).composite([{ input: splashMark, gravity: 'centre' }]).png().toFile('assets/splash.png');
           NODE
           npx capacitor-assets generate --android --iconBackgroundColor "#071A35" --splashBackgroundColor "#071A35"
 
