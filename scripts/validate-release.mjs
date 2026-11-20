@@ -4,6 +4,7 @@ const requiredFiles = [
   "www/index.html",
   "www/customer.html",
   "www/driver.html",
+  "www/restaurant.html",
   "www/admin.html",
   "www/privacy.html",
   "www/taj-menu.html",
@@ -48,6 +49,13 @@ if (!customer.includes('rpc("create_customer_order"') ||
     !customer.includes("signInWithOtp") ||
     !customer.includes('rpc("get_my_customer_orders"')) {
   throw new Error("Customer order creation or verified-phone tracking flow is incomplete.");
+}
+
+const restaurant = await readFile("www/restaurant.html", "utf8");
+if (!restaurant.includes('signInWithPassword') ||
+    !restaurant.includes('rpc("restaurant_update_order_status"') ||
+    !restaurant.includes('from("store_users")')) {
+  throw new Error("Restaurant partner login, store isolation or guarded status workflow is incomplete.");
 }
 
 const driver = await readFile("www/driver.html", "utf8");
