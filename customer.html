@@ -168,7 +168,7 @@ $("verifyOtp").addEventListener("click",async()=>{
   else{
    orders.forEach(order=>{
     const article=document.createElement("article");article.className="order";
-    article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3><p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+esc(order.delivery_price)+' ₪</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
+    article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3><p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع المكتب":esc(order.delivery_price)+" ₪")+'</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
     $("ordersList").appendChild(article);
    });
   }
