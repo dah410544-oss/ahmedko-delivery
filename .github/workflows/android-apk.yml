@@ -1,26 +1,9 @@
-name: Build AHMEDKO Android APK
-# Rebuild APK for the latest WhatsApp-enabled customer and admin workflows.
-# Build requested on 2026-11-20.
+name: Build AHMEDKO Android test APK (manual only)
+# Debug/test build only. Never treat this artifact as an official signed release.
+# Deliberately manual-only to avoid repeated APK builds on every source change.
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "index.html"
-      - "admin.html"
-      - "driver.html"
-      - "customer.html"
-      - "taj-menu.html"
-      - "auto-o2-menu.js"
-      - "manifest.webmanifest"
-      - "service-worker.js"
-      - "icon.svg"
-      - "package.json"
-      - "package-lock.json"
-      - "capacitor.config.json"
-      - "scripts/**"
-      - ".github/workflows/android-apk.yml"
 
 concurrency:
   group: ahmedko-android-${{ github.ref }}
