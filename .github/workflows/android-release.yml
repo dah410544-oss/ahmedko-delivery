@@ -80,7 +80,7 @@ jobs:
           import os, pathlib, re
           p = pathlib.Path("android/app/build.gradle")
           s = p.read_text()
-          if s.count("buildTypes {") != 1 or not re.search(r"buildTypes\\s*\\{\\s*release\\s*\\{", s):
+          if s.count("buildTypes {") != 1 or not re.search(r"buildTypes\s*\{\s*release\s*\{", s):
               raise SystemExit("Unexpected Android Gradle template; refusing to patch signing configuration.")
           signing = """
               signingConfigs {
@@ -93,10 +93,10 @@ jobs:
               }
           """
           s = s.replace("android {", "android {\\n" + signing, 1)
-          s, n = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\\1\\n            signingConfig signingConfigs.release", s, count=1)
+          s, n = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\1\n            signingConfig signingConfigs.release", s, count=1)
           if n != 1:
               raise SystemExit("Could not safely configure the release build type.")
-          s, n = re.subn(r"(defaultConfig\\s*\\{)", r"\\1\\n        versionCode " + os.environ["BUILD_NUMBER"] + r"\\n        versionName \"1.0." + os.environ["BUILD_NUMBER"] + r"\"", s, count=1)
+          s, n = re.subn(r"(defaultConfig\s*\{)", r"\\1\\n        versionCode " + os.environ["BUILD_NUMBER"] + r"\\n        versionName \"1.0." + os.environ["BUILD_NUMBER"] + r"\"", s, count=1)
           if n != 1:
               raise SystemExit("Could not set Android release version.")
           p.write_text(s)
