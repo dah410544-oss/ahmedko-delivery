@@ -101,8 +101,8 @@ jobs:
           if n != 1:
               raise SystemExit("Could not safely configure the release build type.")
           build_number = os.environ["BUILD_NUMBER"]
-          s, code_count = re.subn(r"^\\s*versionCode\\s+\\d+\\s*$", "        versionCode " + build_number, s, count=1, flags=re.M)
-          s, name_count = re.subn(r'^\\s*versionName\\s+"[^"]+"\\s*$', '        versionName "1.0.' + build_number + '"', s, count=1, flags=re.M)
+          s, code_count = re.subn(r"^\s*versionCode\s+\d+\s*$", "        versionCode " + build_number, s, count=1, flags=re.M)
+          s, name_count = re.subn(r'^\s*versionName\s+"[^"]+"\s*$', '        versionName "1.0.' + build_number + '"', s, count=1, flags=re.M)
           if code_count != 1 or name_count != 1:
               raise SystemExit("Could not safely update existing Android versionCode/versionName.")
           p.write_text(s)
