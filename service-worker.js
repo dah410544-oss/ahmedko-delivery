@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-shell-v5";
+const CACHE_NAME = "ahmedko-shell-v6";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = ["", "index.html", "admin.html", "driver.html", "manifest.webmanifest", "icon.svg"].map(appUrl);
 
