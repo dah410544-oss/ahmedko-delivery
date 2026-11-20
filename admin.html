@@ -1324,7 +1324,16 @@ async function loadOrderWorkflow(){
   const card=document.createElement("div");
   card.className="workflow-card";
   const driverOptions=['<option value="">اختر السائق المعتمد</option>'].concat(workflowDrivers.map(d=>'<option value="'+escapeHTML(d.id)+'" '+(d.id===order.driver_id?'selected':'')+'>'+escapeHTML(d.full_name)+' — '+escapeHTML(vehicleLabels[d.vehicle_type]||d.vehicle_type||'')+'</option>')).join("");
-  const statusOptions=Object.entries(orderStatusLabels).map(([value,label])=>'<option value="'+value+'" '+(order.status===value?'selected':'')+'>'+label+'</option>').join("");
+  const allowedAdminStatuses={
+   new:["new","cancelled"],
+   confirmed:["confirmed","cancelled"],
+   assigned:["assigned","cancelled"],
+   picked_up:["picked_up","cancelled"],
+   delivered:["delivered"],
+   cancelled:["cancelled"]
+  };
+  const allowedStatuses=allowedAdminStatuses[order.status]||[order.status];
+  const statusOptions=allowedStatuses.map(value=>'<option value="'+escapeHTML(value)+'">'+escapeHTML(orderStatusLabels[value]||value)+'</option>').join("");
   const created=order.created_at?new Date(order.created_at).toLocaleString("ar-PS"):"—";
   const pricePanel=order.status==="new"&&(order.delivery_price===null||order.delivery_price===undefined)
    ? '<div class="workflow-controls" style="background:#fff9e6;border:1px solid #f5c542;padding:12px;border-radius:10px;margin-top:12px"><label style="font-weight:bold">السعر المتفق عليه مع العميل (₪)</label><input class="order-price-input" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="أدخل السعر بالشيكل" style="padding:10px;border:1px solid var(--border);border-radius:8px;width:160px"><button type="button" data-action="approve-price">اعتماد السعر وتأكيد الطلب</button></div>'
@@ -1357,6 +1366,7 @@ async function loadOrderWorkflow(){
    const select=card.querySelector(".assign-driver");
    const driverId=select.value;
    const statusBox=card.querySelector(".workflow-status");
+   if(!["confirmed","assigned"].includes(order.status)){statusBox.textContent="لا يمكن إسناد الطلب قبل اعتماد السعر وتأكيده من الإدارة.";return;}
    if(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0){statusBox.textContent="اعتمد سعر التوصيل أولاً قبل إسناد الطلب إلى سائق.";return;}
    if(!driverId){statusBox.textContent="اختر سائقاً معتمداً أولاً.";return;}
    const button=card.querySelector('[data-action="assign"]');button.disabled=true;statusBox.textContent="جارٍ إسناد الطلب...";
@@ -1370,6 +1380,7 @@ async function loadOrderWorkflow(){
    const nextStatus=card.querySelector(".change-status").value;
    const statusBox=card.querySelector(".workflow-status");
    if(nextStatus!=="new"&&nextStatus!=="cancelled"&&(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0)){statusBox.textContent="لا يمكن تأكيد الطلب أو تحريكه قبل الاتفاق على أجرة التوصيل واعتمادها من زر «اعتماد السعر وتأكيد الطلب».";return;}
+   if(nextStatus!==order.status&&!allowedStatuses.includes(nextStatus)){statusBox.textContent="هذا الانتقال غير مسموح من حالة الطلب الحالية. استخدم إسناد السائق أو دع السائق يحدّث الاستلام والتسليم.";return;}
    if(nextStatus==="assigned"&&!order.driver_id){statusBox.textContent="يجب إسناد سائق قبل اختيار حالة «تم إسناده».";return;}
    if(nextStatus==="delivered"&&!order.driver_id){statusBox.textContent="لا يمكن إغلاق الطلب دون سائق مسند.";return;}
    if(nextStatus==="picked_up"&&!order.driver_id){statusBox.textContent="لا يمكن تسجيل استلام الطلب قبل إسناده إلى سائق.";return;}
