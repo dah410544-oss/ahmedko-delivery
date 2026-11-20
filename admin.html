@@ -237,6 +237,7 @@ footer{
 .workflow-meta{font-size:12px;color:var(--muted);line-height:1.9}
 .workflow-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .workflow-controls select,.workflow-controls button{font:inherit;padding:9px;border:1px solid var(--border);border-radius:8px}
+.workflow-controls input{font:inherit;padding:9px;border:1px solid var(--border);border-radius:8px;min-width:120px;max-width:180px}
 .workflow-controls select{min-width:130px;max-width:100%;background:#fff}
 .workflow-controls button{background:var(--navy);color:#fff;cursor:pointer}
 .workflow-controls button.secondary{background:#64748b}
@@ -1321,14 +1322,26 @@ async function loadOrderWorkflow(){
   card.innerHTML=
    '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
    '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
-   '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
+   '<div class="workflow-controls"><input class="delivery-fee-input" type="number" min="0.01" step="0.01" placeholder="أجرة التوصيل ₪" value="'+(order.delivery_price??"")+'" aria-label="أجرة التوصيل بالشيكل"><button type="button" data-action="fee">اعتماد الأجرة</button><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
    (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
    '<div class="workflow-status" aria-live="polite"></div>';
+  card.querySelector('[data-action="fee"]').addEventListener("click",async()=>{
+   const input=card.querySelector(".delivery-fee-input"),statusBox=card.querySelector(".workflow-status"),button=card.querySelector('[data-action="fee"]');
+   const fee=Number(input.value);
+   if(!Number.isFinite(fee)||fee<=0){statusBox.textContent="أدخل أجرة توصيل صحيحة أكبر من صفر.";return;}
+   button.disabled=true;statusBox.textContent="جارٍ اعتماد أجرة التوصيل...";
+   const result=await db.from("orders").update({delivery_price:fee}).eq("id",order.id);
+   button.disabled=false;
+   if(result.error){statusBox.textContent="تعذر اعتماد الأجرة: "+result.error.message;return;}
+   statusBox.textContent="تم اعتماد أجرة التوصيل "+fee.toLocaleString("ar-PS")+" ₪. أصبح الطلب جاهزاً للإسناد.";
+   await loadOrderWorkflow();await loadTable("orders");
+  });
   card.querySelector('[data-action="assign"]').addEventListener("click",async()=>{
    const select=card.querySelector(".assign-driver");
    const driverId=select.value;
    const statusBox=card.querySelector(".workflow-status");
    if(!driverId){statusBox.textContent="اختر سائقاً معتمداً أولاً.";return;}
+   if(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0){statusBox.textContent="اعتمد أجرة التوصيل أولاً؛ الطلب بلا سعر ولا يجوز إسناده للسائق.";return;}
    const button=card.querySelector('[data-action="assign"]');button.disabled=true;statusBox.textContent="جارٍ إسناد الطلب...";
    const result=await db.from("orders").update({driver_id:driverId,status:"assigned"}).eq("id",order.id);
    button.disabled=false;
@@ -1341,6 +1354,7 @@ async function loadOrderWorkflow(){
    const statusBox=card.querySelector(".workflow-status");
    if(nextStatus==="assigned"&&!order.driver_id){statusBox.textContent="يجب إسناد سائق قبل اختيار حالة «تم إسناده».";return;}
    if(nextStatus==="delivered"&&!order.driver_id){statusBox.textContent="لا يمكن إغلاق الطلب دون سائق مسند.";return;}
+   if(nextStatus==="delivered"&&(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0)){statusBox.textContent="لا يمكن إغلاق الطلب دون أجرة توصيل معتمدة.";return;}
    const button=card.querySelector('[data-action="status"]');button.disabled=true;statusBox.textContent="جارٍ تحديث حالة الطلب...";
    const result=await db.from("orders").update({status:nextStatus}).eq("id",order.id);
    button.disabled=false;
@@ -1486,6 +1500,24 @@ db.auth.onAuthStateChange((event,session)=>{
   showLogin(error.message);
  }
 })();
+ 
+// Quiet operations refresh: keep the dispatch board current without requiring manual reloads.
+let adminRefreshBusy = false;
+async function refreshOperationsBoard(){
+ if(adminRefreshBusy || document.visibilityState !== "visible" || !currentUser) return;
+ adminRefreshBusy = true;
+ try{
+  await Promise.all([loadStatistics(),loadOrderWorkflow(),loadFinanceEarnings()]);
+ }catch(error){
+  console.warn("تعذر تحديث لوحة العمليات تلقائياً:",error);
+ }finally{
+  adminRefreshBusy = false;
+ }
+}
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState === "visible") refreshOperationsBoard();
+});
+setInterval(refreshOperationsBoard,30000);
 
 })();
 </script>
