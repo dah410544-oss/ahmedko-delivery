@@ -54,6 +54,7 @@ jobs:
           set -euo pipefail
           npm run build:web
           npm run validate:release
+          npm run check:javascript
 
       - name: Generate Android artwork
         run: |
