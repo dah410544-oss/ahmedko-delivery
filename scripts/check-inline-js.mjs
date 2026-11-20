@@ -6,6 +6,7 @@ const htmlFiles = [
   "admin.html",
   "driver.html",
   "customer.html",
+  "restaurant.html",
   "privacy.html",
   "taj-menu.html"
 ];
