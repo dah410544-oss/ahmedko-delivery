@@ -4,6 +4,7 @@ const files = [
   "index.html",
   "admin.html",
   "driver.html",
+  "customer.html",
   "taj-menu.html",
   "auto-o2-menu.js",
   "manifest.webmanifest",
