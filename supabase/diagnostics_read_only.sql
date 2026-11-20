@@ -78,6 +78,4 @@ order by tablename, indexname;
 
 -- 7) Current office commission setting (read-only; should remain 15% unless manager changed it).
 select office_commission_percent, currency
-from public.business_settings
-order by created_at nulls first
-limit 10;
+from public.business_settings;
