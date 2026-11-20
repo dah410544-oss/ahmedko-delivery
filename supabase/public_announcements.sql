@@ -82,3 +82,6 @@ using (
 
 grant select on public.public_announcements to anon, authenticated;
 grant insert, update, delete on public.public_announcements to authenticated;
+
+-- Refresh Supabase REST schema cache so the new RPC/table is visible immediately.
+notify pgrst, 'reload schema';
