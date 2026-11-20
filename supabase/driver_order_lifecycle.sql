@@ -14,7 +14,7 @@ alter table public.drivers
 create index if not exists orders_driver_id_created_at_idx
   on public.orders (driver_id, created_at desc);
 
-do $
+do $$
 begin
   if not exists (
     select 1 from pg_constraint
@@ -26,7 +26,7 @@ begin
       foreign key (driver_id) references public.drivers(id) on delete set null;
   end if;
 end;
-$;
+$$;
 
 -- A driver may read only orders assigned to their own approved account.
 drop policy if exists "Driver reads assigned orders" on public.orders;
@@ -57,7 +57,7 @@ returns table(order_id uuid, delivery_price numeric)
 language plpgsql
 security definer
 set search_path = pg_catalog, public
-as $
+as $$
 declare
   v_price_count integer;
   v_delivery_price numeric;
@@ -132,7 +132,7 @@ begin
 
   return query select v_order_id, v_delivery_price;
 end;
-$;
+$$;
 
 revoke all on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) from public;
 grant execute on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) to anon, authenticated;
@@ -144,13 +144,13 @@ language sql
 stable
 security definer
 set search_path = pg_catalog, public
-as $
+as $$
   select d.id, d.full_name, d.vehicle_type
   from public.drivers d
   where d.is_active is true
     and d.application_status = 'approved'
   order by d.full_name;
-$;
+$$;
 
 revoke all on function public.get_available_drivers() from public;
 grant execute on function public.get_available_drivers() to anon, authenticated;
