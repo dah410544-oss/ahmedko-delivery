@@ -124,7 +124,7 @@ jobs:
               count=1,
           )
           source, code_count = re.subn(
-              r"^\s*versionCode\s+\\d+\s*$",
+              r"^\s*versionCode\s+\d+\s*$",
               "        versionCode " + os.environ["BUILD_NUMBER"],
               source,
               count=1,
