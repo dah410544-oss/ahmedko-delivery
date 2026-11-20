@@ -53,6 +53,7 @@ jobs:
       - name: Prepare web app and Android artwork
         run: |
           npm run build:web
+          node scripts/validate-release.mjs
           npm install --no-save --no-package-lock sharp
           mkdir -p assets
           node --input-type=module <<'NODE'
