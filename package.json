@@ -2,18 +2,19 @@
   "name": "ahmedko-delivery-android",
   "version": "1.0.0",
   "private": true,
-  "description": "Android wrapper and build pipeline for AHMEDKO DELIVERY",
+  "description": "AHMEDKO DELIVERY Android application",
   "scripts": {
     "build:web": "node scripts/prepare-web.mjs",
+    "validate:release": "node scripts/validate-release.mjs",
     "android:sync": "npx cap sync android",
     "android:debug": "cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
-    "@capacitor/android": "^7.0.0",
-    "@capacitor/core": "^7.0.0"
+    "@capacitor/android": "8.6.2",
+    "@capacitor/core": "8.6.2"
   },
   "devDependencies": {
-    "@capacitor/assets": "^4.0.0",
-    "@capacitor/cli": "^7.0.0"
+    "@capacitor/assets": "4.0.0",
+    "@capacitor/cli": "8.6.2"
   }
 }
