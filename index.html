@@ -71,7 +71,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
 <section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
 <main>
-<section class="hero">
+<section class="hero" id="home">
  <div class="eyebrow">أهلاً بك في عالم أحمدكو</div>
  <h1>طلبك علينا…<br><span>وصوله علينا.</span></h1>
  <p>أحمدكو ديلفري — خدمات التوصيل والشحن والنقل والخدمات اللوجستية، وربطك بالمطاعم والمتاجر في غزة والجنوب حسب التوفر.</p>
@@ -82,7 +82,6 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="admin.html">بوابة الإدارة</a>
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="driver.html">بوابة السائقين / انضم كسائق</a>
  </div>
- <div style="margin-top:18px;position:relative;z-index:2"><button class="btn yellow" id="installAppButton" type="button" hidden>تثبيت تطبيق أحمدكو</button></div>
 </section>
 <section id="services">
  <div class="heading"><h2>خدمات أحمدكو</h2><p>خدمات متنوعة في مكان واحد</p></div>
@@ -361,6 +360,9 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   whatsappLink.hidden=false;
   status.textContent="تم حفظ طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل "+money(saved.delivery_price)+" ₪. يمكنك الآن إرسال إشعار للمكتب.";
   shoppingCart=[];drawCart();
+  // Keep the customer in Ahmedko home after successful checkout.
+  document.getElementById("cartPanel").classList.remove("open");
+  window.scrollTo({top:0,behavior:"smooth"});
  }catch(error){
   status.textContent="لم يتم تأكيد الطلب: "+error.message;
  }finally{button.disabled=false;}
@@ -438,73 +440,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     });
   });
 }
-</script>
-<script>
-let deferredInstallPrompt = null;
-const installAppButton = document.getElementById("installAppButton");
-const isAppInstalled = () =>
-  window.matchMedia("(display-mode: standalone)").matches ||
-  window.navigator.standalone === true ||
-  window.Capacitor?.isNativePlatform?.() === true;
-
-const hideInstallButton = () => {
-  if (installAppButton) installAppButton.hidden = true;
-};
-
-// لا نعرض زر التثبيت داخل التطبيق بعد تثبيته.
-if (installAppButton) {
-  if (isAppInstalled()) {
-    hideInstallButton();
-  } else {
-    installAppButton.hidden = false;
-  }
-}
-
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  if (installAppButton && !isAppInstalled()) {
-    installAppButton.hidden = false;
-    installAppButton.textContent = "تثبيت تطبيق أحمدكو";
-    installAppButton.disabled = false;
-  }
-});
-
-if (installAppButton) {
-  installAppButton.addEventListener("click", async () => {
-    if (isAppInstalled()) {
-      hideInstallButton();
-      return;
-    }
-    if (!deferredInstallPrompt) {
-      alert("لتثبيت أحمدكو كتطبيق: افتح الموقع في Google Chrome، ثم اضغط ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» إذا ظهر الخيار.");
-      return;
-    }
-    try {
-      await deferredInstallPrompt.prompt();
-      const choice = await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      if (choice && choice.outcome === "accepted") {
-        installAppButton.textContent = "جارٍ تثبيت أحمدكو";
-        installAppButton.disabled = true;
-      } else {
-        installAppButton.textContent = "إعادة محاولة التثبيت";
-        installAppButton.disabled = false;
-      }
-    } catch (error) {
-      deferredInstallPrompt = null;
-      installAppButton.textContent = "تثبيت تطبيق أحمدكو";
-      installAppButton.disabled = false;
-      alert("تعذر بدء التثبيت من هذا المتصفح. افتح رابط أحمدكو مباشرة في Google Chrome ثم اختر ⋮ ← تثبيت التطبيق. تفاصيل المتصفح: " + (error?.name || "خطأ غير معروف"));
-      console.error("AHMEDKO install failed:", error);
-    }
-  });
-}
-
-window.addEventListener("appinstalled", () => {
-  deferredInstallPrompt = null;
-  hideInstallButton();
-});
 </script>
 </body>
 </html>
