@@ -108,6 +108,15 @@ async function loadOrders(){
 }
 $("login").addEventListener("click",signIn);$("signup").addEventListener("click",signUp);$("submit-application").addEventListener("click",submitApplication);$("refresh").addEventListener("click",loadOrders);$("logout").addEventListener("click",async()=>{await db.auth.signOut();user=null;driver=null;show("profile-panel",false);show("orders-panel",false);show("application-panel",false);show("auth-panel",true);msg("auth-message","تم تسجيل الخروج.");});
 (async()=>{const r=await db.auth.getSession();if(r.data.session){user=r.data.session.user;await loadProfile();}})();
+let driverRefreshBusy=false;
+async function refreshDriverOrders(){
+ if(driverRefreshBusy || !driver || document.visibilityState!=="visible") return;
+ driverRefreshBusy=true;
+ try{await loadOrders();}catch(error){console.warn("تعذر تحديث طلبات السائق:",error);}
+ finally{driverRefreshBusy=false;}
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshDriverOrders();});
+setInterval(refreshDriverOrders,20000);
 })();
 </script>
 </body></html>
