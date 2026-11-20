@@ -2,6 +2,21 @@ name: Build AHMEDKO signed Android release
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/android-release.yml"
+      - "package.json"
+      - "scripts/**"
+      - "index.html"
+      - "admin.html"
+      - "driver.html"
+      - "customer.html"
+      - "taj-menu.html"
+      - "auto-o2-menu.js"
+      - "manifest.webmanifest"
+      - "service-worker.js"
+      - "icon.svg"
 
 permissions:
   contents: read
