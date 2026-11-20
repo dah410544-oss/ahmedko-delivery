@@ -1,6 +1,15 @@
-const CACHE_NAME = "ahmedko-shell-v8";
+const CACHE_NAME = "ahmedko-shell-v9";
 const appUrl = path => new URL(path, self.registration.scope).toString();
-const APP_SHELL = ["", "index.html", "admin.html", "driver.html", "manifest.webmanifest", "icon.svg"].map(appUrl);
+const APP_SHELL = [
+  "",
+  "index.html",
+  "admin.html",
+  "driver.html",
+  "taj-menu.html",
+  "auto-o2-menu.js",
+  "manifest.webmanifest",
+  "icon.svg"
+].map(appUrl);
 
 self.addEventListener("install", event => {
   event.waitUntil(
