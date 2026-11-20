@@ -23,7 +23,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 </style>
 </head>
 <body>
-<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html">العودة إلى أحمدكو ←</a></header>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html#home">العودة إلى الرئيسية ←</a></header>
 <main>
 <section class="intro"><h1>طلباتك مع أحمدكو 🚚</h1><p>أرسل طلب توصيل دون إنشاء حساب. ولمتابعة طلباتك، تحقق من رقم هاتفك برسالة SMS.</p></section>
 <div class="grid">
@@ -53,6 +53,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <button id="submitOrder" class="yellow full" type="submit">إرسال الطلب وحفظه لدى أحمدكو</button>
 <div id="orderMessage" class="message" role="status" aria-live="polite">سيظهر رقم طلبك وأجرة التوصيل بعد تأكيد الحفظ في قاعدة البيانات.</div>
 <a id="sendOrderWhatsapp" class="button yellow full" hidden target="_blank" rel="noopener" style="text-align:center" href="#">إرسال تفاصيل الطلب إلى أحمدكو عبر واتساب</a>
+<a id="returnHomeLink" class="button full" hidden style="text-align:center" href="./index.html#home">العودة إلى الصفحة الرئيسية</a>
 </form>
 </section>
 <section class="panel">
@@ -127,6 +128,7 @@ $("orderForm").addEventListener("submit",async event=>{
   setMessage("orderMessage","تم حفظ طلبك بنجاح.\nرقم الطلب: "+saved.order_id+"\nأجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪\nيمكنك الآن إرسال تفاصيل الطلب إلى مكتب أحمدكو عبر واتساب.","success");
   const whatsappText="مرحباً أحمدكو ديلفري، تم تسجيل طلب توصيل جديد.\nرقم الطلب: "+saved.order_id+"\nالاسم: "+payload.p_customer_name+"\nالهاتف: "+payload.p_customer_phone+"\nالاستلام: "+payload.p_pickup_address+" ("+$("pickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+payload.p_delivery_address+" ("+$("deliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+$("vehicleType").selectedOptions[0].textContent+"\nالأجرة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪";
   const whatsappLink=$("sendOrderWhatsapp");whatsappLink.href="https://wa.me/972598407547?text="+encodeURIComponent(whatsappText);whatsappLink.hidden=false;
+  const homeLink=document.getElementById("returnHomeLink");if(homeLink)homeLink.hidden=false;
   $("trackingPhone").value=payload.p_customer_phone;
   $("orderForm").reset();
  }catch(error){
@@ -173,6 +175,9 @@ $("verifyOtp").addEventListener("click",async()=>{
   setMessage("trackingMessage","تعذر التحقق أو تحميل الطلبات: "+(error.message||"خطأ غير معروف."),"error");
  }finally{button.disabled=false;}
 });
+// Android back from the order page returns to Ahmedko home.
+history.pushState({ahmedkoCustomerPage:true}, "", location.href);
+window.addEventListener("popstate", () => { window.location.replace("./index.html#home"); });
 loadRegions();
 </script>
 </body>
