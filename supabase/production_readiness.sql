@@ -267,3 +267,10 @@ revoke all on function public.is_admin() from public, anon;
 grant execute on function public.is_admin() to authenticated;
 
 notify pgrst, 'reload schema';
+
+-- Read-only post-migration readiness snapshot.
+select
+  (select count(*) from public.regions where is_active is true) as active_regions,
+  (select count(*) from public.delivery_rates where is_active is true and currency = 'ILS') as active_ils_delivery_rates,
+  (select count(*) from public.drivers where is_active is true and application_status = 'approved') as active_approved_drivers,
+  (select count(*) from public.orders where status in ('new','confirmed','assigned','picked_up')) as active_orders;
