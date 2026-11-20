@@ -1326,18 +1326,37 @@ async function loadOrderWorkflow(){
   const driverOptions=['<option value="">اختر السائق المعتمد</option>'].concat(workflowDrivers.map(d=>'<option value="'+escapeHTML(d.id)+'" '+(d.id===order.driver_id?'selected':'')+'>'+escapeHTML(d.full_name)+' — '+escapeHTML(vehicleLabels[d.vehicle_type]||d.vehicle_type||'')+'</option>')).join("");
   const statusOptions=Object.entries(orderStatusLabels).map(([value,label])=>'<option value="'+value+'" '+(order.status===value?'selected':'')+'>'+label+'</option>').join("");
   const created=order.created_at?new Date(order.created_at).toLocaleString("ar-PS"):"—";
+  const pricePanel=order.status==="new"&&(order.delivery_price===null||order.delivery_price===undefined)
+   ? '<div class="workflow-controls" style="background:#fff9e6;border:1px solid #f5c542;padding:12px;border-radius:10px;margin-top:12px"><label style="font-weight:bold">السعر المتفق عليه مع العميل (₪)</label><input class="order-price-input" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="أدخل السعر بالشيكل" style="padding:10px;border:1px solid var(--border);border-radius:8px;width:160px"><button type="button" data-action="approve-price">اعتماد السعر وتأكيد الطلب</button></div>'
+   : "";
   card.innerHTML=
    '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
    '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
-   '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
+   pricePanel+\n   '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
    (whatsappNumber(order.customer_phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(order.customer_phone)+'?text='+encodeURIComponent("مرحباً "+(order.customer_name||"بك")+"، تحديث من أحمدكو ديلفري لطلبك رقم "+order.id+": "+(orderStatusLabels[order.status]||order.status)+". للاستفسار تواصل معنا على 0598407547.")+'">إبلاغ الزبون عبر واتساب</a>':"")+
    (driver&&whatsappNumber(driver.phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(driver.phone)+'?text='+encodeURIComponent("مهمة توصيل جديدة من أحمدكو ديلفري. رقم الطلب: "+order.id+"\nالزبون: "+(order.customer_name||"—")+"\nهاتف الزبون: "+(order.customer_phone||"—")+"\nالاستلام: "+(order.pickup_address||"—")+"\nالتسليم: "+(order.delivery_address||"—")+"\nالأجرة: "+(order.delivery_price??"—")+" ₪")+'">إرسال المهمة للسائق عبر واتساب</a>':"")+
    (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
    '<div class="workflow-status" aria-live="polite"></div>';
+  const priceButton=card.querySelector('[data-action="approve-price"]');
+  if(priceButton)priceButton.addEventListener("click",async()=>{
+   const statusBox=card.querySelector(".workflow-status");
+   const price=Number(card.querySelector(".order-price-input").value);
+   if(!Number.isFinite(price)||price<=0){statusBox.textContent="أدخل سعراً صحيحاً أكبر من صفر.";return;}
+   priceButton.disabled=true;statusBox.textContent="جارٍ اعتماد السعر وتأكيد الطلب...";
+   const result=await db.rpc("admin_set_order_price",{p_order_id:order.id,p_price:price});
+   if(result.error){
+    priceButton.disabled=false;
+    statusBox.textContent="تعذر اعتماد السعر: "+result.error.message;
+    return;
+   }
+   statusBox.textContent="تم اعتماد السعر وتأكيد الطلب بنجاح.";
+   await loadOrderWorkflow();await loadTable("orders");await loadStatistics();
+  });
   card.querySelector('[data-action="assign"]').addEventListener("click",async()=>{
    const select=card.querySelector(".assign-driver");
    const driverId=select.value;
    const statusBox=card.querySelector(".workflow-status");
+   if(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0){statusBox.textContent="اعتمد سعر التوصيل أولاً قبل إسناد الطلب إلى سائق.";return;}
    if(!driverId){statusBox.textContent="اختر سائقاً معتمداً أولاً.";return;}
    const button=card.querySelector('[data-action="assign"]');button.disabled=true;statusBox.textContent="جارٍ إسناد الطلب...";
    const result=await db.from("orders").update({driver_id:driverId,status:"assigned"}).eq("id",order.id);
