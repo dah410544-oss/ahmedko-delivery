@@ -37,7 +37,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Set up Java 21
         uses: actions/setup-java@v4
@@ -46,7 +45,7 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Prepare web app and Android artwork
         run: |
@@ -85,7 +84,7 @@ jobs:
           import os, pathlib, re
           p = pathlib.Path("android/app/build.gradle")
           s = p.read_text()
-          if s.count("android {") != 1 or not re.search(r"buildTypes\\s*\\{\\s*release\\s*\\{", s):
+          if s.count("android {") != 1 or not re.search(r"buildTypes\s*\{\s*release\s*\{", s):
               raise SystemExit("Unexpected Android Gradle template; refusing to patch signing configuration.")
           signing = """
               signingConfigs {
@@ -97,11 +96,11 @@ jobs:
                   }
               }
           """
-          s = s.replace("android {", "android {\\n" + signing, 1)
-          s, n = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\\1\\n            signingConfig signingConfigs.release", s, count=1)
+          s = s.replace("android {", "android {\n" + signing, 1)
+          s, n = re.subn(r"(buildTypes\s*\{\s*release\s*\{)", r"\1\n            signingConfig signingConfigs.release", s, count=1)
           if n != 1:
               raise SystemExit("Could not safely configure the release build type.")
-          s, n = re.subn(r"(defaultConfig\\s*\\{)", r"\\1\\n        versionCode " + os.environ["BUILD_NUMBER"] + r"\\n        versionName \\"1.0." + os.environ["BUILD_NUMBER"] + r"\\" ", s, count=1)
+          s, n = re.subn(r"(defaultConfig\s*\{)", r"\1\n        versionCode " + os.environ["BUILD_NUMBER"] + "\n        versionName \"1.0." + os.environ["BUILD_NUMBER"] + "\"", s, count=1)
           if n != 1:
               raise SystemExit("Could not set Android release version.")
           p.write_text(s)
