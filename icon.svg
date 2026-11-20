@@ -1,27 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-<title id="title">AHMEDKO DELIVERY</title>
-<desc id="desc">شعار هندسي مجرد لأحمدكو: حرف A ذهبي ومسار توصيل وسهم حركة على خلفية كحلية، دون شخصيات أو ملامح.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
+<title id="t">AHMEDKO DELIVERY</title><desc id="d">أيقونة أحمدكو ديلفري: صندوق ذهبي داخل دبوس موقع وطريق توصيل على خلفية كحلية.</desc>
 <defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#173B68"/>
-    <stop offset="1" stop-color="#061329"/>
-  </linearGradient>
-  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#FFE58A"/>
-    <stop offset="1" stop-color="#F5B900"/>
-  </linearGradient>
-  <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
-    <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity=".32"/>
-  </filter>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#123b78"/><stop offset="1" stop-color="#041127"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a3"/><stop offset=".48" stop-color="#ffc928"/><stop offset="1" stop-color="#d88a00"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".4"/></filter>
 </defs>
 <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-<circle cx="256" cy="250" r="190" fill="none" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="3"/>
-<circle cx="256" cy="250" r="158" fill="#FFFFFF" fill-opacity=".025"/>
-<g filter="url(#shadow)" fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M118 365 231 135 Q256 83 281 135 L394 365" stroke-width="42"/>
-  <path d="M177 276 H335" stroke="#FFFFFF" stroke-width="18"/>
+<g opacity=".13" stroke="#8bb8ff" fill="none"><path d="M0 370H512M0 405H512M0 440H512M70 512 180 350M180 512 260 350M330 512 320 350M440 512 390 350" stroke-width="3"/></g>
+<path d="M0 380h512v45H0z" fill="#071b38" opacity=".55"/>
+<g fill="#06152e" opacity=".85"><path d="M0 377h45v-35h25v35h18v-55h24v55h18v-28h24v28h22v-48h26v48h30v-24h20v24h28v-42h20v42h30v-25h24v25h24v-58h22v58h25v-32h20v32h34v-48h22v48h25v-27h20v27h18v50H0z"/></g>
+<g filter="url(#shadow)">
+ <path d="M256 68c-91 0-165 72-165 161 0 110 165 249 165 249s165-139 165-249c0-89-74-161-165-161z" fill="url(#gold)" stroke="#ffeaa0" stroke-width="5"/>
+ <path d="M256 103c-70 0-127 56-127 126 0 75 127 183 127 183s127-108 127-183c0-70-57-126-127-126z" fill="#082047" stroke="#d89409" stroke-width="5"/>
+ <path d="m175 221 81-44 81 44-81 45z" fill="url(#gold)" stroke="#fff0a3" stroke-width="4"/>
+ <path d="M175 221v89l81 47v-91z" fill="#e6a20b" stroke="#ffe58a" stroke-width="4"/>
+ <path d="M337 221v89l-81 47v-91z" fill="#f8c332" stroke="#ffe58a" stroke-width="4"/>
+ <path d="m207 204 81 45 30-16-81-45z" fill="#fff0a3" opacity=".8"/>
 </g>
-<path d="M256 155 V206 M256 239 V258" stroke="#173B68" stroke-width="11" stroke-linecap="round" stroke-dasharray="12 13"/>
-<path d="M147 390 H350" stroke="#F5C32B" stroke-width="8" stroke-linecap="round" opacity=".9"/>
-<path d="M350 390 L326 371 M350 390 L326 409" fill="none" stroke="#F5C32B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M42 397c93-15 160-37 220-64 84-38 153-92 205-153" fill="none" stroke="#ffd447" stroke-width="17" stroke-linecap="round"/>
+<path d="M42 397c93-15 160-37 220-64 84-38 153-92 205-153" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-dasharray="18 22"/>
+<path d="m453 176 23-2-8 23" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="256" cy="456" r="13" fill="#ffe58a"/><circle cx="256" cy="456" r="27" fill="none" stroke="#ffd447" stroke-width="5" opacity=".7"/>
 </svg>
