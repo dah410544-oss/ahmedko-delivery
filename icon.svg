@@ -1,24 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
-<title id="t">AHMEDKO DELIVERY</title><desc id="d">أيقونة أحمدكو ديلفري: صندوق ذهبي داخل دبوس موقع وطريق توصيل على خلفية كحلية.</desc>
+<title id="t">AHMEDKO DELIVERY</title><desc id="d">شعار أحمدكو: حرف A أبيض وذهبي مع طريق توصيل وصندوق على خلفية كحلية.</desc>
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#123b78"/><stop offset="1" stop-color="#041127"/></linearGradient>
- <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a3"/><stop offset=".48" stop-color="#ffc928"/><stop offset="1" stop-color="#d88a00"/></linearGradient>
- <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".4"/></filter>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#123d7b"/><stop offset=".55" stop-color="#071b3b"/><stop offset="1" stop-color="#030d20"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2a6"/><stop offset=".45" stop-color="#ffd13d"/><stop offset="1" stop-color="#d88a00"/></linearGradient>
+ <linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbd7e8"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#000" flood-opacity=".45"/></filter>
 </defs>
 <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-<g opacity=".13" stroke="#8bb8ff" fill="none"><path d="M0 370H512M0 405H512M0 440H512M70 512 180 350M180 512 260 350M330 512 320 350M440 512 390 350" stroke-width="3"/></g>
-<path d="M0 380h512v45H0z" fill="#071b38" opacity=".55"/>
-<g fill="#06152e" opacity=".85"><path d="M0 377h45v-35h25v35h18v-55h24v55h18v-28h24v28h22v-48h26v48h30v-24h20v24h28v-42h20v42h30v-25h24v25h24v-58h22v58h25v-32h20v32h34v-48h22v48h25v-27h20v27h18v50H0z"/></g>
+<path d="M0 370H512M0 410H512M70 512 190 350M210 512 270 350M360 512 340 350M480 512 410 350" stroke="#75a8e8" stroke-width="3" opacity=".10" fill="none"/>
 <g filter="url(#shadow)">
- <path d="M256 68c-91 0-165 72-165 161 0 110 165 249 165 249s165-139 165-249c0-89-74-161-165-161z" fill="url(#gold)" stroke="#ffeaa0" stroke-width="5"/>
- <path d="M256 103c-70 0-127 56-127 126 0 75 127 183 127 183s127-108 127-183c0-70-57-126-127-126z" fill="#082047" stroke="#d89409" stroke-width="5"/>
- <path d="m175 221 81-44 81 44-81 45z" fill="url(#gold)" stroke="#fff0a3" stroke-width="4"/>
- <path d="M175 221v89l81 47v-91z" fill="#e6a20b" stroke="#ffe58a" stroke-width="4"/>
- <path d="M337 221v89l-81 47v-91z" fill="#f8c332" stroke="#ffe58a" stroke-width="4"/>
- <path d="m207 204 81 45 30-16-81-45z" fill="#fff0a3" opacity=".8"/>
+ <path d="M112 378 224 112Q233 91 256 91t32 21l112 266h-77l-67-174-67 174z" fill="url(#white)" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M39 354c107-8 186-44 250-98 46-39 91-87 154-143" fill="none" stroke="url(#gold)" stroke-width="35" stroke-linecap="round"/>
+ <path d="M39 354c107-8 186-44 250-98 46-39 91-87 154-143" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-dasharray="17 21"/>
+ <path d="m421 106 34 7-15 31" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+ <g transform="translate(344 235)">
+  <path d="m0 20 52-28 52 28-52 29z" fill="url(#gold)" stroke="#fff0aa" stroke-width="4"/>
+  <path d="M0 20v62l52 29V49z" fill="#e5a00b" stroke="#ffe28a" stroke-width="4"/>
+  <path d="M104 20v62l-52 29V49z" fill="#ffc52e" stroke="#ffe28a" stroke-width="4"/>
+ </g>
 </g>
-<path d="M42 397c93-15 160-37 220-64 84-38 153-92 205-153" fill="none" stroke="#ffd447" stroke-width="17" stroke-linecap="round"/>
-<path d="M42 397c93-15 160-37 220-64 84-38 153-92 205-153" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-dasharray="18 22"/>
-<path d="m453 176 23-2-8 23" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="256" cy="456" r="13" fill="#ffe58a"/><circle cx="256" cy="456" r="27" fill="none" stroke="#ffd447" stroke-width="5" opacity=".7"/>
+<path d="M80 431h352" stroke="#ffd13d" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+<circle cx="256" cy="431" r="9" fill="#fff2a6"/>
 </svg>
