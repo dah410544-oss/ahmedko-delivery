@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-shell-v10";
+const CACHE_NAME = "ahmedko-shell-v11";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
@@ -8,7 +8,7 @@ const APP_SHELL = [
   "taj-menu.html",
   "auto-o2-menu.js",
   "manifest.webmanifest",
-  "icon.svg"
+  "icon.svg?v=11"
 ].map(appUrl);
 
 self.addEventListener("install", event => {
@@ -37,8 +37,10 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
           return response;
         })
         .catch(async () => (await caches.match(request)) || (await caches.match(appUrl("index.html"))))
