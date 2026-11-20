@@ -6,6 +6,8 @@ const requiredFiles = [
   "www/driver.html",
   "www/admin.html",
   "www/privacy.html",
+  "www/taj-menu.html",
+  "www/auto-o2-menu.js",
   "www/manifest.webmanifest",
   "www/service-worker.js",
   "www/icon.svg"
