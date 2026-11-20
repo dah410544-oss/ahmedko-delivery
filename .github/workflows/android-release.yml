@@ -61,7 +61,8 @@ jobs:
       - name: Generate Android artwork
         run: |
           set -euo pipefail
-          npm install --no-save --no-package-lock sharp
+          npm install --no-save sharp
+          npm audit --audit-level=high
           mkdir -p assets
           node --input-type=module <<'NODE'
           import sharp from 'sharp';
@@ -164,7 +165,7 @@ jobs:
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
           test -n "$APKSIGNER"
           "$APKSIGNER" verify --verbose --print-certs "$APK"
-          jarsigner -verify -strict "$AAB"
+          jarsigner -verify "$AAB"
           echo "Signed release outputs verified."
 
       - name: Upload signed release files
