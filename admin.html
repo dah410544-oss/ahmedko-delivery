@@ -1500,6 +1500,24 @@ db.auth.onAuthStateChange((event,session)=>{
   showLogin(error.message);
  }
 })();
+ 
+// Quiet operations refresh: keep the dispatch board current without requiring manual reloads.
+let adminRefreshBusy = false;
+async function refreshOperationsBoard(){
+ if(adminRefreshBusy || document.visibilityState !== "visible" || !currentUser) return;
+ adminRefreshBusy = true;
+ try{
+  await Promise.all([loadStatistics(),loadOrderWorkflow(),loadFinanceEarnings()]);
+ }catch(error){
+  console.warn("تعذر تحديث لوحة العمليات تلقائياً:",error);
+ }finally{
+  adminRefreshBusy = false;
+ }
+}
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState === "visible") refreshOperationsBoard();
+});
+setInterval(refreshOperationsBoard,30000);
 
 })();
 </script>
