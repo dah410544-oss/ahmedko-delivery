@@ -432,7 +432,7 @@ footer{
    <select id="rate-pickup-region" required aria-label="منطقة الاستلام"><option value="">منطقة الاستلام</option></select>
    <select id="rate-delivery-region" required aria-label="منطقة التسليم"><option value="">منطقة التسليم</option></select>
    <select id="rate-vehicle" required aria-label="وسيلة النقل">
-    <option value="">وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة</option><option value="jeep">جيب</option><option value="bus">باص</option>
+    <option value="">وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة / جيب</option><option value="bus">باص</option>
    </select>
    <input id="rate-price" type="number" min="0.01" step="0.01" required placeholder="السعر بالشيكل">
    <button type="submit" class="primary">حفظ السعر</button>
@@ -1264,7 +1264,7 @@ $("import-auto-menu").addEventListener("click",()=>{
 });
 
 const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
-const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة",tuk_tuk:"توك توك",bus:"باص",jeep:"جيب"};
+const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة / جيب",tuk_tuk:"توك توك",bus:"باص"};
 let workflowOrders=[];
 let workflowDrivers=[];
 
