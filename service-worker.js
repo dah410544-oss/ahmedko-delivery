@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-shell-v13";
+const CACHE_NAME = "ahmedko-shell-v14";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
@@ -8,7 +8,7 @@ const APP_SHELL = [
   "taj-menu.html",
   "auto-o2-menu.js",
   "manifest.webmanifest",
-  "icon.svg?v=13"
+  "icon.svg?v=14"
 ].map(appUrl);
 
 self.addEventListener("install", event => {
