@@ -183,7 +183,12 @@ begin
         v_driver_id, p_order_id, v_delivery_price, v_office_commission,
         v_driver_amount, 'pending', 'تم تسجيل مستحقات الطلب عند تأكيد التسليم'
       )
-      on conflict (order_id) where order_id is not null do nothing;
+      on conflict (order_id) where order_id is not null do update
+      set delivery_amount = excluded.delivery_amount,
+          office_commission = excluded.office_commission,
+          driver_amount = excluded.driver_amount,
+          driver_id = excluded.driver_id
+      where driver_earnings.payment_status <> 'paid';
     end if;
 
     return jsonb_build_object('success', true, 'status', v_current_status, 'unchanged', true);
@@ -210,7 +215,12 @@ begin
       v_driver_id, p_order_id, v_delivery_price, v_office_commission,
       v_driver_amount, 'pending', 'تم تسجيل مستحقات الطلب عند تأكيد التسليم'
     )
-    on conflict (order_id) where order_id is not null do nothing;
+    on conflict (order_id) where order_id is not null do update
+    set delivery_amount = excluded.delivery_amount,
+        office_commission = excluded.office_commission,
+        driver_amount = excluded.driver_amount,
+        driver_id = excluded.driver_id
+    where driver_earnings.payment_status <> 'paid';
   end if;
 
   return jsonb_build_object('success', true, 'status', p_new_status, 'unchanged', false);
