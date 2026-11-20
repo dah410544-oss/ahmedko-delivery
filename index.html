@@ -444,7 +444,8 @@ let deferredInstallPrompt = null;
 const installAppButton = document.getElementById("installAppButton");
 const isAppInstalled = () =>
   window.matchMedia("(display-mode: standalone)").matches ||
-  window.navigator.standalone === true;
+  window.navigator.standalone === true ||
+  window.Capacitor?.isNativePlatform?.() === true;
 
 const hideInstallButton = () => {
   if (installAppButton) installAppButton.hidden = true;
