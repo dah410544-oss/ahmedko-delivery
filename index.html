@@ -475,12 +475,23 @@ if (installAppButton) {
       alert("لتثبيت أحمدكو كتطبيق: افتح الموقع في Google Chrome، ثم اضغط ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» إذا ظهر الخيار.");
       return;
     }
-    deferredInstallPrompt.prompt();
-    const choice = await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    if (choice && choice.outcome === "accepted") {
-      installAppButton.textContent = "جارٍ تثبيت أحمدكو";
-      installAppButton.disabled = true;
+    try {
+      await deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      if (choice && choice.outcome === "accepted") {
+        installAppButton.textContent = "جارٍ تثبيت أحمدكو";
+        installAppButton.disabled = true;
+      } else {
+        installAppButton.textContent = "إعادة محاولة التثبيت";
+        installAppButton.disabled = false;
+      }
+    } catch (error) {
+      deferredInstallPrompt = null;
+      installAppButton.textContent = "تثبيت تطبيق أحمدكو";
+      installAppButton.disabled = false;
+      alert("تعذر بدء التثبيت من هذا المتصفح. افتح رابط أحمدكو مباشرة في Google Chrome ثم اختر ⋮ ← تثبيت التطبيق. تفاصيل المتصفح: " + (error?.name || "خطأ غير معروف"));
+      console.error("AHMEDKO install failed:", error);
     }
   });
 }
