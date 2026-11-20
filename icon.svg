@@ -1,35 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
 <title id="title">AHMEDKO DELIVERY</title>
-<desc id="desc">أيقونة أحمدكو ديلفري: حرف A ذهبي وطريق توصيل ومركبة على خلفية كحلية.</desc>
+<desc id="desc">شعار هندسي مجرد لأحمدكو: حرف A ذهبي ومسار توصيل وسهم حركة على خلفية كحلية، دون شخصيات أو ملامح.</desc>
 <defs>
   <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#173C68"/>
-    <stop offset="1" stop-color="#041124"/>
+    <stop offset="0" stop-color="#173B68"/>
+    <stop offset="1" stop-color="#061329"/>
   </linearGradient>
-  <linearGradient id="gold" x1="0" y1="0" x2="0.85" y2="1">
-    <stop offset="0" stop-color="#FFE99A"/>
-    <stop offset="1" stop-color="#F4B900"/>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFE58A"/>
+    <stop offset="1" stop-color="#F5B900"/>
   </linearGradient>
   <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
-    <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity=".28"/>
+    <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity=".32"/>
   </filter>
 </defs>
 <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-<circle cx="256" cy="244" r="194" fill="none" stroke="#FFFFFF" stroke-opacity=".07" stroke-width="3"/>
-<circle cx="256" cy="244" r="164" fill="#FFFFFF" fill-opacity=".025"/>
-<g filter="url(#shadow)">
-  <path d="M118 372 232 126Q256 76 280 126L394 372" fill="none" stroke="url(#gold)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M183 282H329" stroke="#FFF8E2" stroke-width="17" stroke-linecap="round"/>
-  <path d="M256 160V202M256 226V246" stroke="#173C68" stroke-width="10" stroke-linecap="round" stroke-dasharray="10 13"/>
-  <path d="M170 344H350" stroke="#071A35" stroke-width="18" stroke-linecap="round"/>
-  <path d="M190 310H318Q334 310 342 326L352 348H164L174 326Q178 310 190 310Z" fill="#FFF8E2"/>
-  <path d="M318 310H340Q352 310 360 323L376 348H348L336 326Q331 317 318 317Z" fill="#F4B900"/>
-  <path d="M345 322H357L369 340H350Z" fill="#173C68"/>
-  <circle cx="205" cy="358" r="22" fill="#061326"/>
-  <circle cx="205" cy="358" r="9" fill="#F8D45B"/>
-  <circle cx="354" cy="358" r="22" fill="#061326"/>
-  <circle cx="354" cy="358" r="9" fill="#F8D45B"/>
+<circle cx="256" cy="250" r="190" fill="none" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="3"/>
+<circle cx="256" cy="250" r="158" fill="#FFFFFF" fill-opacity=".025"/>
+<g filter="url(#shadow)" fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M118 365 231 135 Q256 83 281 135 L394 365" stroke-width="42"/>
+  <path d="M177 276 H335" stroke="#FFFFFF" stroke-width="18"/>
 </g>
-<path d="M138 414H374" stroke="#F5C32B" stroke-opacity=".65" stroke-width="6" stroke-linecap="round"/>
-<text x="256" y="463" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="900" letter-spacing="4" fill="#FFFFFF">AHMEDKO</text>
+<path d="M256 155 V206 M256 239 V258" stroke="#173B68" stroke-width="11" stroke-linecap="round" stroke-dasharray="12 13"/>
+<path d="M147 390 H350" stroke="#F5C32B" stroke-width="8" stroke-linecap="round" opacity=".9"/>
+<path d="M350 390 L326 371 M350 390 L326 409" fill="none" stroke="#F5C32B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
