@@ -1,8 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102849"/><stop offset="1" stop-color="#041124"/></linearGradient><linearGradient id="y" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe17a"/><stop offset="1" stop-color="#f5b900"/></linearGradient></defs>
-<rect width="512" height="512" rx="112" fill="url(#g)"/>
-<path d="M86 328 196 116q10-19 31-19h59q20 0 30 19l111 212q12 23-7 39-6 5-18 5h-58q-20 0-30-19l-57-111-57 111q-10 19-30 19h-58q-28 0-26-26 0-9 5-18Z" fill="url(#y)"/>
-<path d="M185 328h143" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".95"/>
-<path d="M104 390h304" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".22"/>
-<text x="256" y="452" font-family="Arial,sans-serif" font-size="38" font-weight="900" text-anchor="middle" fill="#fff" letter-spacing="3">AHMEDKO</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">AHMEDKO DELIVERY</title>
+<desc id="desc">شعار أحمدكو ديلفري: مركبة توصيل ذهبية على خلفية كحلية مع مسار حركة.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173c68"/><stop offset="1" stop-color="#041124"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0.9" y2="1"><stop stop-color="#ffe68a"/><stop offset="1" stop-color="#f2b900"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".38"/></filter>
+</defs>
+<rect width="512" height="512" rx="112" fill="url(#bg)"/>
+<circle cx="256" cy="220" r="176" fill="#ffffff" opacity=".035"/>
+<path d="M72 324c38-78 93-121 162-129 54-6 96 11 145 50" fill="none" stroke="#f5c32b" stroke-width="13" stroke-linecap="round" opacity=".45"/>
+<g filter="url(#shadow)">
+ <path d="M91 177h196c13 0 23 10 23 23v118H91c-13 0-23-10-23-23V200c0-13 10-23 23-23Z" fill="url(#gold)"/>
+ <path d="M310 222h72c11 0 20 5 26 14l38 57v25H310V222Z" fill="#fff1bf"/>
+ <path d="M333 239h42l27 40h-69v-40Z" fill="#173c68"/>
+ <path d="M91 197h196v97H91z" fill="#f5c32b"/>
+ <path d="M111 211h55v64h-55zM180 211h87v64h-87z" fill="#102849" opacity=".93"/>
+ <path d="M68 294h378v29c0 12-10 22-22 22H90c-12 0-22-10-22-22v-29Z" fill="#f5c32b"/>
+ <circle cx="142" cy="344" r="34" fill="#071a35"/><circle cx="142" cy="344" r="15" fill="#e7eef7"/>
+ <circle cx="375" cy="344" r="34" fill="#071a35"/><circle cx="375" cy="344" r="15" fill="#e7eef7"/>
+</g>
+<path d="M112 397h288" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".28"/>
+<text x="256" y="438" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="900" letter-spacing="2" fill="#fff">AHMEDKO</text>
+<text x="256" y="469" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="5" fill="#f5c32b">DELIVERY</text>
 </svg>
