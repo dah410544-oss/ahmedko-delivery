@@ -2,6 +2,34 @@
 -- Run once in Supabase SQL Editor as project owner.
 -- Does not recreate tables, policies, indexes, or existing data.
 
+-- Keep driver assignments referentially valid; preserve all existing rows.
+create index if not exists orders_driver_id_created_at_idx
+  on public.orders (driver_id, created_at desc);
+
+do $
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.orders'::regclass
+      and conname = 'orders_driver_id_fkey'
+  ) then
+    if exists (
+      select 1
+      from public.orders o
+      left join public.drivers d on d.id = o.driver_id
+      where o.driver_id is not null
+        and d.id is null
+    ) then
+      raise exception 'Orders contain an unknown driver_id. Review those rows before adding the driver foreign key.';
+    end if;
+
+    alter table public.orders
+      add constraint orders_driver_id_fkey
+      foreign key (driver_id) references public.drivers(id) on delete set null;
+  end if;
+end;
+$;
+
 create or replace function public.create_customer_order(
   p_customer_name text,
   p_customer_phone text,
