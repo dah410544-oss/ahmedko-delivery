@@ -19,6 +19,10 @@ on:
       - "scripts/**"
       - ".github/workflows/android-apk.yml"
 
+concurrency:
+  group: ahmedko-android-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
