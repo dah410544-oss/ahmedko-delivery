@@ -363,9 +363,8 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   whatsappLink.hidden=false;
   status.textContent="تم استلام طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل: "+feeText+". سيتواصل معك المكتب لتأكيدها.";
   shoppingCart=[];drawCart();
-  // Keep the customer in Ahmedko home after successful checkout.
-  document.getElementById("cartPanel").classList.remove("open");
-  window.scrollTo({top:0,behavior:"smooth"});
+  // Keep the checkout panel open so the customer can immediately tap the WhatsApp handoff link.
+  whatsappLink.scrollIntoView({behavior:"smooth",block:"center"});
  }catch(error){
   status.textContent="لم يتم تأكيد الطلب: "+error.message;
  }finally{button.disabled=false;}
