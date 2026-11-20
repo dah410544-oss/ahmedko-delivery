@@ -155,10 +155,7 @@ $$;
 revoke all on function public.get_available_drivers() from public;
 grant execute on function public.get_available_drivers() to anon, authenticated;
 
--- The office commission is 15%; drivers receive the remaining 85%.
-update public.business_settings
-set office_commission_percent = 15
-where office_commission_percent is distinct from 15;
+-- Preserve the office commission configured in business_settings; do not overwrite it in this migration.
 
 
 do $$
@@ -243,7 +240,7 @@ begin
     from public.business_settings as bs
     limit 1;
 
-    v_commission_rate := coalesce(v_commission_rate, 15);
+    v_commission_rate := coalesce(v_commission_rate, 16);
 
     if v_commission_rate < 0 or v_commission_rate > 100 then
       raise exception 'نسبة عمولة المكتب في الإعدادات غير صحيحة.';
