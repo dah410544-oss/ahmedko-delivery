@@ -66,7 +66,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="#contact">تواصل معنا</a></nav>
+ <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
 <section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
@@ -82,6 +82,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <div class="actions" style="position:relative;z-index:2;display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="admin.html">بوابة الإدارة</a>
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="driver.html">بوابة السائقين / انضم كسائق</a>
+  <a class="btn" style="border:1px solid #ffffff66;color:white" href="restaurant.html">دخول المطاعم والمتاجر</a>
  </div>
 </section>
 <section id="services">
@@ -358,10 +359,31 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   const total=shoppingCart.every(x=>x.price!==null)?money(shoppingCart.reduce((n,x)=>n+x.price*x.qty,0))+" ₪":"يحتاج تأكيد المطعم";
   const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
   const feeText=feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع مكتب أحمدكو";
-  const message="طلب أحمدكو رقم: "+saved.order_id+"\nالاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
+  let restaurantOrderId=null,restaurantError="";
+  try{
+   const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
+    method:"POST",
+    headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify({
+     p_store_id:shoppingCart[0].storeId,
+     p_delivery_order_id:saved.order_id,
+     p_items:shoppingCart.map(x=>({product_id:x.id,quantity:x.qty})),
+     p_customer_name:name,p_customer_phone:phone,p_delivery_address:address,p_notes:customerNotes||null
+    })
+   });
+   const restaurantBody=await restaurantResponse.json().catch(()=>null);
+   if(!restaurantResponse.ok)throw new Error(restaurantBody?.message||restaurantBody?.details||("تعذر إرسال الطلب للمطعم ("+restaurantResponse.status+")."));
+   const restaurantSaved=Array.isArray(restaurantBody)?restaurantBody[0]:restaurantBody;
+   restaurantOrderId=restaurantSaved?.store_order_id||null;
+   if(!restaurantOrderId)throw new Error("لم يرجع النظام رقم طلب المطعم.");
+  }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
+  const message="طلب أحمدكو رقم: "+saved.order_id+"\n"+(restaurantOrderId?"رقم طلب المطعم: "+restaurantOrderId+"\n":"")+
+   "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
   whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
   whatsappLink.hidden=false;
-  status.textContent="تم استلام طلبك بنجاح برقم "+saved.order_id+" — أجرة التوصيل: "+feeText+". سيتواصل معك المكتب لتأكيدها.";
+  status.textContent=restaurantOrderId?
+   "تم حفظ طلب التوصيل وإرساله إلى صندوق المطعم بنجاح. رقم التوصيل: "+saved.order_id+" — رقم المطعم: "+restaurantOrderId+" — أجرة التوصيل: "+feeText+".":
+   "تم حفظ طلب التوصيل رقم "+saved.order_id+"، لكن لم يكتمل تسجيله في صندوق المطعم: "+restaurantError+" اضغط واتساب لإبلاغ المكتب ولا تُعد إنشاء الطلب حتى لا يتكرر.";
   shoppingCart=[];drawCart();
   // Keep the checkout panel open so the customer can immediately tap the WhatsApp handoff link.
   whatsappLink.scrollIntoView({behavior:"smooth",block:"center"});
