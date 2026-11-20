@@ -547,7 +547,7 @@ const tableConfig = {
   columns:[
    "id","customer_name","customer_phone",
    "pickup_address","delivery_address",
-   "status","delivery_price","created_at"
+   "status","delivery_price","notes","created_at"
   ]
  },
  drivers:{
@@ -1320,7 +1320,7 @@ async function loadOrderWorkflow(){
   const created=order.created_at?new Date(order.created_at).toLocaleString("ar-PS"):"—";
   card.innerHTML=
    '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
-   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
+   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+escapeHTML(order.delivery_price??"—")+' ₪<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
    '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
    (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
    '<div class="workflow-status" aria-live="polite"></div>';
@@ -1368,7 +1368,7 @@ async function ensureOrderEarning(order){
  if(!Number.isFinite(amount)||amount<=0)throw new Error("أجرة التوصيل غير محددة أو غير صحيحة.");
  const settings=await db.from("business_settings").select("office_commission_percent").limit(1).maybeSingle();
  if(settings.error)throw new Error("تعذر قراءة نسبة عمولة المكتب: "+settings.error.message);
- const rate=Number(settings.data?.office_commission_percent ?? 15);
+ const rate=Number(settings.data?.office_commission_percent ?? 16);
  if(!Number.isFinite(rate)||rate<0||rate>100)throw new Error("نسبة عمولة المكتب غير صحيحة.");
  const officeCommission=Number((amount*rate/100).toFixed(2));
  const driverAmount=Number((amount-officeCommission).toFixed(2));
