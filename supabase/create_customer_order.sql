@@ -97,3 +97,6 @@ $;
 
 revoke all on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) from public;
 grant execute on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) to anon, authenticated;
+
+-- Refresh Supabase REST schema cache so the new RPC/table is visible immediately.
+notify pgrst, 'reload schema';
