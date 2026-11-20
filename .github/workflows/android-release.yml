@@ -76,7 +76,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          BUILD_NUMBER: ${{ github.run_number }}
+          BUILD_NUMBER: 1
         shell: bash
         run: |
           set -euo pipefail
@@ -105,7 +105,42 @@ jobs:
               raise SystemExit("Could not safely configure the release build type.")
           build_number = os.environ["BUILD_NUMBER"]
           s, code_count = re.subn(r"^\s*versionCode\s+\d+\s*$", "        versionCode " + build_number, s, count=1, flags=re.M)
-          s, name_count = re.subn(r'^\s*versionName\s+"[^"]+"\s*$', '        versionName "1.0.' + build_number + '"', s, count=1, flags=re.M)
+          s, name_count = re.subn(r'^\s*versionName\s+"[^"]+"\s*
+          if code_count != 1 or name_count != 1:
+              raise SystemExit("Could not safely update existing Android versionCode/versionName.")
+          p.write_text(s)
+          PY
+
+      - name: Build signed APK and Play Store AAB
+        env:
+          AHMEDKO_KEYSTORE_PATH: ${{ runner.temp }}/ahmedko-release.keystore
+          AHMEDKO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          AHMEDKO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          AHMEDKO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          cd android
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease bundleRelease
+          APK="app/build/outputs/apk/release/app-release.apk"
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          test -s "$APK"
+          test -s "$AAB"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "$APK"
+          jarsigner -verify "$AAB"
+
+      - name: Upload signed release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: AHMEDKO-DELIVERY-signed-release
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+, '        versionName "1.0.0"', s, count=1, flags=re.M)
           if code_count != 1 or name_count != 1:
               raise SystemExit("Could not safely update existing Android versionCode/versionName.")
           p.write_text(s)
