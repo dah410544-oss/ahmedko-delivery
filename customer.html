@@ -52,6 +52,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <label for="orderNotes">تفاصيل إضافية (اختياري)</label><textarea id="orderNotes" maxlength="1000" placeholder="نوع الطلب أو أي تعليمات للسائق"></textarea>
 <button id="submitOrder" class="yellow full" type="submit">إرسال الطلب وحفظه لدى أحمدكو</button>
 <div id="orderMessage" class="message" role="status" aria-live="polite">سيظهر رقم طلبك وأجرة التوصيل بعد تأكيد الحفظ في قاعدة البيانات.</div>
+<a id="sendOrderWhatsapp" class="button yellow full" hidden target="_blank" rel="noopener" style="text-align:center" href="#">إرسال تفاصيل الطلب إلى أحمدكو عبر واتساب</a>
 </form>
 </section>
 <section class="panel">
@@ -123,7 +124,9 @@ $("orderForm").addEventListener("submit",async event=>{
   if(result.error)throw result.error;
   const saved=Array.isArray(result.data)?result.data[0]:result.data;
   if(!saved||!saved.order_id)throw new Error("لم يرجع النظام رقم الطلب؛ لم نعرض تأكيداً غير موثوق.");
-  setMessage("orderMessage","تم حفظ طلبك بنجاح.\nرقم الطلب: "+saved.order_id+"\nأجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪\nاحتفظ برقم الهاتف نفسه لمتابعة طلباتك بعد التحقق.","success");
+  setMessage("orderMessage","تم حفظ طلبك بنجاح.\nرقم الطلب: "+saved.order_id+"\nأجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪\nيمكنك الآن إرسال تفاصيل الطلب إلى مكتب أحمدكو عبر واتساب.","success");
+  const whatsappText="مرحباً أحمدكو ديلفري، تم تسجيل طلب توصيل جديد.\nرقم الطلب: "+saved.order_id+"\nالاسم: "+payload.p_customer_name+"\nالهاتف: "+payload.p_customer_phone+"\nالاستلام: "+payload.p_pickup_address+" ("+$("pickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+payload.p_delivery_address+" ("+$("deliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+$("vehicleType").selectedOptions[0].textContent+"\nالأجرة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪";
+  const whatsappLink=$("sendOrderWhatsapp");whatsappLink.href="https://wa.me/972598407547?text="+encodeURIComponent(whatsappText);whatsappLink.hidden=false;
   $("trackingPhone").value=payload.p_customer_phone;
   $("orderForm").reset();
  }catch(error){
