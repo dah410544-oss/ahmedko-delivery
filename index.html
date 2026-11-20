@@ -327,6 +327,13 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  whatsappLink.hidden=true;
  if(!shoppingCart.length){status.textContent="السلة فارغة.";return;}
  if(new Set(shoppingCart.map(x=>String(x.storeId))).size!==1){status.textContent="لا يمكن جمع منتجات من أكثر من متجر في طلب واحد.";return;}
+ const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+ if(!uuidPattern.test(String(shoppingCart[0].storeId))||shoppingCart.some(x=>!uuidPattern.test(String(x.id)))){
+  const manualText="مرحباً أحمدكو، أريد الطلب من "+shoppingCart[0].store+".\\n"+shoppingCart.map(x=>x.name+" × "+x.qty+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")).join("\\n")+"\\nعنوان التسليم: "+document.getElementById("buyerAddress").value.trim();
+  whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(manualText);whatsappLink.hidden=false;
+  status.textContent="هذا المنيو معروض مؤقتاً وليس مسجلاً بالكامل في قاعدة طلبات المطعم. لتجنب إنشاء طلب ناقص، أرسل طلبك عبر زر واتساب أدناه حتى تُسجّل إدارة أحمدكو الأصناف رسمياً.";
+  return;
+ }
  const name=document.getElementById("buyerName").value.trim();
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
