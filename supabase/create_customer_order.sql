@@ -18,7 +18,7 @@ returns table(order_id uuid, delivery_price numeric)
 language plpgsql
 security definer
 set search_path = pg_catalog, public
-as $
+as $$
 declare
   v_price_count integer;
   v_delivery_price numeric;
@@ -93,7 +93,7 @@ begin
 
   return query select v_order_id, v_delivery_price;
 end;
-$;
+$$;
 
 revoke all on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) from public;
 grant execute on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) to anon, authenticated;
