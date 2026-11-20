@@ -100,9 +100,11 @@ jobs:
           s, n = re.subn(r"(buildTypes\s*\{\s*release\s*\{)", r"\1\n            signingConfig signingConfigs.release", s, count=1)
           if n != 1:
               raise SystemExit("Could not safely configure the release build type.")
-          s, n = re.subn(r"(defaultConfig\s*\{)", r"\1\n        versionCode " + os.environ["BUILD_NUMBER"] + "\n        versionName \"1.0." + os.environ["BUILD_NUMBER"] + "\"", s, count=1)
-          if n != 1:
-              raise SystemExit("Could not set Android release version.")
+          build_number = os.environ["BUILD_NUMBER"]
+          s, code_count = re.subn(r"^\\s*versionCode\\s+\\d+\\s*$", "        versionCode " + build_number, s, count=1, flags=re.M)
+          s, name_count = re.subn(r'^\\s*versionName\\s+"[^"]+"\\s*$', '        versionName "1.0.' + build_number + '"', s, count=1, flags=re.M)
+          if code_count != 1 or name_count != 1:
+              raise SystemExit("Could not safely update existing Android versionCode/versionName.")
           p.write_text(s)
           PY
 
