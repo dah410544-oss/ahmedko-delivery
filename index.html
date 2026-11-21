@@ -478,9 +478,16 @@ function icon(type){const t=normalize(type);if(t.includes("restaurant")||t.inclu
 async function readTable(table,params){
  const url=new URL(SUPABASE_URL+"/rest/v1/"+table);
  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
- const res=await fetch(url.toString(),{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
- if(!res.ok){const body=await res.text();throw new Error(table+" ("+res.status+"): "+body.slice(0,220));}
- return res.json();
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),8000);
+ try{
+  const res=await fetch(url.toString(),{signal:controller.signal,headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
+  if(!res.ok){const body=await res.text();throw new Error(table+" ("+res.status+"): "+body.slice(0,220));}
+  return await res.json();
+ }catch(error){
+  if(error.name==="AbortError")throw new Error("انتهت مهلة الاتصال بجدول "+table+" بعد 8 ثوانٍ.");
+  throw error;
+ }finally{clearTimeout(timeout);}
 }
 function waLink(store,product){
  let msg="مرحباً أحمدكو، أريد الطلب من: "+(store.store_name||"");
@@ -716,83 +723,83 @@ function search(){
   if(card)card.scrollIntoView({behavior:"smooth",block:"nearest"});
  }
 }
+function readCatalogCache(key){
+ try{const value=JSON.parse(localStorage.getItem("ahmedko_catalog_"+key)||"null");return Array.isArray(value)?value:[];}catch(_){return [];}
+}
+function saveCatalogCache(key,value){
+ try{if(Array.isArray(value))localStorage.setItem("ahmedko_catalog_"+key,JSON.stringify(value));}catch(_){}
+}
 async function init(){
- setStatus("جارٍ الاتصال بقاعدة بيانات أحمدكو…");
- try{stores=await readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active",is_active:"eq.true",order:"store_name.asc"});}
- catch(e){console.error(e);stores=[];setStatus("تعذر الاتصال بقاعدة بيانات المطاعم حالياً؛ سنعرض الأماكن المضافة للموقع مؤقتاً.",true);}
+ stores=readCatalogCache("stores");
+ if(!stores.length)stores=verifiedLocalPlaces.map(s=>({...s}));
+ categories=readCatalogCache("categories");
+ products=readCatalogCache("products");
+ updateRestaurantSuggestions();
+ render(stores);
+ setStatus("تظهر المطاعم الآن؛ جارٍ تحديث الأسماء والمنيو من قاعدة بيانات أحمدكو…");
+ const cachedMuhannad=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
+ const cachedBaba=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
+ mergeLocalMenu(cachedMuhannad?cachedMuhannad.id:muhandStoreId,muhandMenuData);
+ mergeLocalMenu(cachedBaba?cachedBaba.id:babaStoreId,babaMenuData);
+ mergeLocalMenu(tameesStoreId,tameesHameedMenuData);
+ mergeLocalMenu(thaiStoreId,thaiMenuData);
+ mergeLocalMenu(palmeraStoreId,palmeraMenuData);
+ if(Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoStoreId,window.AUTO_O2_MENU);
+ render(stores);
  const results=await Promise.allSettled([
+  readTable("stores",{select:"id,store_name,contact_name,phone,address,store_type,is_active",is_active:"eq.true",order:"store_name.asc"}),
   readTable("product_categories",{select:"id,store_id,name,is_active",is_active:"eq.true",order:"name.asc"}),
   readTable("products",{select:"id,store_id,category_id,name,description,price,is_available",is_available:"eq.true",order:"name.asc"})
  ]);
- if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
- if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\s*)+/,"").replace(/^ال/,"").replace(/\s+/g," ").trim();
+ if(results[0].status==="fulfilled"){stores=results[0].value;saveCatalogCache("stores",stores);}else console.error("Stores:",results[0].reason);
+ if(results[1].status==="fulfilled"){categories=results[1].value;saveCatalogCache("categories",categories);}else console.error("Categories:",results[1].reason);
+ if(results[2].status==="fulfilled"){products=results[2].value;saveCatalogCache("products",products);}else console.error("Products:",results[2].reason);
+ const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").replace(/^ال/,"").replace(/\\s+/g," ").trim();
  const canonicalByKey=new Map(canonicalRestaurantPlaces.map(place=>[restaurantNameKey(place.store_name),place.store_name]));
- // توحيد أسماء سجلات قاعدة البيانات مع الأسماء المعتمدة.
- stores.forEach(store=>{
-  const canonicalName=canonicalByKey.get(restaurantNameKey(store.store_name));
-  if(canonicalName)store.store_name=canonicalName;
- });
- canonicalRestaurantPlaces.forEach(place=>{
-  const key=restaurantNameKey(place.store_name);
-  if(!stores.some(store=>restaurantNameKey(store.store_name)===key))stores.push({...place});
- });
- // عند وجود نسخ مكررة نحتفظ بالسجل الذي لديه منيو فعلي أولاً.
+ stores.forEach(store=>{const canonicalName=canonicalByKey.get(restaurantNameKey(store.store_name));if(canonicalName)store.store_name=canonicalName;});
+ canonicalRestaurantPlaces.forEach(place=>{const key=restaurantNameKey(place.store_name);if(!stores.some(store=>restaurantNameKey(store.store_name)===key))stores.push({...place});});
  stores.sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)));
- const uniqueStores=[];
- const uniqueRestaurantKeys=new Set();
- stores.forEach(store=>{
-  const key=restaurantNameKey(store.store_name);
-  if(!uniqueRestaurantKeys.has(key)){uniqueStores.push(store);uniqueRestaurantKeys.add(key);}
- });
+ const uniqueStores=[],uniqueRestaurantKeys=new Set();
+ stores.forEach(store=>{const key=restaurantNameKey(store.store_name);if(!uniqueRestaurantKeys.has(key)){uniqueStores.push(store);uniqueRestaurantKeys.add(key);}});
  stores=uniqueStores;
  const muhandExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
-  const babaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
-  const muhandId=muhandExisting?muhandExisting.id:muhandStoreId;
-  const babaId=babaExisting?babaExisting.id:babaStoreId;
-  if(!muhandExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===muhandStoreId));
-  if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
-  mergeLocalMenu(muhandId,muhandMenuData);
-  mergeLocalMenu(babaId,babaMenuData);
-  const tameesExisting=stores.find(s=>normalize(s.store_name).includes(normalize("تميس حميد")));
-  const tameesId=tameesExisting?tameesExisting.id:tameesStoreId;
-  if(tameesExisting&&!tameesExisting.phone)tameesExisting.phone="0599028881";
-  if(!tameesExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===tameesStoreId));
-  mergeLocalMenu(tameesId,tameesHameedMenuData);
-  const thaiExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مطعم تايلندي"))||normalize(s.store_name).includes(normalize("التايلندي")));
-  const thaiId=thaiExisting?thaiExisting.id:thaiStoreId;
-  if(!thaiExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===thaiStoreId));
-  mergeLocalMenu(thaiId,thaiMenuData);
-  const palmeraExisting=stores.find(s=>normalize(s.store_name).includes(normalize("PALMERA"))||normalize(s.store_name).includes(normalize("بالميرا")));
-  const palmeraId=palmeraExisting?palmeraExisting.id:palmeraStoreId;
-  if(!palmeraExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===palmeraStoreId));
-  mergeLocalMenu(palmeraId,palmeraMenuData);
-  const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
-  const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
-  if(!tajExisting){
-   const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);
-   if(localTaj)stores.push(localTaj);
-  }
-  if(!categories.some(c=>String(c.store_id)===String(tajStoreId))&&!products.some(p=>String(p.store_id)===String(tajStoreId))){
-   categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
-   products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
-  }
-  const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
-  if(!autoExisting){
-   const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);
-   if(localAuto)stores.push(localAuto);
-  }
-  // Keep a single public card for Auto O2; prefer the real database record over any local fallback.
-  const autoMatches=stores.filter(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
-  if(autoMatches.length>1){
-   const preferred=autoMatches.find(s=>s.id==="d404b052-08e6-4f99-9749-dac2226d5968")||autoMatches.find(s=>s.id&&!String(s.id).startsWith("local-"))||autoMatches[0];
-   stores=stores.filter(s=>!(normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"))||s===preferred);
-  }
-  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
-  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
-  updateRestaurantSuggestions();
-  render(stores);
- if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
+ const babaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
+ const muhandId=muhandExisting?muhandExisting.id:muhandStoreId,babaId=babaExisting?babaExisting.id:babaStoreId;
+ if(!muhandExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===muhandStoreId));
+ if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
+ mergeLocalMenu(muhandId,muhandMenuData);mergeLocalMenu(babaId,babaMenuData);
+ const tameesExisting=stores.find(s=>normalize(s.store_name).includes(normalize("تميس حميد")));
+ const tameesId=tameesExisting?tameesExisting.id:tameesStoreId;
+ if(tameesExisting&&!tameesExisting.phone)tameesExisting.phone="0599028881";
+ if(!tameesExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===tameesStoreId));
+ mergeLocalMenu(tameesId,tameesHameedMenuData);
+ const thaiExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مطعم تايلندي"))||normalize(s.store_name).includes(normalize("التايلندي")));
+ const thaiId=thaiExisting?thaiExisting.id:thaiStoreId;
+ if(!thaiExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===thaiStoreId));
+ mergeLocalMenu(thaiId,thaiMenuData);
+ const palmeraExisting=stores.find(s=>normalize(s.store_name).includes(normalize("PALMERA"))||normalize(s.store_name).includes(normalize("بالميرا")));
+ const palmeraId=palmeraExisting?palmeraExisting.id:palmeraStoreId;
+ if(!palmeraExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===palmeraStoreId));
+ mergeLocalMenu(palmeraId,palmeraMenuData);
+ const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
+ const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
+ if(!tajExisting){const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);if(localTaj)stores.push(localTaj);}
+ if(!categories.some(c=>String(c.store_id)===String(tajStoreId))&&!products.some(p=>String(p.store_id)===String(tajStoreId))){
+  categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
+  products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+ }
+ const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+ if(!autoExisting){const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);if(localAuto)stores.push(localAuto);}
+ const autoMatches=stores.filter(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+ if(autoMatches.length>1){
+  const preferred=autoMatches.find(s=>s.id==="d404b052-08e6-4f99-9749-dac2226d5968")||autoMatches.find(s=>s.id&&!String(s.id).startsWith("local-"))||autoMatches[0];
+  stores=stores.filter(s=>!(normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"))||s===preferred);
+ }
+ const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+ if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
+ updateRestaurantSuggestions();render(stores);
+ if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تظهر المطاعم المتاحة. تعذر تحديث بعض البيانات من الخادم الآن؛ يمكنك البحث واستخدام البيانات المحفوظة.",true);
+ else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
 }
 searchBox.addEventListener("input",search);
 document.getElementById("clearStoreSearch").addEventListener("click",()=>{searchBox.value="";searchBox.focus();render(stores);});
