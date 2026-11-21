@@ -656,7 +656,7 @@ async function refreshAhmedkoNow(){
   (typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform())||
   (typeof window.Capacitor.getPlatform==="function"&&window.Capacitor.getPlatform()==="android")
  ));
- const isAndroidWebView=/;\\s*wv\\)/i.test(navigator.userAgent);
+ const isAndroidWebView=navigator.userAgent.includes("; wv")||navigator.userAgent.includes(";wv");
  const isApp=isStandalone()||isCapacitorApp||isAndroidWebView;
  const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
  const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
