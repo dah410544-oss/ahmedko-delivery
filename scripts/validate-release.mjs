@@ -44,6 +44,22 @@ for (const file of ["www/index.html", "www/customer.html", "www/driver.html", "w
   }
 }
 
+const home = await readFile("www/index.html", "utf8");
+if (!home.includes("function menuFirst(") ||
+    !home.includes("منيو متوفر") ||
+    !home.includes("const canCreateStoreOrder=") ||
+    !home.includes('rpc/create_customer_order') ||
+    !home.includes("أصناف هذا المنيو غير منشورة")) {
+  throw new Error("Homepage menu priority or safe local-menu delivery checkout is incomplete.");
+}
+
+const admin = await readFile("www/admin.html", "utf8");
+if (!admin.includes('id="import-muhannad-menu"') ||
+    !admin.includes('id="import-baba-menu"') ||
+    !admin.includes('async function importPartnerMenu(kind)')) {
+  throw new Error("Admin menu import tools for Muhannad and Al-Baba are missing.");
+}
+
 const customer = await readFile("www/customer.html", "utf8");
 if (!customer.includes('rpc("create_customer_order"') ||
     !customer.includes("signInWithOtp") ||
