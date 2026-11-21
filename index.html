@@ -261,7 +261,7 @@ const palmeraStoreId="local-palmera";
 verifiedLocalPlaces.push(
  {id:muhandStoreId,store_name:"مطعم ومطبخ مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
  {id:babaStoreId,store_name:"مطعم وملحمة البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:tameesStoreId,store_name:"تميس حميد",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:tameesStoreId,store_name:"تميس حميد",contact_name:"",phone:"0599028881",address:"",store_type:"restaurant",is_active:true},
  {id:thaiStoreId,store_name:"مطعم التايلندي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
  {id:palmeraStoreId,store_name:"PALMERA – بالميرا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
  ,{id:"local-jarjawi",store_name:"مطعم ومطبخ الجرجاوي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
@@ -280,7 +280,7 @@ const tameesHameedMenuData=[
   ["تميس دقة","3"],["تميس زعتر","3"],["جبنة فيتا","4"],["جبنة مثلثات","4"],
   ["جبنة شيدر","5"],["جبنة شرائح","6"],["نوتيلا","7"],["مرتديلا سادة","7"],
   ["جبنة مكس","8"],["مرتديلا + جبنة شرائح","8"],["مرتديلا + جبنة مكس","9"],
-  ["نقانق + جبنة مكس","10"],["مرتديلا + جبنة K موزاريلا","11"],
+  ["نقانق + جبنة مكس","10"],["جبنة K موزاريلا + سدية","11"],["مرتديلا + جبنة K موزاريلا","11"],
   ["نقانق + جبنة K موزاريلا","12"],["صدر دجاج بالخضار والجبنة","15"]
  ]]
 ];
@@ -702,6 +702,7 @@ async function init(){
   mergeLocalMenu(babaId,babaMenuData);
   const tameesExisting=stores.find(s=>normalize(s.store_name).includes(normalize("تميس حميد")));
   const tameesId=tameesExisting?tameesExisting.id:tameesStoreId;
+  if(tameesExisting&&!tameesExisting.phone)tameesExisting.phone="0599028881";
   if(!tameesExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===tameesStoreId));
   mergeLocalMenu(tameesId,tameesHameedMenuData);
   const thaiExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مطعم تايلندي"))||normalize(s.store_name).includes(normalize("التايلندي")));
