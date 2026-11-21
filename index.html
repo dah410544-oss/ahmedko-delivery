@@ -471,7 +471,8 @@ init();
   let installPrompt = null;
   const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   const nativeAndroidApp = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
-  if (standalone || nativeAndroidApp) {
+  const nativeLocalApp = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (standalone || nativeAndroidApp || nativeLocalApp) {
     installButton.hidden = true;
     return;
   }
