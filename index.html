@@ -653,32 +653,37 @@ async function refreshAhmedkoNow(){
  let deferredPrompt=null;
  const isInstalled=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
  const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
+ const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
  if(isInstalled()){hideButton();return;}
+ // Keep the install button visible on the public website, even after an install.
+ showButton();
  window.addEventListener("beforeinstallprompt",event=>{
   if(isInstalled())return;
   event.preventDefault();
   deferredPrompt=event;
-  button.hidden=false;
-  button.removeAttribute("aria-hidden");
+  showButton();
  });
  button.addEventListener("click",async()=>{
-  if(!deferredPrompt){hideButton();return;}
+  if(isInstalled()){hideButton();return;}
+  if(!deferredPrompt){
+   button.textContent="للتثبيت: افتح قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية";
+   return;
+  }
   const promptEvent=deferredPrompt;
   deferredPrompt=null;
   button.disabled=true;
   button.textContent="جارٍ فتح التثبيت…";
   try{
    await promptEvent.prompt();
-   const choice=await promptEvent.userChoice;
-   if(choice&&choice.outcome==="accepted"){hideButton();}
-   else{hideButton();}
+   await promptEvent.userChoice;
+   button.textContent="⬇ تثبيت أحمدكو";
+   showButton();
   }catch(error){
-   button.textContent="تعذر بدء التثبيت";
+   button.textContent="⬇ تثبيت أحمدكو";
    console.warn("تعذر بدء تثبيت أحمدكو:",error);
-   setTimeout(hideButton,2200);
   }finally{button.disabled=false;}
  });
- window.addEventListener("appinstalled",()=>{deferredPrompt=null;hideButton();});
+ window.addEventListener("appinstalled",()=>{deferredPrompt=null;});
 })();
 </script>
 <script>
