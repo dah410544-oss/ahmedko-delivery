@@ -389,8 +389,10 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
  // Always save the delivery request first. Only create a restaurant-inbox order
  // when both the store and every product are real database UUIDs.
- const canCreateStoreOrder=uuidPattern.test(String(shoppingCart[0].storeId))&&
+ const catalogIdsAreValid=uuidPattern.test(String(shoppingCart[0].storeId))&&
   shoppingCart.every(x=>uuidPattern.test(String(x.id)));
+ const allItemsPriced=shoppingCart.every(x=>x.price!==null&&Number.isFinite(Number(x.price)));
+ const canCreateStoreOrder=catalogIdsAreValid&&allItemsPriced;
  const name=document.getElementById("buyerName").value.trim();
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
@@ -444,7 +446,9 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  
    }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
   }else{
-   restaurantError="تم حفظ طلب التوصيل، لكن أصناف هذا المنيو غير منشورة بعد في قاعدة بيانات المطعم؛ أرسل إشعار واتساب ليصل الطلب للمكتب.";
+   restaurantError=!catalogIdsAreValid
+    ?"تم حفظ طلب التوصيل، لكن أصناف هذا المنيو غير منشورة بعد في قاعدة بيانات المطعم؛ أرسل إشعار واتساب ليصل الطلب للمكتب."
+    :"تم حفظ طلب التوصيل، لكن يوجد صنف بسعر غير محدد (حسب المتوفر)، لذلك أرسل إشعار واتساب ليؤكد المطعم السعر قبل تسجيل طلبه.";
   }
   const message="طلب أحمدكو رقم: "+saved.order_id+"\n"+(restaurantOrderId?"رقم طلب المطعم: "+restaurantOrderId+"\n":"")+
    "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
