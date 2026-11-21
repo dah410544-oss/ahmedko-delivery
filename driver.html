@@ -111,7 +111,7 @@ async function loadOrders(silent=false){
   });
  }finally{ordersLoading=false;}
 }
-window.setInterval(()=>{if(driver?.application_status==="approved"&&driver.is_active)loadOrders(true);},30000);
+window.setInterval(()=>{if(driver?.application_status==="approved"&&driver.is_active)loadOrders(true);},20000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&driver?.application_status==="approved"&&driver.is_active)loadOrders(true);});
 $("login").addEventListener("click",signIn);$("signup").addEventListener("click",signUp);$("submit-application").addEventListener("click",submitApplication);$("refresh").addEventListener("click",loadOrders);$("logout").addEventListener("click",async()=>{await db.auth.signOut();user=null;driver=null;show("profile-panel",false);show("orders-panel",false);show("application-panel",false);show("auth-panel",true);msg("auth-message","تم تسجيل الخروج.");});
 (async()=>{const r=await db.auth.getSession();if(r.data.session){user=r.data.session.user;await loadProfile();}})();
