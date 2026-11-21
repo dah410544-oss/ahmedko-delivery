@@ -119,15 +119,34 @@ select
 from (values ('stores'),('product_categories'),('products')) as t(tablename)
 order by t.tablename;
 
--- 7) Active catalog counts (returns zero when an optional table is absent).
-select
-  (select count(*) from public.stores where is_active is true) as active_stores,
-  case when to_regclass('public.product_categories') is not null
-    then (select count(*) from public.product_categories where is_active is true)
-    else null end as active_menu_categories,
-  case when to_regclass('public.products') is not null
-    then (select count(*) from public.products where is_available is true)
-    else null end as available_menu_products;
+-- 7) Active catalog counts. Optional menu tables are checked dynamically so
+-- this diagnostic still runs if the catalog migration has not been applied.
+select count(*) as active_stores
+from public.stores
+where is_active is true;
+
+do $$
+declare
+  v_categories bigint;
+  v_products bigint;
+begin
+  if to_regclass('public.product_categories') is not null then
+    execute 'select count(*) from public.product_categories where is_active is true'
+      into v_categories;
+    raise notice 'Active menu categories: %', v_categories;
+  else
+    raise notice 'product_categories table is missing; menu_catalog.sql has not been applied.';
+  end if;
+
+  if to_regclass('public.products') is not null then
+    execute 'select count(*) from public.products where is_available is true'
+      into v_products;
+    raise notice 'Available menu products: %', v_products;
+  else
+    raise notice 'products table is missing; menu_catalog.sql has not been applied.';
+  end if;
+end
+$$;
 
 -- 8) Office settings: inspect only the business values needed for release checks.
 select *
