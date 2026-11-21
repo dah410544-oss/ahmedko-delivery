@@ -18,7 +18,7 @@
     indicator.querySelector(".spin").textContent="↻";
     try{
       if("serviceWorker" in navigator){
-        const reg=await navigator.serviceWorker.getRegistration("/");
+        const reg=await navigator.serviceWorker.getRegistration();
         if(reg){
           await reg.update().catch(()=>{});
           if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});
@@ -51,7 +51,7 @@
     navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!reloading){reloading=true;location.reload();}});
     window.addEventListener("load",async()=>{
       try{
-        const reg=await navigator.serviceWorker.register(new URL("service-worker.js",location.origin+"/ahmedko-delivery/"),{updateViaCache:"none"});
+        const reg=await navigator.serviceWorker.register(new URL("./service-worker.js",document.baseURI),{updateViaCache:"none"});
         const check=()=>reg.update().catch(()=>{});
         check();setInterval(check,60000);
         document.addEventListener("visibilitychange",()=>{if(!document.hidden)check();});
