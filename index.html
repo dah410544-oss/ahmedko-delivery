@@ -38,7 +38,7 @@ section{padding:42px 6%;background:var(--bg)}.heading{margin-bottom:20px}.headin
 .toolbar{display:flex;gap:9px;margin:18px 0}.search{width:100%;min-width:0;border:1px solid #294466;border-radius:13px;padding:14px;background:#102849;color:#fff;outline:none}.search::placeholder{color:#9fb0c6}.search:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #f5c32b20}
 .store-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.store{background:linear-gradient(145deg,#102849,#0c2240);border:1px solid #294466;border-radius:18px;padding:17px;min-width:0;box-shadow:0 8px 22px #0002;transition:transform .2s,border-color .2s}.store:hover{transform:translateY(-3px);border-color:#F5C32B88}.store h3{margin:0 0 7px;font-size:17px;color:#fff}.meta{font-size:12px;color:#B9C7D9;line-height:2}
 .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.small{font-size:12px;padding:9px 11px;border-radius:9px;text-decoration:none;border:0;display:inline-block;font-weight:bold;cursor:pointer;transition:transform .2s}
-.menu{margin-top:13px;padding:13px;border-radius:13px;background:#071A35;border:1px solid #294466;color:#fff}.menu h4{margin:0 0 10px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{background:#102849;border:1px solid #294466;border-radius:12px;padding:11px;min-width:0}.product h5{margin:5px 0;font-size:13px;color:#fff}.product p{font-size:11px;color:var(--muted);margin:0}.price{font-weight:900;color:var(--yellow);margin-top:7px}
+.menu-tag{display:inline-block;margin:3px 0 8px;padding:3px 9px;border-radius:20px;background:#f5c32b22;border:1px solid #f5c32b66;color:#f5c32b;font-size:11px;font-weight:bold}.menu-tag.no-menu{background:#ffffff0b;border-color:#ffffff22;color:#b9c7d9}.menu{margin-top:13px;padding:13px;border-radius:13px;background:#071A35;border:1px solid #294466;color:#fff}.menu h4{margin:0 0 10px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{background:#102849;border:1px solid #294466;border-radius:12px;padding:11px;min-width:0}.product h5{margin:5px 0;font-size:13px;color:#fff}.product p{font-size:11px;color:var(--muted);margin:0}.price{font-weight:900;color:var(--yellow);margin-top:7px}
 .notice{background:#102849;border:1px solid #294466;border-radius:14px;padding:17px;text-align:center;color:var(--muted);font-size:13px}.notice.error{color:#ffd5d5;background:#3a1823;border-color:#7e3445}
 .contact{background:linear-gradient(130deg,#102849,#071A35);border:1px solid #294466;border-radius:22px;margin:14px 6% 34px;padding:27px;box-shadow:0 12px 30px #0003}.contact p{color:#d2dbea;font-size:13px}.contact a{color:var(--yellow);text-decoration:none}
 .contact a.btn.yellow{color:var(--navy)!important;}
@@ -385,12 +385,10 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  if(!shoppingCart.length){status.textContent="السلة فارغة.";return;}
  if(new Set(shoppingCart.map(x=>String(x.storeId))).size!==1){status.textContent="لا يمكن جمع منتجات من أكثر من متجر في طلب واحد.";return;}
  const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
- if(!uuidPattern.test(String(shoppingCart[0].storeId))||shoppingCart.some(x=>!uuidPattern.test(String(x.id)))){
-  const manualText="مرحباً أحمدكو، أريد الطلب من "+shoppingCart[0].store+".\\n"+shoppingCart.map(x=>x.name+" × "+x.qty+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")).join("\\n")+"\\nعنوان التسليم: "+document.getElementById("buyerAddress").value.trim();
-  whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(manualText);whatsappLink.hidden=false;
-  status.textContent="هذا المنيو معروض مؤقتاً وليس مسجلاً بالكامل في قاعدة طلبات المطعم. لتجنب إنشاء طلب ناقص، أرسل طلبك عبر زر واتساب أدناه حتى تُسجّل إدارة أحمدكو الأصناف رسمياً.";
-  return;
- }
+ // Always save the delivery request first. Only create a restaurant-inbox order
+ // when both the store and every product are real database UUIDs.
+ const canCreateStoreOrder=uuidPattern.test(String(shoppingCart[0].storeId))&&
+  shoppingCart.every(x=>uuidPattern.test(String(x.id)));
  const name=document.getElementById("buyerName").value.trim();
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
@@ -424,23 +422,28 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
   const feeText=feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع مكتب أحمدكو";
   let restaurantOrderId=null,restaurantError="";
-  try{
-   const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
-    method:"POST",
-    headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify({
-     p_store_id:shoppingCart[0].storeId,
-     p_delivery_order_id:saved.order_id,
-     p_items:shoppingCart.map(x=>({product_id:x.id,quantity:x.qty})),
-     p_customer_name:name,p_customer_phone:phone,p_delivery_address:address,p_notes:customerNotes||null
-    })
-   });
-   const restaurantBody=await restaurantResponse.json().catch(()=>null);
-   if(!restaurantResponse.ok)throw new Error(restaurantBody?.message||restaurantBody?.details||("تعذر إرسال الطلب للمطعم ("+restaurantResponse.status+")."));
-   const restaurantSaved=Array.isArray(restaurantBody)?restaurantBody[0]:restaurantBody;
-   restaurantOrderId=restaurantSaved?.store_order_id||null;
-   if(!restaurantOrderId)throw new Error("لم يرجع النظام رقم طلب المطعم.");
-  }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
+  if(canCreateStoreOrder){
+   try{
+    const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
+     method:"POST",
+     headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+     body:JSON.stringify({
+      p_store_id:shoppingCart[0].storeId,
+      p_delivery_order_id:saved.order_id,
+      p_items:shoppingCart.map(x=>({product_id:x.id,quantity:x.qty})),
+      p_customer_name:name,p_customer_phone:phone,p_delivery_address:address,p_notes:customerNotes||null
+     })
+    });
+    const restaurantBody=await restaurantResponse.json().catch(()=>null);
+    if(!restaurantResponse.ok)throw new Error(restaurantBody?.message||restaurantBody?.details||("تعذر إرسال الطلب للمطعم ("+restaurantResponse.status+")."));
+    const restaurantSaved=Array.isArray(restaurantBody)?restaurantBody[0]:restaurantBody;
+    restaurantOrderId=restaurantSaved?.store_order_id||null;
+    if(!restaurantOrderId)throw new Error("لم يرجع النظام رقم طلب المطعم.");
+ 
+   }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
+  }else{
+   restaurantError="تم حفظ طلب التوصيل، لكن أصناف هذا المنيو غير منشورة بعد في قاعدة بيانات المطعم؛ أرسل إشعار واتساب ليصل الطلب للمكتب.";
+  }
   const message="طلب أحمدكو رقم: "+saved.order_id+"\n"+(restaurantOrderId?"رقم طلب المطعم: "+restaurantOrderId+"\n":"")+
    "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
   whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
@@ -463,7 +466,8 @@ function storeCard(store){
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
  const typeName=({restaurant:"مطعم",store:"مطعم",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم";
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ const menuTag=storeHasMenu(store)?'<span class="menu-tag">📋 منيو متوفر</span>':'<span class="menu-tag no-menu">المنيو غير منشور</span>';
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
  const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
  button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
  return card;
