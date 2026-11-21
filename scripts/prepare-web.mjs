@@ -11,6 +11,7 @@ const files = [
   "auto-o2-menu.js",
   "manifest.webmanifest",
   "service-worker.js",
+  "live-app.js",
   "icon.svg"
 ];
 
