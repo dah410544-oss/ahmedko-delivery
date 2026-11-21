@@ -284,12 +284,12 @@ section{background:#f4f7fb}
  <a href="customer.html"><span>📦</span><small>طلباتي</small></a>
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
-<section id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
+<div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
  <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>اسأل عن المطاعم والوجبات والطلبات</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
  <div id="ahmedkoAssistantMessages" class="assistant-messages" role="log" aria-live="polite"><div class="assistant-bubble bot">أهلاً بك في أحمدكو! أستطيع مساعدتك في العثور على مطعم أو وجبة، وشرح طريقة الطلب والتتبع.</div></div>
  <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم">المطاعم</button><button type="button" data-assistant-query="التاج">التاج</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button></div>
  <form id="ahmedkoAssistantForm" class="assistant-form"><input id="ahmedkoAssistantInput" type="text" maxlength="240" placeholder="اكتب سؤالك هنا…" autocomplete="off" aria-label="اكتب سؤالك للمساعد"><button type="submit">إرسال</button></form>
-</section>
+</div>
 <button id="ahmedkoAssistantToggle" class="assistant-toggle" type="button" aria-expanded="false">💬 مساعد أحمدكو</button>
 <button class="cart-fab" id="cartOpen" type="button">🛒 سلة الطلب <span class="cart-count" id="cartCount">0</span></button>
 <div class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-label="سلة المشتريات">
@@ -1014,7 +1014,7 @@ function assistantReply(raw){
   assistantLink(bubble,"التواصل عبر واتساب","https://wa.me/972598407547");
   return;
  }
- if(q.includes("مطاعم")||q.includes("منيو")||q==="مطعم"||q.includes("وجبات")){
+ if(q==="مطاعم"||q==="منيو"||q==="مطعم"||q==="وجبات"||q==="اكل"){
   const list=stores.filter(s=>s&&s.store_name).slice(0,7);
   const bubble=assistantBubble(list.length?"هذه بعض المطاعم والمتاجر المتاحة في كتالوج أحمدكو:":"جارٍ تحميل قائمة المطاعم. جرّب بعد لحظات.");
   list.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
