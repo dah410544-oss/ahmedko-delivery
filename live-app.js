@@ -53,7 +53,7 @@
       try{
         const reg=await navigator.serviceWorker.register(new URL("./service-worker.js",document.baseURI),{updateViaCache:"none"});
         const check=()=>reg.update().catch(()=>{});
-        check();setInterval(check,60000);
+        check();setInterval(check,15000);
         document.addEventListener("visibilitychange",()=>{if(!document.hidden)check();});
       }catch(e){console.warn("AHMEDKO service worker:",e);}
     });
