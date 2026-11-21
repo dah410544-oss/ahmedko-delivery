@@ -28,11 +28,13 @@ for Ahmedko Delivery.
 - Responsive mobile-first interface
 
 ### Technology Plan
-- Flutter
-- Supabase
-- Web Admin Dashboard
-- GitHub
-- Android APK
+- Capacitor 8 + Android (current implementation; WebView-based app shell)
+- Responsive Arabic RTL web application (customer, driver, restaurant and admin pages)
+- Supabase (database, authentication and protected RPC workflows)
+- GitHub Actions + GitHub Pages (web deployment)
+- Android APK/AAB build workflow (requires the existing signing keystore secrets)
+- Firebase Cloud Messaging planned for native Android push (Firebase project and google-services.json still required)
+- Supabase Edge Functions planned for secure notification dispatch
 
 ### Repository
 dah410544-oss/ahmedko-delivery
