@@ -1,2 +1,38 @@
-# ahmedko-delivery
-AHMEDKO DELIVERY – Logistics Management System
+# AHMEDKO DELIVERY
+
+منصة أحمدكو ديلفري للطلبات والتوصيل والمطاعم والنقل والخدمات اللوجستية.
+
+## الروابط
+- الموقع والتطبيق: https://dah410544-oss.github.io/ahmedko-delivery/
+- المستودع: https://github.com/dah410544-oss/ahmedko-delivery
+
+## مكونات المشروع
+- `index.html`: واجهة العملاء والمطاعم والمنيوهات.
+- `customer.html`: متابعة طلبات العملاء.
+- `driver.html`: بوابة السائقين.
+- `restaurant.html`: بوابة المطاعم والشركاء.
+- `admin.html`: لوحة الإدارة.
+- `service-worker.js` و`live-app.js`: دعم التثبيت والتخزين المؤقت وتحديث الموقع.
+- `supabase/`: ملفات SQL التهيئة والمخطط.
+- `capacitor.config.json`: إعداد غلاف Android الحالي بمعرّف `com.ahmedko.delivery`.
+
+## التطوير والتحقق
+```bash
+npm install
+npm run build:web
+npm run validate:release
+npm run check:javascript
+```
+
+النشر إلى GitHub Pages يبدأ تلقائياً عند دفع تعديل إلى فرع `main`. يجب انتظار نجاح خطوات البناء والنشر قبل اعتبار النسخة محدثة على الرابط العام.
+
+## إصدار Android
+راجع [ANDROID_RELEASE_SETUP.md](ANDROID_RELEASE_SETUP.md). يتطلب الإصدار الرسمي مفاتيح التوقيع الأربعة المحفوظة في GitHub Actions Secrets. لا تنشئ مفتاح توقيع جديداً إذا كان هناك إصدار سابق مثبت؛ يجب الاحتفاظ بالمفتاح نفسه لضمان قبول التحديث.
+
+## الإشعارات
+عامل الخدمة يتضمن استقبال إشعارات Web Push، لكن الإرسال الفعلي غير مفعّل بعد. يحتاج ذلك إلى إعداد Firebase Cloud Messaging وملف `google-services.json` للتطبيق الأصلي، مع خدمة خلفية آمنة ومفاتيح إرسال محفوظة كأسرار، إضافة إلى موافقة المستخدم على الإشعارات. لا تضع مفاتيح خاصة أو ملفات توقيع في المستودع.
+
+## ملاحظات الجاهزية
+- تحديث ملفات الموقع لا يتطلب تثبيت APK جديد عند فتح الموقع/التطبيق مع الإنترنت.
+- تغييرات Android الأصلية، مثل إضافة Firebase أو مكونات Capacitor، تتطلب بناء APK/AAB جديداً.
+- نجاح النشر أو البناء لا يغني عن اختبار طلب فعلي وحسابات الشركاء على قاعدة البيانات.
