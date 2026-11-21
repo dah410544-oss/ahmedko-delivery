@@ -38,7 +38,7 @@ section{padding:42px 6%;background:var(--bg)}.heading{margin-bottom:20px}.headin
 .toolbar{display:flex;gap:9px;margin:18px 0}.search{width:100%;min-width:0;border:1px solid #294466;border-radius:13px;padding:14px;background:#102849;color:#fff;outline:none}.search::placeholder{color:#9fb0c6}.search:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #f5c32b20}
 .store-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.store{background:linear-gradient(145deg,#102849,#0c2240);border:1px solid #294466;border-radius:18px;padding:17px;min-width:0;box-shadow:0 8px 22px #0002;transition:transform .2s,border-color .2s}.store:hover{transform:translateY(-3px);border-color:#F5C32B88}.store h3{margin:0 0 7px;font-size:17px;color:#fff}.meta{font-size:12px;color:#B9C7D9;line-height:2}
 .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.small{font-size:12px;padding:9px 11px;border-radius:9px;text-decoration:none;border:0;display:inline-block;font-weight:bold;cursor:pointer;transition:transform .2s}
-.menu{margin-top:13px;padding:13px;border-radius:13px;background:#071A35;border:1px solid #294466;color:#fff}.menu h4{margin:0 0 10px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{background:#102849;border:1px solid #294466;border-radius:12px;padding:11px;min-width:0}.product h5{margin:5px 0;font-size:13px;color:#fff}.product p{font-size:11px;color:var(--muted);margin:0}.price{font-weight:900;color:var(--yellow);margin-top:7px}
+.menu-tag{display:inline-block;margin:3px 0 8px;padding:3px 9px;border-radius:20px;background:#f5c32b22;border:1px solid #f5c32b66;color:#f5c32b;font-size:11px;font-weight:bold}.menu-tag.no-menu{background:#ffffff0b;border-color:#ffffff22;color:#b9c7d9}.menu{margin-top:13px;padding:13px;border-radius:13px;background:#071A35;border:1px solid #294466;color:#fff}.menu h4{margin:0 0 10px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{background:#102849;border:1px solid #294466;border-radius:12px;padding:11px;min-width:0}.product h5{margin:5px 0;font-size:13px;color:#fff}.product p{font-size:11px;color:var(--muted);margin:0}.price{font-weight:900;color:var(--yellow);margin-top:7px}
 .notice{background:#102849;border:1px solid #294466;border-radius:14px;padding:17px;text-align:center;color:var(--muted);font-size:13px}.notice.error{color:#ffd5d5;background:#3a1823;border-color:#7e3445}
 .contact{background:linear-gradient(130deg,#102849,#071A35);border:1px solid #294466;border-radius:22px;margin:14px 6% 34px;padding:27px;box-shadow:0 12px 30px #0003}.contact p{color:#d2dbea;font-size:13px}.contact a{color:var(--yellow);text-decoration:none}
 .contact a.btn.yellow{color:var(--navy)!important;}
@@ -61,11 +61,13 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 .add-cart{display:block;width:100%;border:0;border-radius:9px;padding:10px;background:var(--yellow);color:var(--navy);font-weight:900;cursor:pointer;margin-top:8px}
 @media(max-width:520px){.cart-form{grid-template-columns:1fr}.cart-form textarea{grid-column:auto}.cart-box{padding:16px}}
 
+@media (display-mode: standalone){#ahmedkoInstallBtn{display:none!important}}
 </style>
 </head>
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
+ <button id="ahmedkoInstallBtn" class="small" type="button" hidden aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
@@ -78,7 +80,6 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
  <a class="btn yellow" href="customer.html">اطلب توصيلاً وتابع طلبك</a>
  <a class="btn" style="border:1px solid #ffffff66;color:white" href="#market">تصفح المطاعم والمنيو</a>
  <a class="btn" style="border:1px solid #ffffff66;color:white" href="https://wa.me/972598407547" target="_blank" rel="noopener">اطلب عبر واتساب</a>
- <button class="btn yellow" id="installAppBtn" type="button" style="border:0;cursor:pointer">تثبيت تطبيق أحمدكو</button>
  <div class="actions" style="position:relative;z-index:2;display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="admin.html">بوابة الإدارة</a>
   <a class="btn" style="border:1px solid #ffffff66;color:white" href="driver.html">بوابة السائقين / انضم كسائق</a>
@@ -155,6 +156,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 </div>
 
 <footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة · <a href="privacy.html">سياسة الخصوصية</a></footer>
+<script src="auto-o2-menu.js"></script>
 <script>
 "use strict";
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
@@ -194,6 +196,64 @@ const altajStoreId="local-altaj";
 const autoStoreId="local-auto";
 const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true},{"id":autoStoreId,"store_name":"مطعم أوتو","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true}];
 
+
+// Menus supplied by the restaurant owner: Muhannad (image menu) and Al-Baba (written menu).
+const muhandStoreId="local-muhannad";
+const babaStoreId="local-baba";
+verifiedLocalPlaces.push(
+ {id:muhandStoreId,store_name:"مطبخ ومطعم مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:babaStoreId,store_name:"ملحمة ومطعم البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
+);
+const muhandMenuData=[
+ ["الشاورما",[
+  ["كيلو شاورما","120"],["صحن شاورما وجبة","25"],["صحن شاورما نصف كيلو","50"],
+  ["فرشوحة عادي","15"],["فرشوحة دبل عادي","17"],["فرشوحة دبل لحمة","25"],
+  ["فرشوحة دبل دبل","27"],["فرشوحة صاروخ","30"],["فرشوحة عادي بالجبنة","20"],["خبز شاورما","10"]
+ ]],
+ ["الوجبات",[
+  ["وجبة سوري","35"],["وجبة صفيحة","40"],["وجبة أسوار بالجبنة","40"],
+  ["وجبة شاورما صغير","35"],["وجبة شاورما لشخصين","70"],["وجبة العرسان","150"]
+ ]],
+ ["المشاوي",[["المشاوي غير متوفرة حالياً","غير متوفر حالياً"]]],
+ ["السلطات والمقبلات",[
+  ["مايونيز","10"],["سلطة","10"],["بكرتاتي","10"],["فتوشة","10"],
+  ["ملوخيا أحمر","10"],["كول سلو","10"],["سلطة ساخنة (متنوع)","10"]
+ ]],
+ ["المشارب",[["مشروب غازي","حسب المتوفر"],["مياه معدنية","حسب المتوفر"]]]
+];
+const babaMenuData=[
+ ["الشاورما",[
+  ["كيلو شاورما","90"],["فرشوحة شاورما عادي","12"],["فرشوحة دبل عادي","15"],
+  ["فرشوحة دبل لحمة","20"],["فرشوحة دبل دبل","25"]
+ ]],
+ ["المشاوي",[
+  ["كيلو كباب","55"],["كيلو شيش طاووق فخد","45"],["كيلو جناح مشوي","18"],
+  ["كيلو كبدة دجاج مشوي","35"],["كيلو كبدة عجل","50"],["كيلو مشكل","40"],
+  ["وجبة عرسان","60"],["فرشوحة كباب","7"],["فرشوحة شيش","9"],["فرشوحة شيش دبل","12"]
+ ]]
+];
+function makeLocalMenu(storeId,data){
+ const cats=data.map((entry,i)=>({id:storeId+"-cat-"+i,store_id:storeId,name:entry[0]}));
+ const items=data.flatMap((entry,i)=>entry[1].map((item,j)=>({
+  id:storeId+"-product-"+i+"-"+j,store_id:storeId,category_id:storeId+"-cat-"+i,
+  name:item[0],price:item[1]===""||item[1]==="حسب المتوفر"||item[1]==="غير متوفر حالياً"?null:item[1],
+  price_display:item[1]&&item[1]!=="حسب المتوفر"&&item[1]!=="غير متوفر حالياً"?item[1]+" ₪":(item[1]==="حسب المتوفر"?"حسب المتوفر":"غير متوفر حالياً"),
+  is_available:item[1]!=="غير متوفر حالياً"
+ })));
+ return {cats,items};
+}
+function mergeLocalMenu(storeId,data){
+ const generated=makeLocalMenu(storeId,data),categoryMap={};
+ generated.cats.forEach(cat=>{
+  const existing=categories.find(c=>String(c.store_id)===String(storeId)&&normalize(c.name)===normalize(cat.name));
+  if(existing)categoryMap[cat.id]=existing.id;
+  else{categories.push(cat);categoryMap[cat.id]=cat.id;}
+ });
+ generated.items.forEach(item=>{
+  const exists=products.some(p=>String(p.store_id)===String(storeId)&&normalize(p.name)===normalize(item.name));
+  if(!exists)products.push({...item,category_id:categoryMap[item.category_id]||item.category_id});
+ });
+}
 const altajMenuData=[
  ["شاورما",[
   ["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]
@@ -250,7 +310,8 @@ function waLink(store,product){
 
 function productHTML(store,p){
  const price=p.price_display?esc(p.price_display):((p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪");
- return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><button type="button" class="add-cart" data-product-id="'+esc(p.id)+'" data-store-id="'+esc(p.store_id)+'">أضف إلى السلة</button></article>';
+ const unavailable=p.is_available===false;
+ return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+(unavailable?"غير متوفر حالياً":price)+'</div><button type="button" class="add-cart" data-product-id="'+esc(p.id)+'" data-store-id="'+esc(p.store_id)+'" '+(unavailable?"disabled":"")+'>'+(unavailable?"غير متوفر حالياً":"أضف إلى السلة")+'</button></article>';
 }
 
 function renderMenu(store,holder){
@@ -259,7 +320,16 @@ function renderMenu(store,holder){
  holder.className="menu";
  if(!list.length){holder.innerHTML="<p>لا توجد منتجات أو أصناف منشورة لهذا المكان حالياً. تواصل معنا لطلب المساعدة.</p>";return;}
  let html="<h4>المنيو والمنتجات</h4>";const grouped=new Set();
- cats.forEach(c=>{const items=list.filter(p=>String(p.category_id)===String(c.id));if(!items.length)return;grouped.add(String(c.id));html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';});
+ const isMuhannad=normalize(store.store_name).includes(normalize("مهند"));
+ cats.forEach(c=>{
+  const items=list.filter(p=>String(p.category_id)===String(c.id));
+  if(!items.length){
+   if(isMuhannad&&normalize(c.name).includes(normalize("المشاوي")))html+='<h5>'+esc(c.name||"المشاوي")+'</h5><p class="notice">المشاوي غير متوفرة حالياً لدى المطعم.</p>';
+   return;
+  }
+  grouped.add(String(c.id));
+  html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';
+ });
  const rest=list.filter(p=>!p.category_id||!grouped.has(String(p.category_id)));
  if(rest.length)html+='<h5>أصناف أخرى</h5><div class="products">'+rest.map(p=>productHTML(store,p)).join("")+'</div>';
  holder.innerHTML=html;
@@ -328,12 +398,12 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  if(!shoppingCart.length){status.textContent="السلة فارغة.";return;}
  if(new Set(shoppingCart.map(x=>String(x.storeId))).size!==1){status.textContent="لا يمكن جمع منتجات من أكثر من متجر في طلب واحد.";return;}
  const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
- if(!uuidPattern.test(String(shoppingCart[0].storeId))||shoppingCart.some(x=>!uuidPattern.test(String(x.id)))){
-  const manualText="مرحباً أحمدكو، أريد الطلب من "+shoppingCart[0].store+".\\n"+shoppingCart.map(x=>x.name+" × "+x.qty+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")).join("\\n")+"\\nعنوان التسليم: "+document.getElementById("buyerAddress").value.trim();
-  whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(manualText);whatsappLink.hidden=false;
-  status.textContent="هذا المنيو معروض مؤقتاً وليس مسجلاً بالكامل في قاعدة طلبات المطعم. لتجنب إنشاء طلب ناقص، أرسل طلبك عبر زر واتساب أدناه حتى تُسجّل إدارة أحمدكو الأصناف رسمياً.";
-  return;
- }
+ // Always save the delivery request first. Only create a restaurant-inbox order
+ // when both the store and every product are real database UUIDs.
+ const catalogIdsAreValid=uuidPattern.test(String(shoppingCart[0].storeId))&&
+  shoppingCart.every(x=>uuidPattern.test(String(x.id)));
+ const allItemsPriced=shoppingCart.every(x=>x.price!==null&&Number.isFinite(Number(x.price)));
+ const canCreateStoreOrder=catalogIdsAreValid&&allItemsPriced;
  const name=document.getElementById("buyerName").value.trim();
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
@@ -367,23 +437,30 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
   const feeText=feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع مكتب أحمدكو";
   let restaurantOrderId=null,restaurantError="";
-  try{
-   const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
-    method:"POST",
-    headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify({
-     p_store_id:shoppingCart[0].storeId,
-     p_delivery_order_id:saved.order_id,
-     p_items:shoppingCart.map(x=>({product_id:x.id,quantity:x.qty})),
-     p_customer_name:name,p_customer_phone:phone,p_delivery_address:address,p_notes:customerNotes||null
-    })
-   });
-   const restaurantBody=await restaurantResponse.json().catch(()=>null);
-   if(!restaurantResponse.ok)throw new Error(restaurantBody?.message||restaurantBody?.details||("تعذر إرسال الطلب للمطعم ("+restaurantResponse.status+")."));
-   const restaurantSaved=Array.isArray(restaurantBody)?restaurantBody[0]:restaurantBody;
-   restaurantOrderId=restaurantSaved?.store_order_id||null;
-   if(!restaurantOrderId)throw new Error("لم يرجع النظام رقم طلب المطعم.");
-  }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
+  if(canCreateStoreOrder){
+   try{
+    const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
+     method:"POST",
+     headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+     body:JSON.stringify({
+      p_store_id:shoppingCart[0].storeId,
+      p_delivery_order_id:saved.order_id,
+      p_items:shoppingCart.map(x=>({product_id:x.id,quantity:x.qty})),
+      p_customer_name:name,p_customer_phone:phone,p_delivery_address:address,p_notes:customerNotes||null
+     })
+    });
+    const restaurantBody=await restaurantResponse.json().catch(()=>null);
+    if(!restaurantResponse.ok)throw new Error(restaurantBody?.message||restaurantBody?.details||("تعذر إرسال الطلب للمطعم ("+restaurantResponse.status+")."));
+    const restaurantSaved=Array.isArray(restaurantBody)?restaurantBody[0]:restaurantBody;
+    restaurantOrderId=restaurantSaved?.store_order_id||null;
+    if(!restaurantOrderId)throw new Error("لم يرجع النظام رقم طلب المطعم.");
+ 
+   }catch(err){restaurantError=err.message||"تعذر تسجيل الطلب في صندوق المطعم.";}
+  }else{
+   restaurantError=!catalogIdsAreValid
+    ?"تم حفظ طلب التوصيل، لكن أصناف هذا المنيو غير منشورة بعد في قاعدة بيانات المطعم؛ أرسل إشعار واتساب ليصل الطلب للمكتب."
+    :"تم حفظ طلب التوصيل، لكن يوجد صنف بسعر غير محدد (حسب المتوفر)، لذلك أرسل إشعار واتساب ليؤكد المطعم السعر قبل تسجيل طلبه.";
+  }
   const message="طلب أحمدكو رقم: "+saved.order_id+"\n"+(restaurantOrderId?"رقم طلب المطعم: "+restaurantOrderId+"\n":"")+
    "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
   whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
@@ -406,15 +483,24 @@ function storeCard(store){
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
  const typeName=({restaurant:"مطعم",store:"مطعم",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم";
  const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3><div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ const menuTag=storeHasMenu(store)?'<span class="menu-tag">📋 منيو متوفر</span>':'<span class="menu-tag no-menu">المنيو غير منشور</span>';
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
  const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
  button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
  return card;
 }
+function storeHasMenu(store){
+ return categories.some(c=>String(c.store_id)===String(store.id)) ||
+        products.some(p=>String(p.store_id)===String(store.id));
+}
+function menuFirst(list){
+ return [...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
+   String(a.store_name||"").localeCompare(String(b.store_name||""),"ar"));
+}
 function render(list){
  grid.innerHTML="";
  if(!list.length){setStatus("لا توجد مطاعم أو متاجر نشطة منشورة حالياً. ستظهر هنا تلقائياً عند إضافتها وتفعيلها في قاعدة بيانات أحمدكو.");return;}
- statusBox.hidden=true;list.forEach(s=>grid.appendChild(storeCard(s)));
+ statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
 function search(){
  const q=normalize(searchBox.value);if(!q){render(stores);return;}
@@ -422,7 +508,7 @@ function search(){
  const matchingProducts=products.filter(p=>normalize([p.name,p.description].join(" ")).includes(q));
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لا توجد نتائج مطابقة. جرّب كلمة أخرى.");return;}
- statusBox.hidden=true;matchingStores.forEach(s=>grid.appendChild(storeCard(s)));
+ statusBox.hidden=true;menuFirst(matchingStores).forEach(s=>grid.appendChild(storeCard(s)));
  matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المتجر: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
 }
 async function init(){
@@ -436,7 +522,15 @@ async function init(){
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
- const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
+ const muhandExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
+  const babaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
+  const muhandId=muhandExisting?muhandExisting.id:muhandStoreId;
+  const babaId=babaExisting?babaExisting.id:babaStoreId;
+  if(!muhandExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===muhandStoreId));
+  if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
+  mergeLocalMenu(muhandId,muhandMenuData);
+  mergeLocalMenu(babaId,babaMenuData);
+  const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
   const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
   if(!tajExisting){
    const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);
@@ -457,59 +551,176 @@ async function init(){
    const preferred=autoMatches.find(s=>s.id==="d404b052-08e6-4f99-9749-dac2226d5968")||autoMatches.find(s=>s.id&&!String(s.id).startsWith("local-"))||autoMatches[0];
    stores=stores.filter(s=>!(normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"))||s===preferred);
   }
+  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
 searchBox.addEventListener("input",search);
 init();
 </script>
+<style>
+html,body{overscroll-behavior-y:contain}
+#ahmedkoPullRefresh{position:fixed;top:0;left:50%;z-index:9999;transform:translate(-50%,-110%);opacity:0;pointer-events:none;display:flex;align-items:center;gap:9px;padding:9px 17px;border:1px solid #f5c32b88;border-radius:0 0 16px 16px;background:#102849;color:#fff;font: bold 13px Arial,Tahoma,sans-serif;box-shadow:0 8px 22px #0005;transition:transform .16s ease,opacity .16s ease}
+#ahmedkoPullRefresh.visible{opacity:1}
+#ahmedkoPullRefresh .pullIcon{display:inline-block;color:#f5c32b;font-size:20px;line-height:1}
+#ahmedkoPullRefresh.loading .pullIcon{animation:ahmedkoSpin .8s linear infinite}
+@keyframes ahmedkoSpin{to{transform:rotate(360deg)}}
+</style>
 <script>
-(() => {
-  "use strict";
-  const installButton = document.getElementById("installAppBtn");
-  if (!installButton) return;
-  let installPrompt = null;
-  const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  const nativeAndroidApp = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
-  const nativeLocalApp = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  if (standalone || nativeAndroidApp || nativeLocalApp) {
-    installButton.hidden = true;
-    return;
+
+async function refreshAhmedkoNow(){
+ const text=document.querySelector("#ahmedkoPullRefresh .pullText");
+ const icon=document.querySelector("#ahmedkoPullRefresh .pullIcon");
+ const indicator=document.getElementById("ahmedkoPullRefresh");
+ if(text)text.textContent="جارٍ فحص التحديثات وتحميل أحمدكو…";
+ if(icon)icon.textContent="⟳";
+ if(indicator)indicator.classList.add("loading","visible");
+ let reloading=false;
+ const reload=()=>{if(reloading)return;reloading=true;location.reload();};
+ try{
+  if("serviceWorker" in navigator){
+   const reg=await navigator.serviceWorker.getRegistration();
+   if(reg){
+    await reg.update().catch(()=>{});
+    if(reg.waiting){reg.waiting.postMessage({type:"SKIP_WAITING"});}
+    if(reg.installing){
+     await new Promise(resolve=>{
+      const worker=reg.installing;
+      if(!worker||worker.state==="activated"){resolve();return;}
+      worker.addEventListener("statechange",()=>{if(worker.state==="activated"||worker.state==="redundant")resolve();});
+      setTimeout(resolve,1800);
+     });
+    }
+   }
   }
-  window.addEventListener("beforeinstallprompt", event => {
-    event.preventDefault();
-    installPrompt = event;
-    installButton.textContent = "تثبيت تطبيق أحمدكو";
-    installButton.hidden = false;
-  });
-  installButton.addEventListener("click", async () => {
-    if (!installPrompt) {
-      alert("لتثبيت أحمدكو على أندرويد: افتح القائمة ⋮ في متصفح Chrome ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» إذا ظهر الخيار. تأكد من فتح الموقع عبر HTTPS.");
-      return;
-    }
-    installButton.disabled = true;
-    try {
-      await installPrompt.prompt();
-      await installPrompt.userChoice;
-      installPrompt = null;
-    } catch (error) {
-      console.warn("تعذر إكمال التثبيت من نافذة المتصفح:", error);
-    } finally {
-      installButton.disabled = false;
-    }
-  });
-  window.addEventListener("appinstalled", () => {
-    installButton.hidden = true;
-    installPrompt = null;
-  });
+ }catch(error){console.warn("تعذر فحص تحديث أحمدكو:",error);}
+ setTimeout(reload,350);
+}
+
+(()=>{
+ let startY=0,pulling=false,armed=false,refreshing=false;
+ const threshold=70;
+ const indicator=document.createElement("div");
+ indicator.id="ahmedkoPullRefresh";
+ indicator.innerHTML='<span class="pullIcon">↓</span><span class="pullText">اسحب للأسفل للتحديث</span>';
+ if(document.body) document.body.appendChild(indicator);
+ function show(distance){
+  const progress=Math.min(distance/threshold,1);
+  indicator.classList.add("visible");
+  indicator.style.transform="translate(-50%,"+Math.max(0,Math.min(22,distance*.28))+"px)";
+  indicator.querySelector(".pullIcon").textContent=progress>=1?"↻":"↓";
+  indicator.querySelector(".pullText").textContent=progress>=1?"اترك الشاشة للتحديث":"اسحب للأسفل للتحديث";
+ }
+ window.addEventListener("touchstart",event=>{
+  if(refreshing||event.touches.length!==1||window.scrollY>0)return;
+  const target=event.target;
+  if(target&&target.closest&&target.closest("input,textarea,select,[contenteditable=true]"))return;
+  startY=event.touches[0].clientY;
+  pulling=startY<220;
+  armed=false;
+ },{passive:true});
+ window.addEventListener("touchmove",event=>{
+  if(!pulling||refreshing||event.touches.length!==1||window.scrollY>0)return;
+  const distance=event.touches[0].clientY-startY;
+  if(distance<=0){indicator.classList.remove("visible");return;}
+  show(distance);
+  armed=distance>=threshold;
+ },{passive:true});
+ function finish(){
+  if(!pulling)return;
+  pulling=false;
+  if(armed&&!refreshing){
+   refreshing=true;indicator.classList.add("visible","loading");
+   indicator.style.transform="translate(-50%,0)";
+   indicator.querySelector(".pullIcon").textContent="⟳";
+   indicator.querySelector(".pullText").textContent="جارٍ تحديث أحمدكو…";
+   refreshAhmedkoNow();
+  }else{
+   indicator.classList.remove("visible");
+   indicator.style.transform="translate(-50%,-110%)";
+  }
+  armed=false;
+ }
+ window.addEventListener("touchend",finish,{passive:true});
+ window.addEventListener("touchcancel",finish,{passive:true});
 })();
+</script>
+<script>
+(()=>{
+ const button=document.getElementById("ahmedkoInstallBtn");
+ if(!button)return;
+ let deferredPrompt=null;
+ const isNativeApp=!!(window.Capacitor&&((typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform())||(typeof window.Capacitor.getPlatform==="function"&&window.Capacitor.getPlatform()==="android")));\n const isInstalled=()=>isNativeApp||window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+ const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
+ const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
+ if(isInstalled()){hideButton();return;}
+ // Keep the install button visible on the public website, even after an install.
+ showButton();
+ window.addEventListener("beforeinstallprompt",event=>{
+  if(isInstalled())return;
+  event.preventDefault();
+  deferredPrompt=event;
+  showButton();
+ });
+ button.addEventListener("click",async()=>{
+  if(isInstalled()){hideButton();return;}
+  if(!deferredPrompt){
+   button.textContent="للتثبيت: افتح قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية";
+   return;
+  }
+  const promptEvent=deferredPrompt;
+  deferredPrompt=null;
+  button.disabled=true;
+  button.textContent="جارٍ فتح التثبيت…";
+  try{
+   await promptEvent.prompt();
+   await promptEvent.userChoice;
+   button.textContent="⬇ تثبيت أحمدكو";
+   showButton();
+  }catch(error){
+   button.textContent="⬇ تثبيت أحمدكو";
+   console.warn("تعذر بدء تثبيت أحمدكو:",error);
+  }finally{button.disabled=false;}
+ });
+ window.addEventListener("appinstalled",()=>{deferredPrompt=null;});
+})();
+</script>
+<script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" }).catch(error => {
-      console.warn("تعذر تسجيل خدمة التطبيق:", error);
-    });
+  let refreshingForNewVersion = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshingForNewVersion) return;
+    refreshingForNewVersion = true;
+    location.reload();
+  });
+
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" });
+      const checkForUpdate = () => reg.update().catch(() => {});
+      checkForUpdate();
+      // Check periodically while the app remains open, and immediately when it returns to foreground.
+      window.setInterval(checkForUpdate, 60 * 1000);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) checkForUpdate();
+      });
+      reg.addEventListener("updatefound", () => {
+        const worker = reg.installing;
+        if (!worker) return;
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) {
+            worker.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+      if (reg.waiting && navigator.serviceWorker.controller) {
+        reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+    } catch (error) {
+      console.warn("تعذر تسجيل خدمة تحديث أحمدكو:", error);
+    }
   });
 }
-</script>
 </body>
 </html>
