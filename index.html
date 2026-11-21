@@ -67,7 +67,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
+ <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت تطبيق أحمدكو</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
@@ -669,7 +669,7 @@ async function refreshAhmedkoNow(){
  window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   deferredPrompt=event;
-  button.textContent="⬇ تثبيت أحمدكو";
+  button.textContent="⬇ تثبيت تطبيق أحمدكو";
   showButton();
  });
  button.addEventListener("click",async()=>{
@@ -684,9 +684,9 @@ async function refreshAhmedkoNow(){
   try{
    await promptEvent.prompt();
    const choice=await promptEvent.userChoice;
-   button.textContent=choice&&choice.outcome==="accepted"?"تم طلب تثبيت أحمدكو":"⬇ تثبيت أحمدكو";
+   button.textContent=choice&&choice.outcome==="accepted"?"تم طلب تثبيت تطبيق أحمدكو":"⬇ تثبيت تطبيق أحمدكو";
   }catch(error){
-   button.textContent="⬇ تثبيت أحمدكو";
+   button.textContent="⬇ تثبيت تطبيق أحمدكو";
    console.warn("تعذر بدء تثبيت أحمدكو:",error);
   }finally{button.disabled=false;}
  });
