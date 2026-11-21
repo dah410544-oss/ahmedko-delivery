@@ -754,7 +754,7 @@ async function init(){
  if(results[0].status==="fulfilled"){stores=results[0].value;saveCatalogCache("stores",stores);}else console.error("Stores:",results[0].reason);
  if(results[1].status==="fulfilled"){categories=results[1].value;saveCatalogCache("categories",categories);}else console.error("Categories:",results[1].reason);
  if(results[2].status==="fulfilled"){products=results[2].value;saveCatalogCache("products",products);}else console.error("Products:",results[2].reason);
- const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").replace(/^ال/,"").replace(/\\s+/g," ").trim();
+ const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\s*)+/,"").replace(/^ال/,"").replace(/\s+/g," ").trim();
  const canonicalByKey=new Map(canonicalRestaurantPlaces.map(place=>[restaurantNameKey(place.store_name),place.store_name]));
  stores.forEach(store=>{const canonicalName=canonicalByKey.get(restaurantNameKey(store.store_name));if(canonicalName)store.store_name=canonicalName;});
  canonicalRestaurantPlaces.forEach(place=>{const key=restaurantNameKey(place.store_name);if(!stores.some(store=>restaurantNameKey(store.store_name)===key))stores.push({...place});});
