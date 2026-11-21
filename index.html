@@ -652,10 +652,19 @@ async function refreshAhmedkoNow(){
  if(!button)return;
  let deferredPrompt=null;
  const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
- const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
- const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
- // Show the install button in every normal browser tab, even if the app is installed elsewhere.
- if(isStandalone()){hideButton();return;}
+ const isNativeCapacitor=()=>{
+  const cap=window.Capacitor;
+  const bridgeDetected=!!(cap&&(
+   (typeof cap.isNativePlatform==="function"&&cap.isNativePlatform())||
+   (typeof cap.getPlatform==="function"&&cap.getPlatform()!=="web")||
+   (typeof cap.platform==="string"&&cap.platform!=="web")
+  ));
+  return bridgeDetected||/Capacitor/i.test(navigator.userAgent)||location.protocol==="capacitor:";
+ };
+ const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");button.style.display="none";};
+ const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");button.style.display="";};
+ // The install action belongs only on the public website, never inside the native app or installed PWA.
+ if(isStandalone()||isNativeCapacitor()){hideButton();return;}
  showButton();
  window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
