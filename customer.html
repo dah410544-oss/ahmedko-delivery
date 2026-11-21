@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071A35">
+<meta name="description" content="اطلب خدمة التوصيل من أحمدكو وتابع طلباتك بعد التحقق من رقم هاتفك.">
+<title>الطلبات والتتبع | أحمدكو ديلفري</title>
+<style>
+:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--white:#fff;--muted:#64748b;--line:#dce3ed;--green:#137a4a}
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#17243a;font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:15px 5%;border-bottom:4px solid var(--yellow);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-weight:900;font-size:20px}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
+main{width:min(980px,94%);margin:22px auto}.intro{background:linear-gradient(125deg,#071A35,#173c68);color:#fff;border-radius:18px;padding:24px;margin-bottom:18px}.intro h1{margin:0 0 7px;font-size:25px}.intro p{margin:0;color:#dce5f0;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 7px 22px #10294d0b}.panel h2{font-size:18px;margin:0 0 7px;color:var(--navy)}.muted{color:var(--muted);font-size:12px;margin:0 0 13px}
+label{display:block;font-weight:bold;font-size:13px;margin:11px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#17243a;font:inherit;font-size:14px}input:focus,select:focus,textarea:focus{outline:2px solid #f5c32b}textarea{min-height:75px;resize:vertical}
+button,.button{border:0;border-radius:10px;background:var(--navy);color:#fff;padding:12px 16px;font:inherit;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block;margin-top:12px}button.yellow,.button.yellow{background:var(--yellow);color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.full{width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.message{padding:11px;border-radius:10px;background:#edf2f8;color:#334155;font-size:13px;margin-top:12px;white-space:pre-wrap}.message.error{background:#fff0ef;color:#a93232}.message.success{background:#eaf8f1;color:#137a4a}
+.otp-row{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:end}.otp-row button{white-space:nowrap}
+.orders{display:grid;gap:10px;margin-top:14px}.order{border:1px solid var(--line);border-radius:12px;padding:13px}.order h3{font-size:14px;margin:0 0 7px}.order p{font-size:12px;color:#526176;margin:3px 0;overflow-wrap:anywhere}.tag{display:inline-block;border-radius:30px;padding:2px 9px;background:#fff4cc;color:#725400;font-size:11px;font-weight:bold}.order-id{font-size:11px;color:#64748b;direction:ltr;display:inline-block;overflow-wrap:anywhere}
+footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}main{margin:14px auto}.intro{padding:19px}.row{grid-template-columns:1fr}.otp-row{grid-template-columns:1fr}.otp-row button{width:100%}}
+</style>
+</head>
+<body>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html#home">العودة إلى الرئيسية ←</a></header>
+<main>
+<section class="intro"><h1>طلباتك مع أحمدكو 🚚</h1><p>أرسل طلب توصيل دون إنشاء حساب. ولمتابعة طلباتك، تحقق من رقم هاتفك برسالة SMS.</p></section>
+<div class="grid">
+<section class="panel">
+<h2>إنشاء طلب توصيل</h2>
+<p class="muted">لا تحتاج إلى تسجيل الدخول. يستقبل المكتب طلبك أولاً، ثم يتواصل معك للاتفاق على أجرة التوصيل قبل تأكيدها.</p>
+<form id="orderForm">
+<label for="customerName">الاسم الكامل</label><input id="customerName" maxlength="100" required autocomplete="name" placeholder="اسمك">
+<label for="customerPhone">رقم الهاتف</label><input id="customerPhone" maxlength="20" required inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx">
+<label for="pickupAddress">عنوان الاستلام بالتفصيل</label><input id="pickupAddress" maxlength="250" required placeholder="الشارع، المعلم القريب، التفاصيل">
+<div class="row">
+<div><label for="pickupRegion">منطقة الاستلام</label><select id="pickupRegion" required><option value="">جارٍ تحميل المناطق...</option></select></div>
+<div><label for="deliveryRegion">منطقة التسليم</label><select id="deliveryRegion" required><option value="">جارٍ تحميل المناطق...</option></select></div>
+</div>
+<label for="deliveryAddress">عنوان التسليم بالتفصيل</label><input id="deliveryAddress" maxlength="250" required placeholder="الشارع، المعلم القريب، التفاصيل">
+<label for="vehicleType">وسيلة النقل</label>
+<select id="vehicleType" required>
+<option value="">اختر وسيلة النقل</option>
+<option value="car">سيارة / جيب</option>
+<option value="tuk_tuk">توك توك</option>
+<option value="bus">باص</option>
+<option value="electric_bicycle">دراجة كهربائية</option>
+<option value="bicycle">دراجة عادية</option>
+<option value="motorcycle">دراجة نارية</option>
+</select>
+<label for="orderNotes">تفاصيل إضافية (اختياري)</label><textarea id="orderNotes" maxlength="1000" placeholder="نوع الطلب أو أي تعليمات للسائق"></textarea>
+<button id="submitOrder" class="yellow full" type="submit">إرسال الطلب وحفظه لدى أحمدكو</button>
+<div id="orderMessage" class="message" role="status" aria-live="polite">سيظهر رقم طلبك بعد الحفظ. أجرة التوصيل تُحدد بالاتفاق مع مكتب أحمدكو.</div>
+<a id="sendOrderWhatsapp" class="button yellow full" hidden target="_blank" rel="noopener" style="text-align:center" href="#">إرسال تفاصيل الطلب إلى أحمدكو عبر واتساب</a>
+<a id="returnHomeLink" class="button full" hidden style="text-align:center" href="./index.html#home">العودة إلى الصفحة الرئيسية</a>
+</form>
+</section>
+<section class="panel">
+<h2>تتبع طلباتك برقم الهاتف</h2>
+<p class="muted">أدخل رقم الهاتف المستخدم عند إنشاء الطلب. سنرسل رمز تحقق لمرة واحدة قبل عرض الطلبات.</p>
+<form id="otpForm">
+<label for="trackingPhone">رقم الهاتف</label>
+<div class="otp-row"><input id="trackingPhone" maxlength="20" required inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx"><button id="sendOtp" type="submit" class="yellow">إرسال رمز التحقق</button></div>
+<label for="otpCode">رمز SMS</label><input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="أدخل الرمز الذي وصلك">
+<button id="verifyOtp" class="full" type="button">تحقق واعرض طلباتي</button>
+<div id="trackingMessage" class="message" role="status" aria-live="polite">لن تظهر الطلبات إلا بعد نجاح التحقق من ملكية رقم الهاتف.</div>
+</form>
+<div id="ordersList" class="orders" aria-live="polite"></div>
+</section>
+</div>
+</main>
+<footer>AHMEDKO DELIVERY © 2026 · بيانات طلباتك لا تظهر إلا بعد التحقق من الهاتف. · <a href="privacy.html">سياسة الخصوصية</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+const SUPABASE_URL="https://pqulzfhisidcatrakxsx.supabase.co";
+const SUPABASE_KEY="sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const statusNames={new:"تم استلام الطلب",confirmed:"تم تأكيد الطلب",assigned:"تم تعيين السائق",picked_up:"تم استلام الطلب من نقطة الانطلاق",in_transit:"الطلب في الطريق",delivered:"تم التسليم",cancelled:"تم إلغاء الطلب"};
+const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+function setMessage(id,text,type){const el=$(id);el.textContent=text;el.className="message"+(type?" "+type:"");}
+function normalizePhone(value){
+ let digits=String(value||"").replace(/\D/g,"");
+ if(digits.startsWith("00"))digits=digits.slice(2);
+ if(digits.startsWith("970")||digits.startsWith("972"))return "+"+digits;
+ if(digits.startsWith("0"))return "+970"+digits.slice(1);
+ if(digits.length===9&&digits.startsWith("5"))return "+970"+digits;
+ return "+"+digits;
+}
+async function loadRegions(){
+ const selects=[$("pickupRegion"),$("deliveryRegion")];
+ try{
+  const response=await fetch(SUPABASE_URL+"/rest/v1/regions?select=id,name&is_active=eq.true&order=name.asc",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY,Accept:"application/json"}});
+  if(!response.ok)throw new Error("تعذر تحميل المناطق ("+response.status+").");
+  const rows=await response.json();
+  selects.forEach(select=>{
+   select.innerHTML='<option value="">اختر المنطقة</option>';
+   rows.forEach(region=>{const option=document.createElement("option");option.value=region.id;option.textContent=region.name;select.appendChild(option);});
+  });
+  if(!rows.length)throw new Error("لا توجد مناطق نشطة حالياً في قاعدة البيانات.");
+ }catch(error){
+  selects.forEach(select=>select.innerHTML='<option value="">تعذر تحميل المناطق</option>');
+  setMessage("orderMessage",error.message+" لا يمكن إرسال طلب دون مناطق معتمدة.","error");
+ }
+}
+$("orderForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const button=$("submitOrder");button.disabled=true;
+ setMessage("orderMessage","جارٍ حفظ طلبك لدى أحمدكو. سيتم الاتفاق على أجرة التوصيل مع المكتب قبل التأكيد...");
+ const payload={
+  p_customer_name:$("customerName").value.trim(),
+  p_customer_phone:$("customerPhone").value.trim(),
+  p_pickup_address:$("pickupAddress").value.trim(),
+  p_delivery_address:$("deliveryAddress").value.trim(),
+  p_pickup_region_id:$("pickupRegion").value,
+  p_delivery_region_id:$("deliveryRegion").value,
+  p_vehicle_type:$("vehicleType").value,
+  p_order_type:"delivery",
+  p_notes:$("orderNotes").value.trim()||null
+ };
+ try{
+  const result=await db.rpc("create_customer_order",payload);
+  if(result.error)throw result.error;
+  const saved=Array.isArray(result.data)?result.data[0]:result.data;
+  if(!saved||!saved.order_id)throw new Error("لم يرجع النظام رقم الطلب؛ لم نعرض تأكيداً غير موثوق.");
+  const feeIsSet=saved.delivery_price!==null&&saved.delivery_price!==undefined&&Number(saved.delivery_price)>0;
+  const feeText=feeIsSet?("أجرة التوصيل المعتمدة: "+Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪"):"أجرة التوصيل: قيد الاتفاق مع مكتب أحمدكو";
+  setMessage("orderMessage","تم استلام طلبك وحفظه بنجاح.\nرقم الطلب: "+saved.order_id+"\n"+feeText+"\nسيتواصل معك المكتب لتأكيد الأجرة والتفاصيل.","success");
+  const whatsappText="مرحباً أحمدكو ديلفري، تم تسجيل طلب توصيل جديد.\nرقم الطلب: "+saved.order_id+"\nالاسم: "+payload.p_customer_name+"\nالهاتف: "+payload.p_customer_phone+"\nالاستلام: "+payload.p_pickup_address+" ("+$("pickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+payload.p_delivery_address+" ("+$("deliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+$("vehicleType").selectedOptions[0].textContent+"\nالأجرة: "+(feeIsSet?Number(saved.delivery_price).toLocaleString("ar-PS")+" ₪":"قيد الاتفاق مع المكتب");
+  const whatsappLink=$("sendOrderWhatsapp");whatsappLink.href="https://wa.me/972598407547?text="+encodeURIComponent(whatsappText);whatsappLink.hidden=false;
+  const homeLink=document.getElementById("returnHomeLink");if(homeLink)homeLink.hidden=false;
+  $("trackingPhone").value=payload.p_customer_phone;
+  $("orderForm").reset();
+ }catch(error){
+  setMessage("orderMessage","لم يتم تأكيد الطلب: "+(error.message||"حدث خطأ غير معروف."),"error");
+ }finally{button.disabled=false;}
+});
+$("otpForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const phone=normalizePhone($("trackingPhone").value);
+ if(phone.length<10){setMessage("trackingMessage","أدخل رقم هاتف صحيحاً مع مفتاح الدولة أو بصيغته المحلية.","error");return;}
+ const button=$("sendOtp");button.disabled=true;
+ setMessage("trackingMessage","جارٍ طلب إرسال رمز التحقق...");
+ try{
+  const result=await db.auth.signInWithOtp({phone,options:{shouldCreateUser:true}});
+  if(result.error)throw result.error;
+  setMessage("trackingMessage","إذا كان إعداد إرسال الرسائل مفعّلاً، سيصلك رمز SMS على "+phone+". أدخل الرمز ثم اضغط تحقق.","success");
+ }catch(error){
+  setMessage("trackingMessage","تعذر إرسال الرمز: "+(error.message||"خطأ في خدمة الرسائل.")+". قد يحتاج المشروع إلى إعداد مزود SMS في Supabase Auth.","error");
+ }finally{button.disabled=false;}
+});
+$("verifyOtp").addEventListener("click",async()=>{
+ const phone=normalizePhone($("trackingPhone").value);
+ const token=$("otpCode").value.trim();
+ if(!token){setMessage("trackingMessage","أدخل رمز التحقق الذي وصلك برسالة SMS.","error");return;}
+ const button=$("verifyOtp");button.disabled=true;
+ setMessage("trackingMessage","جارٍ التحقق من الرمز...");
+ try{
+  const verified=await db.auth.verifyOtp({phone,token,type:"sms"});
+  if(verified.error)throw verified.error;
+  const result=await db.rpc("get_my_customer_orders");
+  if(result.error)throw result.error;
+  const orders=result.data||[];
+  $("ordersList").innerHTML="";
+  if(!orders.length){$("ordersList").innerHTML='<div class="message">تم التحقق من الهاتف، لكن لا توجد طلبات مسجلة بهذا الرقم حتى الآن.</div>';}
+  else{
+   orders.forEach(order=>{
+    const article=document.createElement("article");article.className="order";
+    article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3><p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع المكتب":esc(order.delivery_price)+" ₪")+'</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
+    $("ordersList").appendChild(article);
+   });
+  }
+  setMessage("trackingMessage","تم التحقق من رقم الهاتف بنجاح. هذه الطلبات المرتبطة به.","success");
+ }catch(error){
+  setMessage("trackingMessage","تعذر التحقق أو تحميل الطلبات: "+(error.message||"خطأ غير معروف."),"error");
+ }finally{button.disabled=false;}
+});
+// Android back from the order page returns to Ahmedko home.
+history.pushState({ahmedkoCustomerPage:true}, "", location.href);
+window.addEventListener("popstate", () => { window.location.replace("./index.html#home"); });
+loadRegions();
+</script>
+</body>
+</html>

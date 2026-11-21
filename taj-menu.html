@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#091a33"><title>منيو مطعم التاج | أحمدكو ديلفري</title>
+<style>
+:root{--n:#091a33;--n2:#102b50;--y:#ffc928;--bg:#f5f7fb;--ink:#17243a;--muted:#69778d;--line:#e4e9f1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif}
+header{background:linear-gradient(130deg,var(--n),var(--n2));color:white;text-align:center;padding:27px 14px 23px;border-bottom:5px solid var(--y)}
+.brand{font-weight:900;color:var(--y);font-size:14px}.logo{font-size:28px;font-weight:900;margin:9px}.sub{color:#d7e1ef;font-size:13px}
+.home-link{display:inline-block;margin-top:13px;padding:8px 13px;border:1px solid #ffffff66;border-radius:10px;color:#fff;text-decoration:none;font-size:12px;font-weight:bold}
+main{max-width:1100px;margin:auto;padding:18px 14px 105px}.search{width:100%;padding:14px;border:1px solid var(--line);border-radius:13px;font:inherit;font-size:16px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tab{white-space:nowrap;border:1px solid var(--line);background:white;color:var(--n);border-radius:25px;padding:10px 14px;font-weight:bold}.tab.active{background:var(--y);border-color:var(--y)}
+h2{font-size:21px;color:var(--n);margin:17px 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+.item{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:9px}.item h3{font-size:15px;margin:0;line-height:1.6}.price{font-weight:900;color:#926400;font-size:16px}.hint{font-size:12px;color:var(--muted)}
+select{width:100%;padding:9px;border:1px solid var(--line);border-radius:9px;background:white;font:inherit}
+.add{border:0;border-radius:10px;padding:11px;background:var(--n);color:white;font-weight:bold;font-size:14px}
+.note{font-size:12px;color:var(--muted);line-height:1.8;margin-top:18px}.empty{background:white;padding:25px;border-radius:13px;color:var(--muted)}
+.cartbar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 -5px 20px #091a3312}.cartinfo{font-weight:bold;color:var(--n)}.send{background:#159b55;color:white;border:0;border-radius:11px;padding:12px 15px;font-weight:bold}
+@media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.item{padding:11px}.item h3{font-size:13px}.price{font-size:14px}.add{font-size:12px;padding:10px 5px}.logo{font-size:24px}}
+</style></head>
+<body>
+<header><div class="brand">AHMEDKO DELIVERY</div><div class="logo">مطعم التاج</div><div class="sub">المنيو والطلبات عبر أحمدكو ديلفري · الأسعار بالشيكل ₪</div><a class="home-link" href="index.html">العودة إلى موقع أحمدكو</a></header>
+<main>
+<input id="search" class="search" placeholder="ابحث عن صنف..." autocomplete="off">
+<nav id="tabs" class="tabs"></nav><h2 id="heading">شاورما</h2><section id="items" class="grid"></section>
+<p class="note">الأسعار كما وردت من المطعم. الأصناف ذات السعر المتغير أو خيارات الصالة وT.W يتم تأكيد سعرها النهائي عند تنسيق الطلب. رسوم التوصيل منفصلة ويتم الاتفاق عليها عبر أحمدكو.</p>
+</main>
+<div class="cartbar"><div class="cartinfo" id="cartInfo">طلبك: 0 أصناف</div><button class="send" onclick="sendOrder()">إرسال الطلب إلى أحمدكو عبر واتساب</button></div>
+<script>
+const menu=[
+["شاورما",[["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]]],
+["شاورما ضاني",[["شاورما ضاني","35"],["شاورما ضاني دبل عادي","37"],["شاورما ضاني دبل لحمة","45"],["شاورما ضاني دبل دبل","47"],["بيتا ضاني","25"],["سوري ضاني","50"],["صحيفة ضاني","55"],["صاروخ ضاني","60"],["كريب ضاني","60"],["وجبات ضاني","50-60"]]],
+["شاورما حبش",[["شاورما حبش","30"],["شاورما حبش دبل عادي","32"],["شاورما حبش دبل لحمة","40"],["شاورما حبش صاروخ","55"],["بيتا حبش","20"],["صحيفة حبش","55"],["سوري حبش","48"],["عربية حبش","55"],["وجبات حبش","40-50"]]],
+["ساندويتشات",[["تشكن بيتزا","30"],["دجاج بالذرة والجبنة","30"],["بانيه عادي","25"],["بانيه بالجبنة","30"],["صحيفة زنجر","35"],["مسحب بالجبنة","35"],["بيف برجر","35"],["تشكن برجر","35"],["كنتاكي برجر دبل","55"],["الفطيرة الذهبية","35"],["كالزوني التاج","35"],["تشيكن ستروجونوف","30"],["تشكن اسكلوبيني","30"],["دجاج بالجبنة","30"],["كريب كرسبي","40"],["كريب مسحب","40"],["كريب مكس","40"],["بيكاتي","30"],["فاهيتا","30"],["مكس غربي","40"]]],
+["مشاوي",[["وجبة التاج","50","50"],["لفة كباب","17","17"],["لفة شيش طاووق","20","20"],["دجاج مشوي","75","70"],["جناح مشوي","34","35"],["كيلو كباب","80","70"],["كيلو شيش","80","70"],["كيلو دجاج","80","70"],["كيلو مسحب","80","70"],["كبدة عجل","95","75"],["ريش خروف","150","150"],["كبدة دجاج","50","50"],["صينية دجاج مع أرز","70","70"]]],
+["وجبات",[["وجبة اسكلوبيني","65"],["وجبة كرسبي زنجر","65"],["وجبة بيكاتي","65"],["وجبة ستيك دجاج بالصوص","65"],["وجبة تشكن بيتزا","65"],["وجبة دجاج جبنة و...","65"]]],
+["باستا",[["باستا كرسبي","30"],["باستا صدر دجاج","30"],["باستا بالبشاميل روم","30"]]],
+["بيتزا",[["بيتزا خضار (صغير)","15"],["بيتزا خضار (وسط)","25"],["بيتزا خضار (كبير)","45"],["بيتزا بأنواعها (صدر - مارجريتا - شاورما)","25-60"]]],
+["مقبلات",[["سلطة سخنة","10"],["سلطات مشكل","10"],["شيبس","10"],["صوص (جبنة - كراشي)","10"],["سلطة يوناني","25"],["سلطة سيزر","30"]]]
+];
+let active=menu[0][0],cart=[];
+const $=id=>document.getElementById(id);
+function renderTabs(){ $("tabs").innerHTML=menu.map(c=>`<button class="tab ${c[0]===active?'active':''}" onclick="choose('${c[0]}')">${c[0]}</button>`).join("")}
+function choose(n){active=n;$("search").value="";render()}
+function add(name,price){cart.push({name,price});$("cartInfo").textContent="طلبك: "+cart.length+" أصناف"}
+function addFromCard(name,a,b,i){let p=a;if(b){let v=$("opt"+i).value.split("|");p=v[0]+" "+v[1]+" ₪"}else if(a.includes("-"))p="السعر النهائي ضمن "+a+" ₪ ويؤكد عند الطلب";else p=a+" ₪";add(name,p)}
+function render(){
+ renderTabs();let q=$("search").value.trim().toLowerCase(),cat=menu.find(c=>c[0]===active);
+ $("heading").textContent=q?"نتائج البحث":active;
+ let list=q?menu.flatMap(c=>c[1].map(x=>({cat:c[0],x}))).filter(o=>o.x[0].toLowerCase().includes(q)):cat[1].map(x=>({cat:active,x}));
+ if(!list.length){$("items").innerHTML='<div class="empty">لا توجد أصناف مطابقة للبحث</div>';return}
+ $("items").innerHTML=list.map(({cat,x},i)=>{
+ let dual=x.length===3,price=dual?`صالة ${x[1]} ₪ · T.W ${x[2]} ₪`:x[1].includes("-")?`من ${x[1].replace("-", " إلى ")} ₪`:x[1]+" ₪";
+ let selector=dual?`<select id="opt${i}"><option value="صالة|${x[1]}">صالة — ${x[1]} ₪</option><option value="T.W|${x[2]}">T.W — ${x[2]} ₪</option></select>`:"";
+ let shown=x[1].includes("-")?"السعر حسب الاختيار ضمن النطاق":price;
+ return `<article class="item"><div class="hint">${cat}</div><h3>${x[0]}</h3><div class="price">${shown}</div>${selector}<button class="add" onclick='addFromCard(${JSON.stringify(x[0])},${JSON.stringify(x[1])},${JSON.stringify(x[2]||"")},${i})'>إضافة للطلب</button></article>`;
+ }).join("");
+}
+function sendOrder(){if(!cart.length){alert("أضف صنفاً واحداً على الأقل إلى طلبك أولاً");return}
+ let msg="مرحباً أحمدكو ديلفري، أريد طلباً من مطعم التاج:\n"+cart.map((x,i)=>(i+1)+") "+x.name+" — "+x.price).join("\n")+"\n\nيرجى تأكيد الطلب والسعر النهائي ورسوم التوصيل.";
+ location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg)}
+$("search").addEventListener("input",render);render();
+</script></body></html>

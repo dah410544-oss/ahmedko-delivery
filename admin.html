@@ -1,0 +1,1537 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#081a35">
+<title>أحمدكو ديلفري | لوحة الإدارة</title>
+
+<style>
+:root{
+ --navy:#081a35;
+ --blue:#17365f;
+ --yellow:#f5c542;
+ --bg:#f2f5fa;
+ --white:#fff;
+ --text:#17243a;
+ --muted:#77849a;
+ --border:#e6ebf2;
+ --red:#c0392b;
+ --green:#16845b;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Tahoma,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
+button,input{font:inherit}
+header{
+ background:var(--navy);
+ color:white;
+ padding:18px 22px;
+ border-bottom:4px solid var(--yellow);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+.brand{font-size:23px;font-weight:bold}
+.brand span{color:var(--yellow)}
+header small{color:#c7d3e4}
+#login-panel{
+ max-width:430px;
+ margin:55px auto;
+ padding:25px;
+ background:white;
+ border-radius:17px;
+ box-shadow:0 5px 25px #10294d12;
+}
+#login-panel h2{margin-top:0}
+#login-panel input{
+ display:block;
+ width:100%;
+ padding:14px;
+ margin:12px 0;
+ border:1px solid #ccd5e2;
+ border-radius:9px;
+}
+.primary{
+ border:0;
+ background:var(--navy);
+ color:white;
+ padding:13px 18px;
+ border-radius:9px;
+ cursor:pointer;
+}
+.primary:disabled{opacity:.6}
+#login-button{width:100%}
+#auth-message{font-size:13px;line-height:1.8;color:var(--muted)}
+.layout{
+ display:grid;
+ grid-template-columns:220px 1fr;
+ min-height:calc(100vh - 85px);
+}
+aside{
+ background:white;
+ border-left:1px solid var(--border);
+ padding:16px 12px;
+}
+.nav-button{
+ display:block;
+ width:100%;
+ text-align:right;
+ border:0;
+ background:transparent;
+ padding:13px;
+ margin-bottom:5px;
+ border-radius:9px;
+ color:var(--text);
+ cursor:pointer;
+}
+.nav-button.active,.nav-button:hover{
+ background:var(--navy);
+ color:white;
+}
+main{padding:22px;min-width:0}
+.page{display:none}
+.page.active{display:block}
+.welcome{
+ background:linear-gradient(120deg,#081a35,#1b4778);
+ color:white;
+ border-radius:17px;
+ padding:23px;
+ margin-bottom:20px;
+}
+.welcome h1{font-size:22px;margin:0 0 10px}
+.welcome p{font-size:13px;color:#d3deec;line-height:1.9}
+.welcome strong{color:var(--yellow)}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:13px;
+}
+.stat{
+ background:white;
+ padding:18px;
+ border:1px solid var(--border);
+ border-radius:14px;
+}
+.stat p{font-size:12px;color:var(--muted)}
+.stat h2{font-size:27px;margin:10px 0}
+.stat small{font-size:11px;color:var(--muted)}
+.section-title{font-size:18px;margin:25px 0 14px}
+.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px;
+ margin-bottom:16px;
+}
+.panel h3{margin-top:0;font-size:16px}
+.toolbar{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-bottom:13px;
+}
+.toolbar input{
+ padding:10px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ min-width:180px;
+}
+.table-wrap{overflow-x:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:550px;
+ font-size:12px;
+}
+th,td{
+ padding:12px 10px;
+ border-bottom:1px solid var(--border);
+ text-align:right;
+ max-width:230px;
+ overflow-wrap:anywhere;
+}
+th{background:#f5f7fb;color:var(--blue)}
+td{color:var(--text)}
+.status{
+ padding:5px 9px;
+ border-radius:20px;
+ background:#edf2f8;
+ font-size:11px;
+}
+.error{
+ background:#fff0ef;
+ border:1px solid #f0c5c0;
+ color:#a93226;
+ padding:13px;
+ border-radius:9px;
+ line-height:1.8;
+ font-size:12px;
+}
+.success{
+ background:#eaf8f1;
+ border:1px solid #b9e5ce;
+ color:#16764e;
+ padding:12px;
+ border-radius:9px;
+ font-size:12px;
+}
+.muted{color:var(--muted);font-size:12px}
+#logout-button{
+ width:100%;
+ margin-top:20px;
+ background:#fff0ef;
+ color:#a93226;
+ border:0;
+ padding:12px;
+ border-radius:9px;
+ cursor:pointer;
+}
+#dashboard-message{margin-top:17px}
+footer{
+ text-align:center;
+ color:var(--muted);
+ font-size:11px;
+ padding:20px;
+}
+[hidden]{display:none!important}
+@media(max-width:800px){
+ .layout{grid-template-columns:1fr}
+ aside{
+  display:flex;
+  overflow-x:auto;
+  border-left:0;
+  border-bottom:1px solid var(--border);
+  padding:8px;
+ }
+ .nav-button{
+  width:auto;
+  min-width:max-content;
+  margin:0 3px;
+  padding:11px;
+  font-size:12px;
+ }
+ main{padding:13px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+ .brand{font-size:19px}
+ header{padding:15px}
+ .welcome{padding:17px}
+ .welcome h1{font-size:19px}
+ .stat{padding:13px}
+ .stat h2{font-size:23px}
+}
+
+.workflow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.workflow-card{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;margin:10px 0}
+.workflow-card h4{margin:0 0 8px;font-size:14px}
+.workflow-meta{font-size:12px;color:var(--muted);line-height:1.9}
+.workflow-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.workflow-controls select,.workflow-controls button{font:inherit;padding:9px;border:1px solid var(--border);border-radius:8px}
+.workflow-controls select{min-width:130px;max-width:100%;background:#fff}
+.workflow-controls button{background:var(--navy);color:#fff;cursor:pointer}
+.workflow-controls button.secondary{background:#64748b}
+.workflow-controls button:disabled{opacity:.55;cursor:not-allowed}
+.workflow-status{font-size:12px;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.workflow-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+
+<body>
+
+<header>
+ <div>
+  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
+  <small>نظام إدارة الخدمات اللوجستية</small>
+ </div>
+ <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <small id="account-label">إدارة المكتب</small>
+  <a href="./index.html" style="display:inline-block;background:#f5c542;color:#081a35;text-decoration:none;font-weight:bold;padding:9px 12px;border-radius:9px;font-size:13px">العودة للموقع الرئيسي ←</a>
+ </div>
+</header>
+
+<section id="login-panel" hidden>
+ <h2>دخول إدارة المكتب</h2>
+ <p class="muted">سجل الدخول بحساب المدير المعتمد.</p>
+ <input id="admin-email" type="email"
+  placeholder="البريد الإلكتروني" autocomplete="username">
+ <input id="admin-password" type="password"
+  placeholder="كلمة المرور" autocomplete="current-password">
+ <button class="primary" id="login-button">تسجيل الدخول</button>
+ <p id="auth-message">أدخل بيانات حساب المدير.</p>
+</section>
+
+<div id="app" class="layout" hidden>
+
+<aside>
+ <button class="nav-button active" data-page="home">🏠 الرئيسية</button>
+ <button class="nav-button" data-page="orders">📦 الطلبات</button>
+ <button class="nav-button" data-page="drivers">🛵 السائقون</button>
+ <button class="nav-button" data-page="stores">🏪 المتاجر</button>
+ <button class="nav-button" data-page="menus">🍽️ القوائم والمنتجات</button>
+ <button class="nav-button" data-page="regions">📍 المناطق</button>
+ <button class="nav-button" data-page="rates">💰 الأسعار</button>
+ <button class="nav-button" data-page="finance">💳 الحسابات</button>
+ <button class="nav-button" data-page="announcements">📣 العروض والإعلانات</button>
+ <button class="nav-button" data-page="diagnostics">🔧 فحص النظام</button>
+ <button id="logout-button">تسجيل الخروج</button>
+</aside>
+
+<main>
+
+<section class="page active" id="page-home">
+ <div class="welcome">
+  <h1>مرحباً بك في أحمدكو ديلفري 👋</h1>
+  <p>
+   مركز إدارة الطلبات والسائقين والفروع والحسابات.<br>
+   <strong>طلبك علينا وراحتك تهمّنا!</strong>
+  </p>
+ </div>
+
+ <div class="stats">
+  <div class="stat">
+   <p>📦 طلبات اليوم</p>
+   <h2 id="today-orders">—</h2>
+   <small>الطلبات المسجلة اليوم</small>
+  </div>
+  <div class="stat">
+   <p>🛵 إجمالي السائقين</p>
+   <h2 id="drivers-count">—</h2>
+   <small>السائقون المسجلون</small>
+  </div>
+  <div class="stat">
+   <p>📋 إجمالي الطلبات</p>
+   <h2 id="total-orders">—</h2>
+   <small>كل الطلبات المسجلة</small>
+  </div>
+  <div class="stat">
+   <p>💰 عمولة المكتب</p>
+   <h2 id="commission">—</h2>
+   <small>النسبة المعتمدة</small>
+  </div>
+ </div>
+
+ <h2 class="section-title">حالة النظام</h2>
+ <div class="panel">
+  <div id="dashboard-message" class="muted">
+   جارٍ تحميل بيانات المكتب...
+  </div>
+ </div>
+</section>
+
+<section class="page" id="page-orders">
+ <h2 class="section-title">إدارة الطلبات</h2>
+ <div class="panel">
+  <h3>مركز تشغيل الطلبات</h3>
+  <p class="muted">إسناد الطلبات للسائقين المعتمدين وتحديث مراحل التنفيذ. عند اختيار «تم التسليم» تُنشأ مستحقات الطلب مرة واحدة إذا لم تكن موجودة.</p>
+  <div id="orders-workflow" class="muted">جارٍ تحميل مركز تشغيل الطلبات...</div>
+ </div>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>سجل الطلبات</h3>
+   <input class="search" data-table="orders" placeholder="بحث في الطلبات">
+  </div>
+  <div id="table-orders" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-drivers">
+ <h2 class="section-title">إدارة السائقين</h2>
+ <div class="panel"><div class="toolbar"><h3>طلبات الانضمام الجديدة</h3><button class="primary" type="button" id="refresh-driver-applications">تحديث الطلبات</button></div><div id="driver-applications" class="muted">جارٍ تحميل طلبات الانضمام...</div></div>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>سجل السائقين</h3>
+   <input class="search" data-table="drivers" placeholder="بحث عن سائق">
+  </div>
+  <div id="table-drivers" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-stores">
+ <h2 class="section-title">إدارة المطاعم والشركات والمتاجر</h2>
+ <div class="panel">
+  <h3>تسجيل شريك تجاري جديد</h3>
+  <form id="store-form" class="workflow-controls">
+   <input id="store-name" required maxlength="150" placeholder="اسم المطعم أو الشركة أو المتجر">
+   <input id="store-contact" maxlength="100" placeholder="اسم مسؤول التواصل">
+   <input id="store-phone" maxlength="30" placeholder="رقم الهاتف">
+   <input id="store-address" maxlength="250" placeholder="العنوان">
+   <select id="store-type" required aria-label="نوع النشاط"><option value="restaurant">مطعم</option><option value="cafe">مقهى</option><option value="store">متجر / شركة</option></select>
+   <button type="submit" class="primary">تسجيل الشريك</button>
+  </form>
+  <p id="store-form-message" class="workflow-status" aria-live="polite"></p>
+ </div>
+ <div class="panel">
+  <div class="toolbar">
+   <h3>المتاجر والشركاء المسجلون</h3>
+   <input class="search" data-table="stores" placeholder="بحث عن شريك">
+  </div>
+  <div id="table-stores" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-menus">
+ <h2 class="section-title">إدارة قوائم الطعام والمنتجات</h2>
+ <div class="panel">
+  <h3>إضافة قسم جديد</h3>
+  <form id="category-form" class="workflow-controls">
+   <select id="category-store" required aria-label="اختر المتجر"><option value="">اختر المتجر</option></select>
+   <input id="category-name" required maxlength="100" placeholder="اسم القسم" style="padding:10px;border:1px solid var(--border);border-radius:8px;flex:1;min-width:150px">
+   <button type="submit" class="primary">إضافة القسم</button>
+  </form>
+  <p id="category-message" class="workflow-status" aria-live="polite"></p>
+ </div>
+ <div class="panel">
+  <h3 id="product-form-title">إضافة منتج جديد</h3>
+  <form id="product-form">
+   <input type="hidden" id="product-id">
+   <div class="workflow-controls">
+    <select id="product-store" required aria-label="اختر المتجر"><option value="">اختر المتجر</option></select>
+    <select id="product-category" required aria-label="اختر القسم"><option value="">اختر القسم</option></select>
+   </div>
+   <div class="workflow-controls">
+    <input id="product-name" required maxlength="150" placeholder="اسم المنتج" style="padding:10px;border:1px solid var(--border);border-radius:8px;flex:1;min-width:160px">
+    <input id="product-price" required type="number" min="0" step="0.01" placeholder="السعر بالشيكل" style="padding:10px;border:1px solid var(--border);border-radius:8px;width:150px">
+   </div>
+   <textarea id="product-description" maxlength="700" rows="2" placeholder="وصف المنتج (اختياري)" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:10px;font:inherit"></textarea>
+   <label style="display:flex;gap:8px;align-items:center;margin:12px 0"><input id="product-available" type="checkbox" checked> المنتج متاح للطلب</label>
+   <div class="workflow-controls">
+    <button type="submit" class="primary" id="product-save">حفظ المنتج</button>
+    <button type="button" class="secondary" id="product-cancel">إلغاء التعديل</button>
+   </div>
+   <p id="product-message" class="workflow-status" aria-live="polite"></p>
+  </form>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="import-auto-menu">استيراد منيو أوتو O2</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
+  <div id="menu-manager-list" class="muted">جارٍ تحميل القوائم...</div>
+ </div>
+</section>
+
+<section class="page" id="page-regions">
+ <h2 class="section-title">مناطق التوصيل</h2>
+ <div class="panel">
+  <h3>المناطق المسجلة</h3>
+  <div id="table-regions" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+<section class="page" id="page-rates">
+ <h2 class="section-title">أسعار التوصيل</h2>
+ <div class="panel">
+  <h3>إضافة أو تحديث سعر توصيل معتمد</h3>
+  <p class="muted">يُحدد السعر حسب منطقة الاستلام ومنطقة التسليم ووسيلة النقل. لا يقبل النظام الطلب إذا لم يوجد سعر نشط وحيد لهذا المسار.</p>
+  <form id="delivery-rate-form" class="workflow-controls">
+   <select id="rate-pickup-region" required aria-label="منطقة الاستلام"><option value="">منطقة الاستلام</option></select>
+   <select id="rate-delivery-region" required aria-label="منطقة التسليم"><option value="">منطقة التسليم</option></select>
+   <select id="rate-vehicle" required aria-label="وسيلة النقل">
+    <option value="">وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة / جيب</option><option value="bus">باص</option>
+   </select>
+   <input id="rate-price" type="number" min="0.01" step="0.01" required placeholder="السعر بالشيكل">
+   <button type="submit" class="primary">حفظ السعر</button>
+  </form>
+  <p id="delivery-rate-message" class="workflow-status" aria-live="polite"></p>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>جدول الأسعار</h3><button type="button" class="primary" id="refresh-rates">تحديث الأسعار</button></div>
+  <div id="table-delivery_rates" class="muted">جارٍ التحميل...</div>
+ </div>
+</section>
+
+
+
+<section class="page" id="page-finance">
+ <h2 class="section-title">الحسابات والعمولات</h2>
+ <div class="panel">
+  <h3>إعدادات العمولة</h3>
+  <p>عمولة المكتب: <strong id="finance-commission">—</strong></p>
+  <p>العملة: <strong id="finance-currency">—</strong></p>
+  <p class="muted">
+   يتم عرض نسبة العمولة من إعدادات النشاط التجاري.
+   لا يتم تعديل سجلات الأرباح تلقائياً من هذه الصفحة.
+  </p>
+ </div>
+ <div class="panel">
+  <h3>ملخص الطلبات</h3>
+  <p id="finance-summary" class="muted">جارٍ التحميل...</p>
+ </div>
+ <div class="panel">
+  <div class="toolbar"><h3>مستحقات السائقين والمدفوعات</h3><button class="primary" type="button" id="refresh-earnings">تحديث السجلات</button></div>
+  <div id="earnings-workflow" class="muted">جارٍ تحميل المستحقات...</div>
+ </div>
+</section>
+
+<section class="page" id="page-announcements">
+ <h2 class="section-title">العروض والإعلانات العامة</h2>
+ <div class="panel">
+  <h3>إضافة أو تعديل إعلان يظهر للزبائن</h3>
+  <p class="muted">هذه الأدوات للمدير بعد تسجيل الدخول فقط. لا تضع هنا أرقام الطلبات أو بيانات الحسابات.</p>
+  <form id="announcement-form">
+   <input type="hidden" id="announcement-id">
+   <label for="announcement-title">عنوان الإعلان</label>
+   <input id="announcement-title" maxlength="90" required placeholder="مثال: عرض خاص من أحمدكو" style="display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid var(--border);border-radius:8px">
+   <label for="announcement-message">نص الإعلان</label>
+   <textarea id="announcement-message" maxlength="700" required rows="4" placeholder="اكتب تفاصيل العرض أو الكلمة التي تريد عرضها للزبائن..." style="display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid var(--border);border-radius:8px;font:inherit"></textarea>
+   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+    <div><label for="announcement-start">يبدأ العرض (اختياري)</label><input id="announcement-start" type="datetime-local" style="width:100%;padding:11px;margin-top:8px;border:1px solid var(--border);border-radius:8px"></div>
+    <div><label for="announcement-end">ينتهي العرض (اختياري)</label><input id="announcement-end" type="datetime-local" style="width:100%;padding:11px;margin-top:8px;border:1px solid var(--border);border-radius:8px"></div>
+   </div>
+   <label style="display:flex;align-items:center;gap:8px;margin:15px 0"><input id="announcement-active" type="checkbox" checked> نشر الإعلان للزبائن</label>
+   <button class="primary" id="announcement-save" type="submit">حفظ الإعلان</button>
+   <button class="primary" id="announcement-cancel" type="button" style="background:#64748b">إلغاء التعديل</button>
+   <p id="announcement-message-status" class="muted" aria-live="polite"></p>
+  </form>
+ </div>
+ <div class="panel"><h3>الإعلانات المحفوظة</h3><div id="announcements-list" class="muted">جارٍ التحميل...</div></div>
+</section>
+
+<section class="page" id="page-diagnostics">
+ <h2 class="section-title">فحص قاعدة البيانات</h2>
+ <div class="panel">
+  <h3>نتائج الاتصال والصلاحيات</h3>
+  <p class="muted">
+   تظهر هنا نتيجة كل جدول بشكل مستقل لتحديد سبب أي مشكلة.
+  </p>
+  <div id="diagnostics-list">جارٍ الفحص...</div>
+ </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+ AHMEDKO DELIVERY © 2026<br>
+ معسكر الشاطئ – شارع حميد
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(() => {
+"use strict";
+
+const SUPABASE_URL =
+ "https://pqulzfhisidcatrakxsx.supabase.co";
+
+const SUPABASE_KEY =
+ "sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+const panel = $("login-panel");
+const app = $("app");
+const authMessage = $("auth-message");
+
+let currentUser = null;
+let diagnostics = {};
+let tableData = {};
+
+const tableConfig = {
+ orders:{
+  title:"الطلبات",
+  columns:[
+   "id","customer_name","customer_phone",
+   "pickup_address","delivery_address",
+   "status","delivery_price","notes","created_at"
+  ]
+ },
+ drivers:{
+  title:"السائقون",
+  columns:[
+   "id","full_name","phone","vehicle_type",
+   "is_active","application_status","created_at"
+  ]
+ },
+ stores:{
+  title:"المتاجر",
+  columns:[
+   "id","store_name","contact_name",
+   "phone","address","store_type","is_active"
+  ]
+ },
+ regions:{
+  title:"المناطق",
+  columns:["id","name","is_active","created_at"]
+ },
+ delivery_rates:{
+  title:"أسعار التوصيل",
+  columns:[
+   "id","pickup_region_id","delivery_region_id",
+   "vehicle_type","price","currency","is_active"
+  ]
+ },
+
+};
+
+function escapeHTML(value){
+ return String(value ?? "")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+function showLogin(message){
+ app.hidden = true;
+ panel.hidden = false;
+ authMessage.textContent = message || "أدخل بيانات المدير.";
+}
+
+function showApp(){
+ panel.hidden = true;
+ app.hidden = false;
+}
+
+function showPage(name){
+ document.querySelectorAll(".page").forEach(page=>{
+  page.classList.toggle("active",page.id==="page-"+name);
+ });
+ document.querySelectorAll(".nav-button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.page===name);
+ });
+}
+
+document.querySelectorAll(".nav-button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  showPage(button.dataset.page);
+  if(button.dataset.page==="menus")loadMenuManager();
+ });
+});
+
+async function verifyAdmin(){
+ const {data,error} = await db.auth.getUser();
+
+ if(error || !data.user){
+  throw new Error("تعذر التحقق من حساب الدخول.");
+ }
+
+ currentUser = data.user;
+
+ const result = await db
+  .from("user_roles")
+  .select("role")
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
+
+ if(result.error){
+  throw new Error(
+   "فشل الوصول إلى جدول user_roles: "+result.error.message
+  );
+ }
+
+ if(!result.data || result.data.role !== "admin"){
+  await db.auth.signOut();
+  throw new Error("هذا الحساب ليس مديراً معتمداً.");
+ }
+
+ $("account-label").textContent =
+  currentUser.email || "مدير المكتب";
+
+ return true;
+}
+
+function setDiagnostic(name,ok,detail){
+ diagnostics[name] = {ok,detail};
+ renderDiagnostics();
+}
+
+function renderDiagnostics(){
+ const container = $("diagnostics-list");
+ container.innerHTML = "";
+
+ Object.entries(diagnostics).forEach(([name,result])=>{
+  const div = document.createElement("div");
+  div.style.marginBottom = "10px";
+
+  const status = result.ok
+   ? "✅ متاح"
+   : "❌ فشل الوصول";
+
+  div.innerHTML =
+   '<div class="'+(result.ok?"success":"error")+'">'+
+   '<strong>'+escapeHTML(name)+'</strong> — '+status+
+   '<br>'+escapeHTML(result.detail)+
+   '</div>';
+
+  container.appendChild(div);
+ });
+}
+
+async function countTable(name,query){
+ try{
+  const result = await query;
+
+  if(result.error){
+   setDiagnostic(name,false,result.error.message);
+   return {ok:false,count:null};
+  }
+
+  setDiagnostic(name,true,"تم الاتصال بنجاح.");
+  return {ok:true,count:result.count ?? 0};
+ }catch(error){
+  setDiagnostic(name,false,error.message);
+  return {ok:false,count:null};
+ }
+}
+
+async function loadTable(name){
+ const config = tableConfig[name];
+ if(!config) return;
+
+ const container = $("table-"+name);
+ container.textContent = "جارٍ تحميل البيانات...";
+
+ try{
+  let query = db.from(name).select("*");
+
+  if(name !== "business_settings"){
+   query = query.order("created_at",{ascending:false});
+  }
+
+  const result = await query.limit(100);
+
+  if(result.error){
+   container.innerHTML =
+    '<div class="error">تعذر قراءة جدول '+
+    escapeHTML(name)+': '+
+    escapeHTML(result.error.message)+
+    '</div>';
+
+   setDiagnostic(name,false,result.error.message);
+   return;
+  }
+
+  tableData[name] = result.data || [];
+  setDiagnostic(name,true,"تم تحميل "+tableData[name].length+" سجل.");
+
+  renderTable(name);
+
+ }catch(error){
+  container.innerHTML =
+   '<div class="error">'+escapeHTML(error.message)+'</div>';
+  setDiagnostic(name,false,error.message);
+ }
+}
+
+function renderTable(name,search=""){
+ const config = tableConfig[name];
+ const container = $("table-"+name);
+ const rows = tableData[name] || [];
+
+ const filtered = rows.filter(row=>
+  JSON.stringify(row).toLowerCase().includes(search.toLowerCase())
+ );
+
+ if(!filtered.length){
+  container.innerHTML =
+   '<p class="muted">لا توجد بيانات للعرض.</p>';
+  return;
+ }
+
+ const columns = config.columns.filter(column=>
+  filtered.some(row=>Object.hasOwn(row,column))
+ );
+
+ let html = '<div class="table-wrap"><table><thead><tr>';
+
+ columns.forEach(column=>{
+  html += "<th>"+escapeHTML(column)+"</th>";
+ });
+
+ html += "</tr></thead><tbody>";
+
+ filtered.forEach(row=>{
+  html += "<tr>";
+  columns.forEach(column=>{
+   let value = row[column];
+
+   if(typeof value === "boolean"){
+    value = value ? "نعم" : "لا";
+   }
+
+   if(value === null || value === undefined){
+    value = "—";
+   }
+
+   if(typeof value === "object"){
+    value = JSON.stringify(value);
+   }
+
+   html += "<td>"+escapeHTML(value)+"</td>";
+  });
+  html += "</tr>";
+ });
+
+ html += "</tbody></table></div>";
+ container.innerHTML = html;
+}
+
+document.querySelectorAll(".search").forEach(input=>{
+ input.addEventListener("input",()=>{
+  renderTable(input.dataset.table,input.value);
+ });
+});
+
+$("store-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const button=event.currentTarget.querySelector('[type="submit"]'),message=$("store-form-message");
+ const payload={
+  store_name:$("store-name").value.trim(),
+  contact_name:$("store-contact").value.trim()||null,
+  phone:$("store-phone").value.trim()||null,
+  address:$("store-address").value.trim()||null,
+  store_type:$("store-type").value,
+  is_active:true
+ };
+ if(payload.store_name.length<2){message.textContent="أدخل اسماً صحيحاً للنشاط.";return;}
+ button.disabled=true;message.textContent="جارٍ تسجيل الشريك...";
+ try{
+  const result=await db.from("stores").insert(payload);
+  if(result.error)throw result.error;
+  message.textContent="تم تسجيل الشريك بنجاح. يمكنك الآن إضافة أقسامه ومنتجاته من إدارة القوائم.";
+  event.currentTarget.reset();
+  await loadTable("stores");await loadMenuManager();
+ }catch(error){message.textContent="تعذر تسجيل الشريك: "+error.message;}
+ finally{button.disabled=false;}
+});
+
+async function loadRateFormOptions(){
+ const pickup=$("rate-pickup-region"),delivery=$("rate-delivery-region");
+ try{
+  const result=await db.from("regions").select("id,name").eq("is_active",true).order("name");
+  if(result.error)throw result.error;
+  const options='<option value="">اختر المنطقة</option>'+(result.data||[]).map(r=>'<option value="'+escapeHTML(r.id)+'">'+escapeHTML(r.name)+'</option>').join("");
+  pickup.innerHTML=options;delivery.innerHTML=options;
+  if(!result.data?.length)$("delivery-rate-message").textContent="لا توجد مناطق مفعّلة. راجع جدول المناطق أولاً.";
+ }catch(error){$("delivery-rate-message").textContent="تعذر تحميل المناطق: "+error.message;}
+}
+$("delivery-rate-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const message=$("delivery-rate-message"),button=event.currentTarget.querySelector('[type="submit"]');
+ const pickup=$("rate-pickup-region").value,delivery=$("rate-delivery-region").value;
+ const vehicle=$("rate-vehicle").value,price=Number($("rate-price").value);
+ if(!pickup||!delivery||!vehicle||!Number.isFinite(price)||price<=0){message.textContent="أكمل جميع الحقول بسعر صحيح أكبر من صفر.";return;}
+ button.disabled=true;message.textContent="جارٍ حفظ السعر...";
+ try{
+  const existing=await db.from("delivery_rates").select("id").eq("pickup_region_id",pickup).eq("delivery_region_id",delivery).eq("vehicle_type",vehicle).eq("is_active",true);
+  if(existing.error)throw existing.error;
+  if(existing.data.length>1)throw new Error("يوجد أكثر من سعر نشط لهذا المسار. عالج التكرار في جدول الأسعار قبل الحفظ.");
+  let result;
+  if(existing.data.length===1){
+   result=await db.from("delivery_rates").update({price,currency:"ILS",is_active:true}).eq("id",existing.data[0].id);
+  }else{
+   result=await db.from("delivery_rates").insert({pickup_region_id:pickup,delivery_region_id:delivery,vehicle_type:vehicle,price,currency:"ILS",is_active:true});
+  }
+  if(result.error)throw result.error;
+  message.textContent="تم حفظ السعر المعتمد بالشيكل بنجاح.";
+  $("rate-price").value="";
+  await loadTable("delivery_rates");
+ }catch(error){message.textContent="تعذر حفظ السعر: "+error.message;}
+ finally{button.disabled=false;}
+});
+$("refresh-rates")?.addEventListener("click",()=>loadTable("delivery_rates"));
+
+async  function loadSettings(){
+ const result = await db
+  .from("business_settings")
+  .select("office_commission_percent,currency")
+  .limit(1)
+.maybeSingle();
+
+ if(result.error){
+  $("commission").textContent = "خطأ";
+  $("finance-commission").textContent = "غير متاح";
+  $("finance-currency").textContent = "غير متاح";
+
+  setDiagnostic("business_settings",false,result.error.message);
+  return;
+ }
+
+ setDiagnostic("business_settings",true,"تم تحميل إعدادات المكتب.");
+
+ const commission = result.data?.office_commission_percent;
+ const currency = result.data?.currency;
+
+ $("commission").textContent =
+  commission === null || commission === undefined
+   ? "—" : commission+"%";
+
+ $("finance-commission").textContent =
+  commission === null || commission === undefined
+   ? "—" : commission+"%";
+
+ $("finance-currency").textContent = currency || "—";
+}
+
+async function loadStatistics(){
+  const now = new Date();
+  const start = new Date(
+    now.getFullYear(),now.getMonth(),now.getDate()
+  ).toISOString();
+
+  const [todayOrders,totalOrders,drivers] = await Promise.all([
+    countTable(
+      "orders today",
+      db.from("orders")
+        .select("id",{count:"exact",head:true})
+        .gte("created_at",start)
+    ),
+    countTable(
+      "all orders",
+      db.from("orders")
+        .select("id",{count:"exact",head:true})
+    ),
+    countTable(
+      "drivers",
+      db.from("drivers")
+        .select("id",{count:"exact",head:true})
+    )
+  ]);
+
+  $("today-orders").textContent =
+    todayOrders.ok ? todayOrders.count : "خطأ";
+  $("total-orders").textContent =
+    totalOrders.ok ? totalOrders.count : "خطأ";
+  $("drivers-count").textContent =
+    drivers.ok ? drivers.count : "خطأ";
+
+  $("finance-summary").textContent =
+    "طلبات اليوم: "+(todayOrders.ok?todayOrders.count:"غير متاح")+
+    " | إجمالي الطلبات: "+(totalOrders.ok?totalOrders.count:"غير متاح");
+
+  const failed = [todayOrders,totalOrders,drivers].filter(x=>!x.ok).length;
+  $("dashboard-message").innerHTML = failed
+    ? '<div class="error">يوجد '+failed+
+      ' استعلامات لم تنجح. افتح قسم فحص النظام لمعرفة التفاصيل.</div>'
+    : '<div class="success">تم تحميل الإحصائيات بنجاح.</div>';
+}
+
+function localDateTimeValue(value){
+ if(!value)return "";
+ const d=new Date(value);
+ const pad=n=>String(n).padStart(2,"0");
+ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
+}
+function resetAnnouncementForm(){
+ $("announcement-id").value="";
+ $("announcement-title").value="";
+ $("announcement-message").value="";
+ $("announcement-start").value="";
+ $("announcement-end").value="";
+ $("announcement-active").checked=true;
+ $("announcement-save").textContent="حفظ الإعلان";
+}
+async function loadAnnouncements(){
+ const box=$("announcements-list");
+ box.textContent="جارٍ تحميل الإعلانات...";
+ const result=await db.from("public_announcements").select("*").order("created_at",{ascending:false}).limit(50);
+ if(result.error){
+  box.innerHTML='<div class="error">تعذر تحميل الإعلانات: '+escapeHTML(result.error.message)+'<br>تأكد من تنفيذ ملف إعداد جدول الإعلانات.</div>';
+  setDiagnostic("public_announcements",false,result.error.message);
+  return;
+ }
+ setDiagnostic("public_announcements",true,"تم تحميل "+result.data.length+" إعلان.");
+ if(!result.data.length){box.textContent="لا توجد إعلانات محفوظة بعد.";return;}
+ box.innerHTML="";
+ result.data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="panel";
+  const state=item.is_active?"منشور":"مخفي";
+  row.innerHTML='<strong>'+escapeHTML(item.title)+'</strong><p>'+escapeHTML(item.message)+'</p><small class="muted">الحالة: '+state+'</small><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" class="primary edit-announcement">تعديل</button><button type="button" class="primary toggle-announcement" style="background:#64748b">'+(item.is_active?"إخفاء":"نشر")+'</button><button type="button" class="primary delete-announcement" style="background:#a93226">حذف</button></div>';
+  row.querySelector(".edit-announcement").addEventListener("click",()=>{
+   $("announcement-id").value=item.id;
+   $("announcement-title").value=item.title||"";
+   $("announcement-message").value=item.message||"";
+   $("announcement-start").value=localDateTimeValue(item.starts_at);
+   $("announcement-end").value=localDateTimeValue(item.ends_at);
+   $("announcement-active").checked=!!item.is_active;
+   $("announcement-save").textContent="حفظ التعديلات";
+   showPage("announcements");
+   $("announcement-title").focus();
+  });
+  row.querySelector(".toggle-announcement").addEventListener("click",async()=>{
+   const update=await db.from("public_announcements").update({is_active:!item.is_active,updated_at:new Date().toISOString()}).eq("id",item.id);
+   if(update.error){alert("تعذر تغيير حالة الإعلان: "+update.error.message);return;}
+   await loadAnnouncements();
+  });
+  row.querySelector(".delete-announcement").addEventListener("click",async()=>{
+   if(!confirm("هل تريد حذف هذا الإعلان نهائياً؟"))return;
+   const del=await db.from("public_announcements").delete().eq("id",item.id);
+   if(del.error){alert("تعذر حذف الإعلان: "+del.error.message);return;}
+   await loadAnnouncements();
+  });
+  box.appendChild(row);
+ });
+}
+$("announcement-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const status=$("announcement-message-status");
+ const button=$("announcement-save");
+ const title=$("announcement-title").value.trim();
+ const message=$("announcement-message").value.trim();
+ if(!title||!message){status.textContent="أدخل عنوان الإعلان ونصه.";return;}
+ const startRaw=$("announcement-start").value;
+ const endRaw=$("announcement-end").value;
+ const starts_at=startRaw?new Date(startRaw).toISOString():null;
+ const ends_at=endRaw?new Date(endRaw).toISOString():null;
+ if(ends_at&&new Date(ends_at)<=new Date(starts_at||Date.now())){status.textContent="وقت الانتهاء يجب أن يكون بعد وقت البداية أو الوقت الحالي.";return;}
+ const payload={title,message,starts_at,ends_at,is_active:$("announcement-active").checked,updated_at:new Date().toISOString()};
+ button.disabled=true;
+ status.textContent="جارٍ الحفظ...";
+ try{
+  const id=$("announcement-id").value;
+  const result=id
+   ? await db.from("public_announcements").update(payload).eq("id",id)
+   : await db.from("public_announcements").insert({...payload,created_by:currentUser.id});
+  if(result.error)throw result.error;
+  status.textContent="تم حفظ الإعلان بنجاح.";
+  resetAnnouncementForm();
+  await loadAnnouncements();
+ }catch(error){status.textContent="تعذر الحفظ: "+error.message;}
+ finally{button.disabled=false;}
+});
+$("announcement-cancel").addEventListener("click",resetAnnouncementForm);
+
+
+const menuStoreSelects=["category-store","product-store"];
+let menuStores=[],menuCategories=[],menuProducts=[];
+function menuMessage(id,message,error=false){const el=$(id);el.textContent=message;el.className=error?"workflow-status error":"workflow-status";}
+function fillMenuStoreSelects(){
+ menuStoreSelects.forEach(id=>{
+  const el=$(id),previous=el.value;
+  el.innerHTML='<option value="">اختر المتجر</option>'+menuStores.map(s=>'<option value="'+escapeHTML(s.id)+'">'+escapeHTML(s.store_name)+'</option>').join("");
+  if(menuStores.some(s=>s.id===previous))el.value=previous;
+ });
+}
+function fillProductCategories(){
+ const storeId=$("product-store").value,previous=$("product-category").value;
+ const list=menuCategories.filter(c=>c.store_id===storeId&&c.is_active!==false);
+ $("product-category").innerHTML='<option value="">اختر القسم</option>'+list.map(c=>'<option value="'+escapeHTML(c.id)+'">'+escapeHTML(c.name)+'</option>').join("");
+ if(list.some(c=>c.id===previous))$("product-category").value=previous;
+}
+async function loadMenuManager(){
+ const box=$("menu-manager-list");
+ box.textContent="جارٍ تحميل المتاجر...";
+ menuStores=[];menuCategories=[];menuProducts=[];
+ const publicRead=async(table,params)=>{
+  const url=new URL(SUPABASE_URL+"/rest/v1/"+table);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const response=await fetch(url.toString(),{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY,Accept:"application/json"}});
+  if(!response.ok)throw new Error(table+" ("+response.status+"): "+(await response.text()).slice(0,180));
+  return response.json();
+ };
+ try{
+  let storeError=null;
+  const s=await db.from("stores").select("id,store_name,is_active").order("store_name");
+  if(s.error)storeError=s.error.message;
+  else menuStores=s.data||[];
+  // Fallback to the public active-store policy if the authenticated query returns no rows.
+  if(!menuStores.length){
+   try{menuStores=await publicRead("stores",{select:"id,store_name,is_active",is_active:"eq.true",order:"store_name.asc"});}
+   catch(fallbackError){if(!storeError)storeError=fallbackError.message;}
+  }
+  fillMenuStoreSelects();
+  if(!menuStores.length){
+   const detail=storeError||"لم تُرجع قاعدة البيانات أي متاجر. تحقق من تفعيل المتاجر وسياسة القراءة.";
+   box.innerHTML='<div class="error">لم نتمكن من تحميل المتاجر لقوائم الاختيار: '+escapeHTML(detail)+'</div>';
+   $("category-store").innerHTML='<option value="">تعذر تحميل المتاجر</option>';
+   $("product-store").innerHTML='<option value="">تعذر تحميل المتاجر</option>';
+   setDiagnostic("تحميل متاجر القوائم",false,detail);
+   return;
+  }
+  const [cats,prods]=await Promise.all([
+   db.from("product_categories").select("id,store_id,name,is_active").order("name"),
+   db.from("products").select("id,store_id,category_id,name,description,price,is_available").order("name")
+  ]);
+  menuCategories=cats.error?[]:(cats.data||[]);
+  menuProducts=prods.error?[]:(prods.data||[]);
+  fillProductCategories();
+  renderMenuManager();
+  const errors=[storeError&&("ملاحظة المتاجر: "+storeError),cats.error&&("الأقسام: "+cats.error.message),prods.error&&("المنتجات: "+prods.error.message)].filter(Boolean);
+  if(errors.length){
+   box.insertAdjacentHTML("afterbegin",'<div class="error">تم تحميل '+menuStores.length+' متجراً. '+escapeHTML(errors.join(" | "))+'</div>');
+   setDiagnostic("تحميل القوائم",false,errors.join(" | "));
+  }else{
+   setDiagnostic("قوائم الطعام والمنتجات",true,"تم تحميل "+menuStores.length+" متجراً و"+menuCategories.length+" قسماً و"+menuProducts.length+" منتجاً.");
+  }
+ }catch(error){
+  fillMenuStoreSelects();
+  box.innerHTML='<div class="error">حدث خطأ أثناء تحميل المتاجر: '+escapeHTML(error.message||String(error))+'</div>';
+  setDiagnostic("تحميل المتاجر",false,error.message||String(error));
+ }
+}
+function renderMenuManager(){
+ const box=$("menu-manager-list");
+ if(!menuStores.length){box.textContent="لا توجد متاجر مسجلة.";return;}
+ let html="";
+ menuStores.forEach(store=>{
+  const cats=menuCategories.filter(c=>c.store_id===store.id);
+  const products=menuProducts.filter(p=>p.store_id===store.id);
+  html+='<div class="workflow-card"><h4>'+escapeHTML(store.store_name)+' <span class="status">'+products.length+' منتج · '+cats.length+' قسم</span></h4>';
+  if(!cats.length)html+='<p class="muted">لا توجد أقسام بعد.</p>';
+  cats.forEach(cat=>{
+   const items=products.filter(p=>p.category_id===cat.id);
+   html+='<div style="padding:10px 0;border-top:1px solid var(--border)"><strong>'+escapeHTML(cat.name)+'</strong> <span class="status">'+items.length+' منتج</span> '+(cat.is_active===false?'<span class="status">قسم مخفي</span>':'')+'<div class="workflow-controls"><button type="button" class="secondary category-toggle" data-id="'+escapeHTML(cat.id)+'" data-active="'+String(cat.is_active!==false)+'">'+(cat.is_active===false?'إظهار القسم':'إخفاء القسم')+'</button></div>';
+   items.forEach(p=>{
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-top:1px dashed var(--border)"><span>'+escapeHTML(p.name)+' — '+escapeHTML(p.price)+' ₪ '+(p.is_available?'':'(غير متاح)')+'</span><div class="workflow-controls"><button type="button" class="secondary product-edit" data-id="'+escapeHTML(p.id)+'">تعديل</button><button type="button" class="secondary product-toggle" data-id="'+escapeHTML(p.id)+'" data-active="'+String(!!p.is_available)+'">'+(p.is_available?'إيقاف':'إتاحة')+'</button></div></div>';
+   });
+   html+='</div>';
+  });
+  html+='</div>';
+ });
+ box.innerHTML=html;
+ box.querySelectorAll(".category-toggle").forEach(btn=>btn.addEventListener("click",async()=>{
+  btn.disabled=true;const active=btn.dataset.active==="true";
+  const r=await db.from("product_categories").update({is_active:!active}).eq("id",btn.dataset.id);
+  if(r.error){alert("تعذر تحديث القسم: "+r.error.message);btn.disabled=false;return;}await loadMenuManager();
+ }));
+ box.querySelectorAll(".product-toggle").forEach(btn=>btn.addEventListener("click",async()=>{
+  btn.disabled=true;const active=btn.dataset.active==="true";
+  const r=await db.from("products").update({is_available:!active}).eq("id",btn.dataset.id);
+  if(r.error){alert("تعذر تحديث المنتج: "+r.error.message);btn.disabled=false;return;}await loadMenuManager();
+ }));
+ box.querySelectorAll(".product-edit").forEach(btn=>btn.addEventListener("click",()=>{
+  const p=menuProducts.find(x=>x.id===btn.dataset.id);if(!p)return;
+  $("product-id").value=p.id;$("product-store").value=p.store_id;fillProductCategories();$("product-category").value=p.category_id||"";
+  $("product-name").value=p.name||"";$("product-price").value=p.price??"";$("product-description").value=p.description||"";$("product-available").checked=!!p.is_available;
+  $("product-form-title").textContent="تعديل المنتج";$("product-save").textContent="حفظ التعديلات";$("product-message").textContent="";
+  $("product-form").scrollIntoView({behavior:"smooth",block:"center"});
+ }));
+}
+$("category-store").addEventListener("change",()=>{});
+$("product-store").addEventListener("change",fillProductCategories);
+$("category-form").addEventListener("submit",async event=>{
+ event.preventDefault();const storeId=$("category-store").value,name=$("category-name").value.trim();
+ if(!storeId||!name){menuMessage("category-message","اختر المتجر واكتب اسم القسم.",true);return;}
+ const btn=event.submitter;btn.disabled=true;menuMessage("category-message","جارٍ حفظ القسم...");
+ const r=await db.from("product_categories").insert({store_id:storeId,name,is_active:true});
+ btn.disabled=false;
+ if(r.error){menuMessage("category-message","تعذر إضافة القسم: "+r.error.message,true);return;}
+ $("category-name").value="";menuMessage("category-message","تمت إضافة القسم بنجاح.");await loadMenuManager();
+});
+function resetProductForm(){
+ $("product-id").value="";$("product-store").value="";fillProductCategories();$("product-category").value="";
+ $("product-name").value="";$("product-price").value="";$("product-description").value="";$("product-available").checked=true;
+ $("product-form-title").textContent="إضافة منتج جديد";$("product-save").textContent="حفظ المنتج";$("product-message").textContent="";
+}
+$("product-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const id=$("product-id").value,storeId=$("product-store").value,categoryId=$("product-category").value;
+ const name=$("product-name").value.trim(),price=Number($("product-price").value),description=$("product-description").value.trim();
+ if(!storeId||!categoryId||!name||!Number.isFinite(price)||price<0){menuMessage("product-message","أكمل المتجر والقسم واسم المنتج والسعر الصحيح.",true);return;}
+ const cat=menuCategories.find(x=>x.id===categoryId&&x.store_id===storeId&&x.is_active!==false);
+ if(!cat){menuMessage("product-message","القسم المختار لا يتبع المتجر المحدد أو أنه مخفي.",true);return;}
+ const payload={store_id:storeId,category_id:categoryId,name,price,description:description||null,is_available:$("product-available").checked};
+ const btn=$("product-save");btn.disabled=true;menuMessage("product-message","جارٍ حفظ المنتج...");
+ const r=id?await db.from("products").update(payload).eq("id",id):await db.from("products").insert(payload);
+ btn.disabled=false;
+ if(r.error){menuMessage("product-message","تعذر حفظ المنتج: "+r.error.message,true);return;}
+ resetProductForm();menuMessage("product-message",id?"تم تحديث المنتج بنجاح.":"تمت إضافة المنتج بنجاح.");await loadMenuManager();
+});
+$("product-cancel").addEventListener("click",resetProductForm);
+
+$("refresh-menus").addEventListener("click",loadMenuManager);
+
+async function importTajMenu(){
+ const button=$("import-taj-menu"),status=$("menu-import-status");
+ const storeId="f9a58bca-a274-43c9-965a-da299201f3a7";
+ button.disabled=true;status.textContent="جارٍ قراءة المنيو والتحقق من بيانات مطبخ التاج...";
+ let addedCategories=0,addedProducts=0,skippedProducts=0;
+ try{
+  const storeCheck=await db.from("stores").select("id,store_name").eq("id",storeId).maybeSingle();
+  if(storeCheck.error)throw new Error(storeCheck.error.message);
+  if(!storeCheck.data)throw new Error("لم يتم العثور على متجر مطبخ التاج في قاعدة البيانات.");
+  const response=await fetch("taj-menu.html",{cache:"no-store"});
+  if(!response.ok)throw new Error("تعذر قراءة ملف منيو التاج ("+response.status+").");
+  const html=await response.text();
+  const match=html.match(/const\s+menu\s*=\s*(\[[\s\S]*?\]);\s*\nlet\s+active/);
+  if(!match)throw new Error("لم أتمكن من استخراج أقسام المنيو من الملف.");
+  const menu=(new Function("return ("+match[1]+")"))();
+  if(!Array.isArray(menu)||!menu.length)throw new Error("بيانات المنيو فارغة.");
+  const catsResult=await db.from("product_categories").select("id,name").eq("store_id",storeId);
+  if(catsResult.error)throw new Error(catsResult.error.message);
+  const knownCats=new Map((catsResult.data||[]).map(c=>[c.name.trim(),c]));
+  for(const [categoryName,items] of menu){
+   let category=knownCats.get(categoryName);
+   if(!category){
+    const inserted=await db.from("product_categories").insert({store_id:storeId,name:categoryName,is_active:true}).select("id,name").single();
+    if(inserted.error)throw new Error("تعذر إنشاء قسم "+categoryName+": "+inserted.error.message);
+    category=inserted.data;knownCats.set(categoryName,category);addedCategories++;
+   }
+   const existing=await db.from("products").select("name").eq("store_id",storeId).eq("category_id",category.id);
+   if(existing.error)throw new Error("تعذر قراءة منتجات قسم "+categoryName+": "+existing.error.message);
+   const names=new Set((existing.data||[]).map(p=>(p.name||"").trim()));
+   const rows=[];
+   for(const item of items){
+    const name=String(item[0]||"").trim();
+    if(!name||names.has(name)){skippedProducts++;continue;}
+    const raw=String(item[1]??"").trim();
+    const price=Number.parseFloat(raw.replace(",","."));
+    if(!Number.isFinite(price)||price<0){skippedProducts++;continue;}
+    let details=[];
+    if(item.length===3)details.push("السعر حسب الخيار: صالة "+item[1]+" ₪، وT.W "+item[2]+" ₪.");
+    else if(raw.includes("-"))details.push("السعر ضمن النطاق "+raw+" ₪؛ يؤكد السعر النهائي عند الطلب.");
+    rows.push({store_id:storeId,category_id:category.id,name,price,description:details.join(" ")||null,is_available:true});
+    names.add(name);
+   }
+   if(rows.length){
+    const inserted=await db.from("products").insert(rows);
+    if(inserted.error)throw new Error("تعذر حفظ منتجات قسم "+categoryName+": "+inserted.error.message);
+    addedProducts+=rows.length;
+   }
+   status.textContent="تمت معالجة قسم "+categoryName+"؛ أضيف حتى الآن "+addedProducts+" صنفاً...";
+  }
+  await loadMenuManager();
+  status.textContent="اكتمل استيراد منيو مطبخ التاج: "+addedCategories+" أقسام جديدة و"+addedProducts+" أصناف جديدة. تم تجاوز "+skippedProducts+" صنفاً موجوداً أو غير صالح دون تكرار.";
+ }catch(error){
+  status.textContent="توقف الاستيراد: "+error.message+" — الأصناف التي حُفظت قبل الخطأ تبقى محفوظة، ويمكن إعادة المحاولة بأمان دون تكرار.";
+ }finally{button.disabled=false;}
+}
+$("import-taj-menu").addEventListener("click",()=>{
+ if(confirm("سيتم استيراد الأقسام والأصناف الموثقة من منيو مطبخ التاج فقط، مع تخطي الموجود وعدم تكراره. هل تريد المتابعة؟"))importTajMenu();
+});
+
+
+
+
+
+
+async function importAutoO2Menu(){
+ const button=$("import-auto-menu"),status=$("menu-import-status");
+ const storeId="d404b052-08e6-4f99-9749-dac2226d5968";
+ button.disabled=true;status.textContent="جارٍ قراءة منيو أوتو O2 والتحقق من الأصناف الموجودة...";
+ let addedCategories=0,addedProducts=0,skippedProducts=0;
+ try{
+  const storeCheck=await db.from("stores").select("id,store_name").eq("id",storeId).maybeSingle();
+  if(storeCheck.error)throw new Error(storeCheck.error.message);
+  if(!storeCheck.data)throw new Error("لم يتم العثور على متجر أوتو O2 في قاعدة البيانات.");
+  const response=await fetch("auto-o2-menu.js",{cache:"no-store"});
+  if(!response.ok)throw new Error("تعذر قراءة ملف المنيو ("+response.status+").");
+  const source=await response.text();
+  const match=source.match(/const\s+menu\s*=\s*(\[[\s\S]*?\]);/);
+  if(!match)throw new Error("لم أتمكن من قراءة أقسام المنيو.");
+  const menu=(new Function("return ("+match[1]+")"))();
+  if(!Array.isArray(menu)||!menu.length)throw new Error("ملف المنيو فارغ.");
+  const catsResult=await db.from("product_categories").select("id,name").eq("store_id",storeId);
+  if(catsResult.error)throw new Error(catsResult.error.message);
+  const knownCats=new Map((catsResult.data||[]).map(c=>[c.name.trim(),c]));
+  for(const [categoryName,items] of menu){
+   let category=knownCats.get(categoryName);
+   if(!category){
+    const inserted=await db.from("product_categories").insert({store_id:storeId,name:categoryName,is_active:true}).select("id,name").single();
+    if(inserted.error)throw new Error("تعذر إنشاء قسم "+categoryName+": "+inserted.error.message);
+    category=inserted.data;knownCats.set(categoryName,category);addedCategories++;
+   }
+   const existing=await db.from("products").select("name").eq("store_id",storeId).eq("category_id",category.id);
+   if(existing.error)throw new Error("تعذر قراءة منتجات قسم "+categoryName+": "+existing.error.message);
+   const names=new Set((existing.data||[]).map(p=>(p.name||"").trim()));
+   const rows=[];
+   for(const item of items){
+    const name=String(item[0]||"").trim(),price=Number(item[1]);
+    if(!name||names.has(name)){skippedProducts++;continue;}
+    if(!Number.isFinite(price)||price<0){skippedProducts++;continue;}
+    rows.push({store_id:storeId,category_id:category.id,name,price,description:null,is_available:true});
+    names.add(name);
+   }
+   if(rows.length){
+    const inserted=await db.from("products").insert(rows);
+    if(inserted.error)throw new Error("تعذر حفظ منتجات قسم "+categoryName+": "+inserted.error.message);
+    addedProducts+=rows.length;
+   }
+   status.textContent="تمت معالجة قسم "+categoryName+"؛ أضيف حتى الآن "+addedProducts+" صنفاً...";
+  }
+  await loadMenuManager();
+  status.textContent="اكتمل استيراد منيو أوتو O2: "+addedCategories+" أقسام جديدة و"+addedProducts+" أصناف جديدة. تم تجاوز "+skippedProducts+" صنفاً موجوداً لتجنب التكرار.";
+ }catch(error){
+  status.textContent="توقف الاستيراد: "+error.message+" — ما تم حفظه يبقى محفوظاً، ويمكن إعادة المحاولة دون تكرار الأصناف الموجودة.";
+ }finally{button.disabled=false;}
+}
+$("import-auto-menu").addEventListener("click",()=>{
+ if(confirm("سيتم استيراد الأصناف المقروءة بوضوح فقط من صورة منيو أوتو O2. الأصناف غير الواضحة مستبعدة، والموجود لن يتكرر. هل تريد المتابعة؟"))importAutoO2Menu();
+});
+
+const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"استلم السائق الطلب – في الطريق",delivered:"تم التسليم",cancelled:"ملغي"};
+function whatsappNumber(value){
+ let digits=String(value||"").replace(/\D/g,"");
+ if(digits.startsWith("00"))digits=digits.slice(2);
+ if(digits.startsWith("970")||digits.startsWith("972"))return digits;
+ if(digits.startsWith("0"))return "970"+digits.slice(1);
+ if(digits.startsWith("5")&&digits.length===9)return "970"+digits;
+ return digits;
+}
+const vehicleLabels={bicycle:"دراجة",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة / جيب",tuk_tuk:"توك توك",bus:"باص"};
+let workflowOrders=[];
+let workflowDrivers=[];
+
+
+async function loadDriverApplications(){
+ const box=$("driver-applications");if(!box)return;
+ box.textContent="جارٍ تحميل طلبات الانضمام...";
+ const result=await db.from("drivers").select("id,full_name,phone,vehicle_type,created_at,user_id").eq("application_status","pending").order("created_at",{ascending:true});
+ if(result.error){box.innerHTML='<div class="error">تعذر تحميل طلبات السائقين: '+escapeHTML(result.error.message)+'</div>';return;}
+ if(!result.data.length){box.textContent="لا توجد طلبات انضمام معلقة حالياً.";return;}
+ box.innerHTML="";
+ result.data.forEach(driver=>{
+  const card=document.createElement("div");card.className="workflow-card";
+  card.innerHTML='<h4>'+escapeHTML(driver.full_name)+'</h4><div class="workflow-meta">الهاتف: '+escapeHTML(driver.phone)+'<br>وسيلة النقل: '+escapeHTML(vehicleLabels[driver.vehicle_type]||driver.vehicle_type)+'<br>تاريخ الطلب: '+escapeHTML(driver.created_at?new Date(driver.created_at).toLocaleString("ar-PS"):"—")+'</div><div class="workflow-controls"><button type="button" data-action="approve">قبول وتفعيل السائق</button><button type="button" class="secondary" data-action="reject">رفض الطلب</button></div><div class="workflow-status" aria-live="polite"></div>';
+  const act=async(status)=>{
+   const buttons=card.querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
+   const statusBox=card.querySelector(".workflow-status");statusBox.textContent="جارٍ حفظ القرار...";
+   const payload={application_status:status,is_active:status==="approved"};
+   const update=await db.from("drivers").update(payload).eq("id",driver.id);
+   if(update.error){statusBox.textContent="تعذر حفظ القرار: "+update.error.message;buttons.forEach(b=>b.disabled=false);return;}
+   statusBox.textContent=status==="approved"?"تم قبول السائق وتفعيل حسابه.":"تم رفض طلب السائق.";
+   await loadDriverApplications();await loadTable("drivers");await loadOrderWorkflow();await loadStatistics();
+  };
+  card.querySelector('[data-action="approve"]').addEventListener("click",()=>act("approved"));
+  card.querySelector('[data-action="reject"]').addEventListener("click",()=>{if(confirm("هل تريد رفض طلب الانضمام؟"))act("rejected");});
+  box.appendChild(card);
+ });
+}
+$("refresh-driver-applications")?.addEventListener("click",loadDriverApplications);
+
+async function loadOrderWorkflow(){
+ const box=$("orders-workflow");
+ box.textContent="جارٍ تحميل الطلبات والسائقين...";
+ const [ordersResult,driversResult]=await Promise.all([
+  db.from("orders").select("*").order("created_at",{ascending:false}).limit(100),
+  db.from("drivers").select("id,full_name,phone,vehicle_type,is_active,application_status").eq("is_active",true).eq("application_status","approved").order("full_name")
+ ]);
+ if(ordersResult.error){box.innerHTML='<div class="error">تعذر تحميل الطلبات: '+escapeHTML(ordersResult.error.message)+'</div>';return;}
+ if(driversResult.error){box.innerHTML='<div class="error">تعذر تحميل السائقين: '+escapeHTML(driversResult.error.message)+'</div>';return;}
+ workflowOrders=ordersResult.data||[];
+ workflowDrivers=driversResult.data||[];
+ if(!workflowOrders.length){box.innerHTML='<p class="muted">لا توجد طلبات مسجلة حالياً.</p>';return;}
+ box.innerHTML="";
+ workflowOrders.forEach(order=>{
+  const driver=workflowDrivers.find(d=>d.id===order.driver_id);
+  const card=document.createElement("div");
+  card.className="workflow-card";
+  const driverOptions=['<option value="">اختر السائق المعتمد</option>'].concat(workflowDrivers.map(d=>'<option value="'+escapeHTML(d.id)+'" '+(d.id===order.driver_id?'selected':'')+'>'+escapeHTML(d.full_name)+' — '+escapeHTML(vehicleLabels[d.vehicle_type]||d.vehicle_type||'')+'</option>')).join("");
+  const allowedAdminStatuses={
+   new:["new","cancelled"],
+   confirmed:["confirmed","cancelled"],
+   assigned:["assigned","cancelled"],
+   picked_up:["picked_up","cancelled"],
+   delivered:["delivered"],
+   cancelled:["cancelled"]
+  };
+  const allowedStatuses=allowedAdminStatuses[order.status]||[order.status];
+  const statusOptions=allowedStatuses.map(value=>'<option value="'+escapeHTML(value)+'">'+escapeHTML(orderStatusLabels[value]||value)+'</option>').join("");
+  const created=order.created_at?new Date(order.created_at).toLocaleString("ar-PS"):"—";
+  const pricePanel=order.status==="new"&&(order.delivery_price===null||order.delivery_price===undefined)
+   ? '<div class="workflow-controls" style="background:#fff9e6;border:1px solid #f5c542;padding:12px;border-radius:10px;margin-top:12px"><label style="font-weight:bold">السعر المتفق عليه مع العميل (₪)</label><input class="order-price-input" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="أدخل السعر بالشيكل" style="padding:10px;border:1px solid var(--border);border-radius:8px;width:160px"><button type="button" data-action="approve-price">اعتماد السعر وتأكيد الطلب</button></div>'
+   : "";
+  card.innerHTML=
+   '<h4>طلب: '+escapeHTML(order.customer_name||"بدون اسم")+' <span class="status">'+escapeHTML(orderStatusLabels[order.status]||order.status||"—")+'</span></h4>'+
+   '<div class="workflow-meta">الهاتف: '+escapeHTML(order.customer_phone||"—")+'<br>الاستلام: '+escapeHTML(order.pickup_address||"—")+'<br>التسليم: '+escapeHTML(order.delivery_address||"—")+'<br>تفاصيل الطلب: '+escapeHTML(order.notes||"—")+'<br>المركبة المطلوبة: '+escapeHTML(vehicleLabels[order.vehicle_type]||order.vehicle_type||"غير محددة")+'<br>الأجرة: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع العميل":escapeHTML(order.delivery_price)+" ₪")+'<br>السائق الحالي: '+escapeHTML(driver?.full_name|| (order.driver_id?"معرّف سائق مسجل":"لم يُسند بعد"))+'<br>تاريخ الطلب: '+escapeHTML(created)+'</div>'+
+   pricePanel+
+   '<div class="workflow-controls"><select class="assign-driver" aria-label="اختيار السائق">'+driverOptions+'</select><button type="button" data-action="assign">إسناد السائق</button><select class="change-status" aria-label="حالة الطلب">'+statusOptions+'</select><button type="button" class="secondary" data-action="status">حفظ الحالة</button>'+
+   (whatsappNumber(order.customer_phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(order.customer_phone)+'?text='+encodeURIComponent("مرحباً "+(order.customer_name||"بك")+"، تحديث من أحمدكو ديلفري لطلبك رقم "+order.id+": "+(orderStatusLabels[order.status]||order.status)+". للاستفسار تواصل معنا على 0598407547.")+'">إبلاغ الزبون عبر واتساب</a>':"")+
+   (driver&&whatsappNumber(driver.phone)?'<a class="button" style="margin-top:0;background:#16845b;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+whatsappNumber(driver.phone)+'?text='+encodeURIComponent("مهمة توصيل جديدة من أحمدكو ديلفري. رقم الطلب: "+order.id+"\nالزبون: "+(order.customer_name||"—")+"\nهاتف الزبون: "+(order.customer_phone||"—")+"\nالاستلام: "+(order.pickup_address||"—")+"\nالتسليم: "+(order.delivery_address||"—")+"\nالأجرة: "+(order.delivery_price===null||order.delivery_price===undefined?"غير معتمدة بعد":order.delivery_price+" ₪"))+'">إرسال المهمة للسائق عبر واتساب</a>':"")+
+   (order.status==="delivered"?'<button type="button" class="secondary" data-action="earning">مراجعة مستحقات الطلب</button>':"")+'</div>'+
+   '<div class="workflow-status" aria-live="polite"></div>';
+  const priceButton=card.querySelector('[data-action="approve-price"]');
+  if(priceButton)priceButton.addEventListener("click",async()=>{
+   const statusBox=card.querySelector(".workflow-status");
+   const price=Number(card.querySelector(".order-price-input").value);
+   if(!Number.isFinite(price)||price<=0){statusBox.textContent="أدخل سعراً صحيحاً أكبر من صفر.";return;}
+   priceButton.disabled=true;statusBox.textContent="جارٍ اعتماد السعر وتأكيد الطلب...";
+   const result=await db.rpc("admin_set_order_price",{p_order_id:order.id,p_price:price});
+   if(result.error){
+    priceButton.disabled=false;
+    statusBox.textContent="تعذر اعتماد السعر: "+result.error.message;
+    return;
+   }
+   statusBox.textContent="تم اعتماد السعر وتأكيد الطلب بنجاح.";
+   await loadOrderWorkflow();await loadTable("orders");await loadStatistics();
+  });
+  card.querySelector('[data-action="assign"]').addEventListener("click",async()=>{
+   const select=card.querySelector(".assign-driver");
+   const driverId=select.value;
+   const statusBox=card.querySelector(".workflow-status");
+   if(!["confirmed","assigned"].includes(order.status)){statusBox.textContent="لا يمكن إسناد الطلب قبل اعتماد السعر وتأكيده من الإدارة.";return;}
+   if(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0){statusBox.textContent="اعتمد سعر التوصيل أولاً قبل إسناد الطلب إلى سائق.";return;}
+   if(!driverId){statusBox.textContent="اختر سائقاً معتمداً أولاً.";return;}
+   const button=card.querySelector('[data-action="assign"]');button.disabled=true;statusBox.textContent="جارٍ إسناد الطلب...";
+   const result=await db.from("orders").update({driver_id:driverId,status:"assigned"}).eq("id",order.id);
+   button.disabled=false;
+   if(result.error){statusBox.textContent="تعذر الإسناد: "+result.error.message;return;}
+   statusBox.textContent="تم إسناد الطلب وتحديث حالته.";
+   await loadOrderWorkflow();await loadTable("orders");await loadStatistics();
+  });
+  card.querySelector('[data-action="status"]').addEventListener("click",async()=>{
+   const nextStatus=card.querySelector(".change-status").value;
+   const statusBox=card.querySelector(".workflow-status");
+   if(nextStatus!=="new"&&nextStatus!=="cancelled"&&(order.delivery_price===null||order.delivery_price===undefined||Number(order.delivery_price)<=0)){statusBox.textContent="لا يمكن تأكيد الطلب أو تحريكه قبل الاتفاق على أجرة التوصيل واعتمادها من زر «اعتماد السعر وتأكيد الطلب».";return;}
+   if(nextStatus!==order.status&&!allowedStatuses.includes(nextStatus)){statusBox.textContent="هذا الانتقال غير مسموح من حالة الطلب الحالية. استخدم إسناد السائق أو دع السائق يحدّث الاستلام والتسليم.";return;}
+   if(nextStatus==="assigned"&&!order.driver_id){statusBox.textContent="يجب إسناد سائق قبل اختيار حالة «تم إسناده».";return;}
+   if(nextStatus==="delivered"&&!order.driver_id){statusBox.textContent="لا يمكن إغلاق الطلب دون سائق مسند.";return;}
+   if(nextStatus==="picked_up"&&!order.driver_id){statusBox.textContent="لا يمكن تسجيل استلام الطلب قبل إسناده إلى سائق.";return;}
+   const button=card.querySelector('[data-action="status"]');button.disabled=true;statusBox.textContent="جارٍ تحديث حالة الطلب...";
+   const result=await db.from("orders").update({status:nextStatus}).eq("id",order.id);
+   button.disabled=false;
+   if(result.error){statusBox.textContent="تعذر تحديث الحالة: "+result.error.message;return;}
+   if(nextStatus==="delivered"){
+    try{await ensureOrderEarning({...order,status:nextStatus});statusBox.textContent="تم التسليم وإنشاء/التحقق من مستحقات السائق.";}
+    catch(error){statusBox.textContent="تم تحديث الطلب إلى تم التسليم، لكن تعذر إنشاء المستحقات: "+error.message+" — استخدم زر مراجعة المستحقات بعد معالجة السبب.";}
+   }else{statusBox.textContent="تم تحديث حالة الطلب.";}
+   await loadOrderWorkflow();await loadTable("orders");await loadFinanceEarnings();await loadStatistics();
+  });
+  const earningButton=card.querySelector('[data-action="earning"]');
+  if(earningButton)earningButton.addEventListener("click",async()=>{
+   const statusBox=card.querySelector(".workflow-status");earningButton.disabled=true;statusBox.textContent="جارٍ فحص سجل المستحقات...";
+   try{await ensureOrderEarning(order);statusBox.textContent="تم التحقق من سجل مستحقات هذا الطلب دون تكرار.";await loadFinanceEarnings();}
+   catch(error){statusBox.textContent="تعذر إنشاء المستحقات: "+error.message;}
+   earningButton.disabled=false;
+  });
+  box.appendChild(card);
+ });
+}
+
+async function ensureOrderEarning(order){
+ if(!order.driver_id)throw new Error("لا يوجد سائق مسند لهذا الطلب.");
+ const amount=Number(order.delivery_price);
+ if(!Number.isFinite(amount)||amount<=0)throw new Error("أجرة التوصيل غير محددة أو غير صحيحة.");
+ const settings=await db.from("business_settings").select("office_commission_percent").limit(1).maybeSingle();
+ if(settings.error)throw new Error("تعذر قراءة نسبة عمولة المكتب: "+settings.error.message);
+ const rate=Number(settings.data?.office_commission_percent ?? 15);
+ if(!Number.isFinite(rate)||rate<0||rate>100)throw new Error("نسبة عمولة المكتب غير صحيحة.");
+ const officeCommission=Number((amount*rate/100).toFixed(2));
+ const driverAmount=Number((amount-officeCommission).toFixed(2));
+ const existing=await db.from("driver_earnings").select("id,delivery_amount,office_commission,driver_amount,driver_id,payment_status").eq("order_id",order.id).limit(1);
+ if(existing.error)throw new Error(existing.error.message);
+ const values={driver_id:order.driver_id,delivery_amount:amount,office_commission:officeCommission,driver_amount:driverAmount};
+ if(existing.data&&existing.data.length){
+  const row=existing.data[0];
+  if(row.payment_status==="paid")return row.id;
+  if(Number(row.delivery_amount)!==amount||Number(row.office_commission)!==officeCommission||Number(row.driver_amount)!==driverAmount||row.driver_id!==order.driver_id){
+   const fixed=await db.from("driver_earnings").update(values).eq("id",row.id);
+   if(fixed.error)throw new Error("تعذر تصحيح توزيع المستحقات: "+fixed.error.message);
+  }
+  return row.id;
+ }
+ const inserted=await db.from("driver_earnings").insert({...values,order_id:order.id,payment_status:"pending",notes:"تم احتساب عمولة المكتب "+rate+"% ومستحق السائق "+(100-rate)+"% تلقائياً"});
+ if(inserted.error)throw new Error(inserted.error.message);
+ return true;
+}
+
+async function loadFinanceEarnings(){
+ const box=$("earnings-workflow");if(!box)return;
+ box.textContent="جارٍ تحميل المستحقات...";
+ const result=await db.from("driver_earnings").select("id,driver_id,order_id,delivery_amount,office_commission,driver_amount,payment_status,notes,created_at").order("created_at",{ascending:false}).limit(200);
+ if(result.error){box.innerHTML='<div class="error">تعذر قراءة المستحقات: '+escapeHTML(result.error.message)+'</div>';return;}
+ if(!result.data.length){box.innerHTML='<p class="muted">لا توجد سجلات مستحقات بعد. تُنشأ عند تأكيد تسليم الطلب من مركز تشغيل الطلبات.</p>';return;}
+ const driverIds=[...new Set(result.data.map(x=>x.driver_id).filter(Boolean))];
+ let names={};
+ if(driverIds.length){const d=await db.from("drivers").select("id,full_name").in("id",driverIds);if(!d.error)(d.data||[]).forEach(x=>names[x.id]=x.full_name);}
+ let html='<div class="table-wrap"><table><thead><tr><th>السائق</th><th>رقم الطلب</th><th>قيمة التوصيل</th><th>عمولة المكتب</th><th>مستحق السائق</th><th>الدفع</th><th>الإجراء</th></tr></thead><tbody>';
+ result.data.forEach(item=>{
+  html+='<tr><td>'+escapeHTML(names[item.driver_id]||item.driver_id)+'</td><td>'+escapeHTML(item.order_id||"—")+'</td><td>'+escapeHTML(item.delivery_amount)+' ₪</td><td>'+escapeHTML(item.office_commission)+' ₪</td><td>'+escapeHTML(item.driver_amount)+' ₪</td><td>'+escapeHTML(item.payment_status==="paid"?"مدفوع":"قيد الدفع")+'</td><td>'+(item.payment_status==="pending"?'<button type="button" class="primary mark-paid" data-id="'+escapeHTML(item.id)+'" style="padding:7px 10px">تسجيل الدفع</button>':"—")+'</td></tr>';
+ });
+ html+='</tbody></table></div>';box.innerHTML=html;
+ box.querySelectorAll(".mark-paid").forEach(button=>button.addEventListener("click",async()=>{
+  if(!confirm("تأكيد تسجيل دفع مستحقات هذا السائق؟"))return;
+  button.disabled=true;
+  const update=await db.from("driver_earnings").update({payment_status:"paid"}).eq("id",button.dataset.id);
+  if(update.error){alert("تعذر تسجيل الدفع: "+update.error.message);button.disabled=false;return;}
+  await loadFinanceEarnings();
+ }));
+}
+$("refresh-earnings")?.addEventListener("click",loadFinanceEarnings);
+
+async function loadDashboard(){
+ await verifyAdmin();
+ showApp();
+ showPage("home");
+
+ diagnostics = {};
+ renderDiagnostics();
+
+ await Promise.all([
+  loadStatistics(),
+  loadSettings(),
+  loadAnnouncements(),
+  loadOrderWorkflow(),
+  loadDriverApplications(),
+  loadFinanceEarnings(),
+  loadMenuManager(),
+  loadRateFormOptions(),
+  ...Object.keys(tableConfig).map(loadTable)
+ ]);
+}
+
+$("login-button").addEventListener("click",async()=>{
+ const button = $("login-button");
+ button.disabled = true;
+ authMessage.textContent = "جارٍ التحقق من الحساب...";
+
+ try{
+  const {error} = await db.auth.signInWithPassword({
+   email:$("admin-email").value.trim(),
+   password:$("admin-password").value
+  });
+
+  if(error) throw error;
+
+  await loadDashboard();
+
+ }catch(error){
+  showLogin(error.message || "تعذر تسجيل الدخول.");
+ }finally{
+  button.disabled = false;
+ }
+});
+
+$("admin-password").addEventListener("keydown",event=>{
+ if(event.key==="Enter") $("login-button").click();
+});
+
+$("logout-button").addEventListener("click",async()=>{
+ await db.auth.signOut();
+ currentUser = null;
+ showLogin("تم تسجيل الخروج بنجاح.");
+});
+
+db.auth.onAuthStateChange((event,session)=>{
+ if(event==="SIGNED_OUT"){
+  showLogin("يرجى تسجيل الدخول.");
+ }
+});
+
+(async()=>{
+ try{
+  const {data,error} = await db.auth.getSession();
+  if(error) throw error;
+
+  if(data.session){
+   await loadDashboard();
+  }else{
+   showLogin("أدخل بيانات حساب المدير المعتمد.");
+  }
+ }catch(error){
+  showLogin(error.message);
+ }
+})();
+
+})();
+</script>
+
+</body>
+</html>

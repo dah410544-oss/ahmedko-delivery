@@ -1,6 +1,6 @@
 name: Build AHMEDKO Android test APK (manual only)
 # Debug/test build only. Never treat this artifact as an official signed release.
-# The workflow is stored on main but builds the reviewed recovery branch.
+# Deliberately manual-only to avoid repeated APK builds on every source change.
 
 on:
   workflow_dispatch:
@@ -17,10 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - name: Checkout reviewed recovery source
+      - name: Checkout source
         uses: actions/checkout@v5
-        with:
-          ref: recovery/full-project-2026-11-21
 
       - name: Set up Node.js
         uses: actions/setup-node@v5

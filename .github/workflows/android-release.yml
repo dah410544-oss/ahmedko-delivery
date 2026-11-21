@@ -1,0 +1,187 @@
+name: Build AHMEDKO signed Android release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ahmedko-android-release
+  cancel-in-progress: false
+
+jobs:
+  signed-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Validate signing secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in KEYSTORE_B64 KEY_ALIAS KEYSTORE_PASSWORD KEY_PASSWORD; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing Android signing secret. Follow ANDROID_RELEASE_SETUP.md."
+              exit 1
+            fi
+          done
+
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Prepare and validate web app
+        run: |
+          set -euo pipefail
+          npm run build:web
+          npm run validate:release
+          npm run check:javascript
+
+      - name: Generate Android artwork
+        run: |
+          set -euo pipefail
+          npm install --no-save sharp
+          npm audit --audit-level=high
+          mkdir -p assets
+          node --input-type=module <<'NODE'
+          import sharp from 'sharp';
+          await sharp('icon.svg').resize(1024, 1024).png().toFile('assets/icon.png');
+          const splashMark = await sharp('icon.svg').resize(1200, 1200).png().toBuffer();
+          await sharp({
+            create: {
+              width: 2732,
+              height: 2732,
+              channels: 4,
+              background: '#071A35'
+            }
+          }).composite([{ input: splashMark, gravity: 'centre' }]).png().toFile('assets/splash.png');
+          NODE
+          npx capacitor-assets generate --android --iconBackgroundColor "#071A35" --splashBackgroundColor "#071A35"
+
+      - name: Create Android project and sync
+        run: |
+          set -euo pipefail
+          npx cap add android
+          npx cap sync android
+          grep -Eq 'targetSdkVersion[[:space:]]*=[[:space:]]*36' android/variables.gradle
+
+      - name: Configure persistent release signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          BUILD_NUMBER: ${{ github.run_number }}
+          AHMEDKO_KEYSTORE_PATH: ${{ runner.temp }}/ahmedko-release.keystore
+          AHMEDKO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          AHMEDKO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          AHMEDKO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$AHMEDKO_KEYSTORE_PATH"
+          test -s "$AHMEDKO_KEYSTORE_PATH"
+          keytool -list -keystore "$AHMEDKO_KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          gradle = pathlib.Path("android/app/build.gradle")
+          if not gradle.is_file():
+              raise SystemExit("Android app Gradle file was not generated.")
+          source = gradle.read_text()
+          if source.count("android {") != 1:
+              raise SystemExit("Unexpected Android Gradle template; refusing unsafe signing patch.")
+
+          signing = """
+              signingConfigs {
+                  release {
+                      storeFile file(System.getenv("AHMEDKO_KEYSTORE_PATH"))
+                      storePassword System.getenv("AHMEDKO_KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("AHMEDKO_KEY_ALIAS")
+                      keyPassword System.getenv("AHMEDKO_KEY_PASSWORD")
+                  }
+              }
+          """
+          source = source.replace("android {", "android {\n" + signing, 1)
+          source, signing_count = re.subn(
+              r"(buildTypes\s*\{\s*release\s*\{)",
+              r"\1\n            signingConfig signingConfigs.release",
+              source,
+              count=1,
+          )
+          source, code_count = re.subn(
+              r"^\s*versionCode\s+\d+\s*$",
+              "        versionCode " + os.environ["BUILD_NUMBER"],
+              source,
+              count=1,
+              flags=re.M,
+          )
+          source, name_count = re.subn(
+              r'^\s*versionName\s+"[^"]+"\s*$',
+              '        versionName "1.0.0"',
+              source,
+              count=1,
+              flags=re.M,
+          )
+          if (signing_count, code_count, name_count) != (1, 1, 1):
+              raise SystemExit(
+                  f"Unsafe Gradle template: signing={signing_count}, "
+                  f"versionCode={code_count}, versionName={name_count}"
+              )
+          gradle.write_text(source)
+          PY
+
+      - name: Build and verify signed APK and Play Store AAB
+        env:
+          AHMEDKO_KEYSTORE_PATH: ${{ runner.temp }}/ahmedko-release.keystore
+          AHMEDKO_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          AHMEDKO_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          AHMEDKO_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          chmod +x gradlew
+          ./gradlew --no-daemon clean assembleRelease bundleRelease
+          APK="app/build/outputs/apk/release/app-release.apk"
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          test -s "$APK"
+          test -s "$AAB"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          jarsigner -verify "$AAB"
+          echo "Signed release outputs verified."
+
+      - name: Upload signed release files
+        uses: actions/upload-artifact@v5
+        with:
+          name: AHMEDKO-DELIVERY-signed-release
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
