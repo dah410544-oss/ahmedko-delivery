@@ -102,7 +102,14 @@ jobs:
           set -euo pipefail
           printf '%s' "$KEYSTORE_B64" | base64 --decode > "$AHMEDKO_KEYSTORE_PATH"
           test -s "$AHMEDKO_KEYSTORE_PATH"
-          keytool -list -keystore "$AHMEDKO_KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          if ! keytool -list -keystore "$AHMEDKO_KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD"; then
+            echo "::error::The decoded keystore cannot be opened. Recheck ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD."
+            exit 1
+          fi
+          if ! keytool -list -keystore "$AHMEDKO_KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS"; then
+            echo "::error::The keystore opens, but ANDROID_KEY_ALIAS is missing or ANDROID_KEY_PASSWORD/alias configuration is incorrect."
+            exit 1
+          fi
           python3 - <<'PY'
           import os
           import pathlib
