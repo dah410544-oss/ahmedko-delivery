@@ -991,11 +991,7 @@ function assistantSearch(query){
 function assistantReply(raw){
  const q=normalize(raw);
  if(q.includes("كيف اطلب")||q.includes("طريقه الطلب")||q==="طلب"){
-  const bubble=assistantBubble("للطلب بسهولة:
-1) اختر المطعم والوجبة.
-2) أضف الأصناف إلى السلة.
-3) أدخل بياناتك وعنوان التسليم.
-4) أرسل الطلب وانتظر تأكيد أحمدكو.");
+  const bubble=assistantBubble("للطلب بسهولة:\n1) اختر المطعم والوجبة.\n2) أضف الأصناف إلى السلة.\n3) أدخل بياناتك وعنوان التسليم.\n4) أرسل الطلب وانتظر تأكيد أحمدكو.");
   assistantLink(bubble,"فتح الطلبات والتوصيل","customer.html");
   return;
  }
