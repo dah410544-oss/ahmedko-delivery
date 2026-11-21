@@ -240,6 +240,7 @@ a, button { -webkit-tap-highlight-color:transparent; }
 
 <footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة · <a href="privacy.html">سياسة الخصوصية</a></footer>
 <script src="auto-o2-menu.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
@@ -276,6 +277,7 @@ const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
 let catalogLoading = false;
+let catalogRefreshQueued = false;
 let lastCatalogRefresh = 0;
 const altajStoreId="local-altaj";
 const autoStoreId="local-auto";
@@ -778,7 +780,7 @@ function saveCatalogCache(key,value){
  try{if(Array.isArray(value))localStorage.setItem("ahmedko_catalog_"+key,JSON.stringify(value));}catch(_){}
 }
 async function init(){
- if(catalogLoading)return;
+ if(catalogLoading){catalogRefreshQueued=true;return;}
  catalogLoading=true;
  lastCatalogRefresh=Date.now();
  try{
@@ -855,7 +857,10 @@ async function init(){
  if(searchBox.value.trim())search();else render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تظهر المطاعم المتاحة. تعذر تحديث بعض البيانات من الخادم الآن؛ يمكنك البحث واستخدام البيانات المحفوظة.",true);
  else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
- }finally{catalogLoading=false;}
+ }finally{
+  catalogLoading=false;
+  if(catalogRefreshQueued){catalogRefreshQueued=false;setTimeout(()=>init(),250);}
+ }
 }
 searchBox.addEventListener("input",search);
 document.getElementById("submitStoreSearch").addEventListener("click",()=>{search();grid.scrollIntoView({behavior:"smooth",block:"start"});});
@@ -863,7 +868,19 @@ searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preve
 searchBox.addEventListener("keydown",event=>{if(event.key==="Escape"){searchBox.value="";search();}});
 window.addEventListener("focus",()=>{if(Date.now()-lastCatalogRefresh>45000)init();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastCatalogRefresh>45000)init();});
-setInterval(()=>{if(!document.hidden)init();},60000);
+setInterval(()=>{if(!document.hidden)init();},45000);
+let catalogRealtimeClient=null;
+try{
+ if(window.supabase?.createClient){
+  catalogRealtimeClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const refreshCatalog=()=>{if(!document.hidden)init();};
+  catalogRealtimeClient.channel("ahmedko-public-catalog")
+   .on("postgres_changes",{event:"*",schema:"public",table:"stores"},refreshCatalog)
+   .on("postgres_changes",{event:"*",schema:"public",table:"product_categories"},refreshCatalog)
+   .on("postgres_changes",{event:"*",schema:"public",table:"products"},refreshCatalog)
+   .subscribe(status=>{if(status==="CHANNEL_ERROR")console.warn("AHMEDKO catalog realtime unavailable; periodic refresh remains active.");});
+ }
+}catch(error){console.warn("AHMEDKO catalog realtime setup:",error);}
 init();
 </script>
 <style>
