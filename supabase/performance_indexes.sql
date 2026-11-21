@@ -36,6 +36,24 @@ begin
 end;
 $$;
 
+-- Public restaurant catalog: fast active-store and menu lookups.
+do $
+begin
+  if to_regclass('public.stores') is not null then
+    execute 'create index if not exists stores_active_name_idx on public.stores (store_name) where is_active is true';
+    execute 'analyze public.stores';
+  end if;
+  if to_regclass('public.product_categories') is not null then
+    execute 'create index if not exists product_categories_active_store_name_idx on public.product_categories (store_id, name) where is_active is true';
+    execute 'analyze public.product_categories';
+  end if;
+  if to_regclass('public.products') is not null then
+    execute 'create index if not exists products_available_store_name_idx on public.products (store_id, name) where is_available is true';
+    execute 'analyze public.products';
+  end if;
+end;
+$;
+
 -- Refresh planner statistics after adding indexes.
 analyze public.orders;
 analyze public.delivery_rates;
