@@ -8,6 +8,24 @@
   indicator.id="ahmedkoLiveRefresh";
   indicator.innerHTML='<span class="spin">↓</span><span>اسحب للأسفل للتحديث</span>';
   document.body.appendChild(indicator);
+  const networkState=document.createElement("div");
+  networkState.id="ahmedkoNetworkState";
+  networkState.setAttribute("role","status");
+  networkState.setAttribute("aria-live","polite");
+  document.body.appendChild(networkState);
+  let networkTimer;
+  const showNetworkState=online=>{
+    networkState.textContent=online?"عاد الاتصال بالإنترنت":"لا يوجد اتصال بالإنترنت";
+    networkState.classList.toggle("offline",!online);
+    networkState.classList.add("show");
+    clearTimeout(networkTimer);
+    if(online&&"serviceWorker" in navigator){
+      navigator.serviceWorker.getRegistration().then(reg=>reg&&reg.update().catch(()=>{})).catch(()=>{});
+    }
+    networkTimer=setTimeout(()=>networkState.classList.remove("show"),online?3500:10000);
+  };
+  window.addEventListener("offline",()=>showNetworkState(false));
+  window.addEventListener("online",()=>showNetworkState(true));
   let startY=0,pulling=false,refreshing=false;
   const threshold=75;
   const hide=()=>{indicator.classList.remove("show");indicator.style.transform="translate(-50%,-150%)";};
