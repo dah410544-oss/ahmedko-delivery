@@ -192,7 +192,7 @@ a, button { -webkit-tap-highlight-color:transparent; }
 </section>
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
- <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="clearStoreSearch" class="small yellow" type="button" aria-label="مسح البحث">مسح</button></div>
+ <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="clearStoreSearch" class="small yellow" type="button" aria-label="تنفيذ البحث">بحث</button></div>
  <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة.</p>
  <div id="storeLiveSuggestions" class="live-suggestions" role="listbox" aria-label="اقتراحات البحث" aria-live="polite" hidden></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
@@ -861,7 +861,7 @@ async function init(){
  else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
 }
 searchBox.addEventListener("input",search);
-document.getElementById("clearStoreSearch").addEventListener("click",()=>{searchBox.value="";searchBox.focus();render(stores);});
+document.getElementById("clearStoreSearch").addEventListener("click",()=>{search();grid.scrollIntoView({behavior:"smooth",block:"start"});});
 searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();search();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
 init();
 </script>
