@@ -38,6 +38,11 @@ begin
     execute 'analyze public.store_users';
   end if;
 
+  if to_regclass('public.store_orders') is not null then
+    execute 'create index if not exists store_orders_store_created_idx on public.store_orders (store_id, created_at desc)';
+    execute 'analyze public.store_orders';
+  end if;
+
   if to_regclass('public.store_order_items') is not null then
     execute 'create index if not exists store_order_items_order_idx on public.store_order_items (order_id)';
     execute 'analyze public.store_order_items';
