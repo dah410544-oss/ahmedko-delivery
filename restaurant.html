@@ -102,7 +102,7 @@ $("loginForm").addEventListener("submit",async e=>{
 $("storeSelect").addEventListener("change",async()=>{activeStore=$("storeSelect").value;const s=stores.find(x=>x.id===activeStore);$("storeTitle").textContent=s?.store_name||"طلبات المطعم";await refreshAll();});
 $("refresh").addEventListener("click",refreshAll);
 $("logout").addEventListener("click",async()=>{await db.auth.signOut();session=null;showLogin();});
-window.setInterval(()=>refreshAll(true),30000);
+window.setInterval(()=>refreshAll(true),20000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAll(true);});
 $("orders").addEventListener("click",async e=>{
  const b=e.target.closest("button[data-order]");if(!b)return;
