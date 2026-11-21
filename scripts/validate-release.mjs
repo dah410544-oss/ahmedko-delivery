@@ -11,6 +11,7 @@ const requiredFiles = [
   "www/auto-o2-menu.js",
   "www/manifest.webmanifest",
   "www/service-worker.js",
+  "www/live-app.js",
   "www/icon.svg"
 ];
 
