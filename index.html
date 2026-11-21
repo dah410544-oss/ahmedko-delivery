@@ -674,17 +674,10 @@ function storeHasMenu(store){
  return products.some(p=>String(p.store_id)===String(store.id) && p.is_available!==false);
 }
 function menuFirst(list){
- const sorted=[...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
+ // Duplicate restaurant records are already collapsed during init().
+ // Keep this renderer independent from init()-local variables so cards always render.
+ return [...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
    String(a.store_name||"").localeCompare(String(b.store_name||""),"ar"));
- // Collapse duplicate records for the 14 approved restaurants; prefer the record with products.
- const seenCanonical=new Set();
- return sorted.filter(store=>{
-  const key=restaurantNameKey(store.store_name||"");
-  if(!canonicalByKey.has(key))return true;
-  if(seenCanonical.has(key))return false;
-  seenCanonical.add(key);
-  return true;
- });
 }
 function render(list){
  grid.innerHTML="";
