@@ -712,7 +712,11 @@ function search(){
   const details=normalize([s.store_type,s.address,s.contact_name].join(" "));
   return name.includes(q)||shortName.includes(key)||details.includes(q);
  });
- const matchingProducts=products.filter(p=>normalize([p.name,p.description].join(" ")).includes(q));
+ const matchingProducts=products.filter(p=>{
+  const text=normalize([p.name,p.description].join(" "));
+  const shortText=restaurantSearchKey([p.name,p.description].join(" "));
+  return text.includes(q)||(key&&shortText.includes(key));
+ });
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
  statusBox.hidden=false;statusBox.className="notice";statusBox.textContent="نتائج البحث: "+matchingStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة.";
