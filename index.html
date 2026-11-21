@@ -255,10 +255,21 @@ const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي",
 // Menus supplied by the restaurant owner: Muhannad (image menu) and Al-Baba (written menu).
 const muhandStoreId="local-muhannad";
 const babaStoreId="local-baba";
+const tameesStoreId="local-tamees-hameed";
+const thaiStoreId="local-thai-restaurant";
+const palmeraStoreId="local-palmera";
 verifiedLocalPlaces.push(
  {id:muhandStoreId,store_name:"مطبخ ومطعم مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:babaStoreId,store_name:"ملحمة ومطعم البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
+ {id:babaStoreId,store_name:"ملحمة ومطعم البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:tameesStoreId,store_name:"تميس حميد",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:thaiStoreId,store_name:"المطعم التايلندي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:palmeraStoreId,store_name:"PALMERA – بالميرا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
 );
+const tameesHameedMenuData=[
+ ["التميس",[
+  ["تميس دقة","3"],["تميس زعتر","3"],["تميس جبنة فيتا","4"],["تميس جبنة شيدر","5"]
+ ]]
+];
 const muhandMenuData=[
  ["الشاورما",[
   ["كيلو شاورما","120"],["صحن شاورما وجبة","25"],["صحن شاورما نصف كيلو","50"],
@@ -585,6 +596,11 @@ async function init(){
   if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
   mergeLocalMenu(muhandId,muhandMenuData);
   mergeLocalMenu(babaId,babaMenuData);
+  const tameesExisting=stores.find(s=>normalize(s.store_name).includes(normalize("تميس حميد")));
+  const tameesId=tameesExisting?tameesExisting.id:tameesStoreId;
+  if(!tameesExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===tameesStoreId));
+  mergeLocalMenu(tameesId,tameesHameedMenuData);
+  // Thai and PALMERA are listed below menu-ready restaurants until their complete item/price lists are verified.
   const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
   const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
   if(!tajExisting){
