@@ -61,4 +61,5 @@ function sendOrder(){if(!cart.length){alert("أضف صنفاً واحداً عل
  let msg="مرحباً أحمدكو ديلفري، أريد طلباً من مطعم التاج:\n"+cart.map((x,i)=>(i+1)+") "+x.name+" — "+x.price).join("\n")+"\n\nيرجى تأكيد الطلب والسعر النهائي ورسوم التوصيل.";
  location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg)}
 $("search").addEventListener("input",render);render();
-</script></body></html>
+</script>  <script src="live-app.js?v=1" defer></script>
+</body></html>
