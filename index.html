@@ -194,6 +194,51 @@ const altajStoreId="local-altaj";
 const autoStoreId="local-auto";
 const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true},{"id":autoStoreId,"store_name":"مطعم أوتو","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true}];
 
+
+// Menus supplied by the restaurant owner: Muhannad (image menu) and Al-Baba (written menu).
+const muhandStoreId="local-muhannad";
+const babaStoreId="local-baba";
+verifiedLocalPlaces.push(
+ {id:muhandStoreId,store_name:"مطبخ ومطعم مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:babaStoreId,store_name:"ملحمة ومطعم البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
+);
+const muhandMenuData=[
+ ["الشاورما",[
+  ["كيلو شاورما","120"],["صحن شاورما وجبة","25"],["صحن شاورما نصف كيلو","50"],
+  ["فرشوحة عادي","15"],["فرشوحة دبل عادي","17"],["فرشوحة دبل لحمة","25"],
+  ["فرشوحة دبل دبل","27"],["فرشوحة صاروخ","30"],["فرشوحة عادي بالجبنة","20"],["خبز شاورما","10"]
+ ]],
+ ["الوجبات",[
+  ["وجبة سوري","35"],["وجبة صفيحة","40"],["وجبة أسوار بالجبنة","40"],
+  ["وجبة شاورما صغير","35"],["وجبة شاورما لشخصين","70"],["وجبة العرسان","150"]
+ ]],
+ ["المشاوي",[["المشاوي غير متوفرة حالياً",""]]],
+ ["السلطات والمقبلات",[
+  ["مايونيز","10"],["سلطة","10"],["بكرتاتي","10"],["فتوشة","10"],
+  ["ملوخيا أحمر","10"],["كول سلو","10"],["سلطة ساخنة (متنوع)","10"]
+ ]],
+ ["المشارب",[["مشروب غازي","حسب المتوفر"],["مياه معدنية","حسب المتوفر"]]]
+];
+const babaMenuData=[
+ ["الشاورما",[
+  ["كيلو شاورما","90"],["فرشوحة شاورما عادي","12"],["فرشوحة دبل عادي","15"],
+  ["فرشوحة دبل لحمة","20"],["فرشوحة دبل دبل","25"]
+ ]],
+ ["المشاوي",[
+  ["كيلو كباب","55"],["كيلو شيش طاووق فخد","45"],["كيلو جناح مشوي","18"],
+  ["كيلو كبدة دجاج مشوي","35"],["كيلو كبدة عجل","50"],["كيلو مشكل","40"],
+  ["وجبة عرسان","60"],["فرشوحة كباب","7"],["فرشوحة شيش","9"],["فرشوحة شيش دبل","12"]
+ ]]
+];
+function makeLocalMenu(storeId,data){
+ const cats=data.map((entry,i)=>({id:storeId+"-cat-"+i,store_id:storeId,name:entry[0]}));
+ const items=data.flatMap((entry,i)=>entry[1].map((item,j)=>({
+  id:storeId+"-product-"+i+"-"+j,store_id:storeId,category_id:storeId+"-cat-"+i,
+  name:item[0],price:item[1]===""||item[1]==="حسب المتوفر"?null:item[1],
+  price_display:item[1]&&item[1]!=="حسب المتوفر"?item[1]+" ₪":(item[1]==="حسب المتوفر"?"حسب المتوفر":"غير متوفر حالياً")
+ })));
+ return {cats,items};
+}
 const altajMenuData=[
  ["شاورما",[
   ["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]
@@ -444,7 +489,21 @@ async function init(){
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
  verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
- const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
+ const muhandExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
+  const babaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
+  const muhandId=muhandExisting?muhandExisting.id:muhandStoreId;
+  const babaId=babaExisting?babaExisting.id:babaStoreId;
+  if(!muhandExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===muhandStoreId));
+  if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
+  const muhandLocal=makeLocalMenu(muhandId,muhandMenuData);
+  const babaLocal=makeLocalMenu(babaId,babaMenuData);
+  if(!categories.some(c=>String(c.store_id)===String(muhandId))&&!products.some(p=>String(p.store_id)===String(muhandId))){
+   categories=categories.concat(muhandLocal.cats);products=products.concat(muhandLocal.items);
+  }
+  if(!categories.some(c=>String(c.store_id)===String(babaId))&&!products.some(p=>String(p.store_id)===String(babaId))){
+   categories=categories.concat(babaLocal.cats);products=products.concat(babaLocal.items);
+  }
+  const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
   const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
   if(!tajExisting){
    const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);
