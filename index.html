@@ -67,7 +67,6 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <button id="ahmedkoManualRefresh" class="small yellow" type="button" aria-label="تحديث التطبيق" style="cursor:pointer;white-space:nowrap">↻ تحديث</button>
  <button id="ahmedkoInstallBtn" class="small" type="button" hidden aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
@@ -569,10 +568,38 @@ html,body{overscroll-behavior-y:contain}
 @keyframes ahmedkoSpin{to{transform:rotate(360deg)}}
 </style>
 <script>
+
+async function refreshAhmedkoNow(){
+ const text=document.querySelector("#ahmedkoPullRefresh .pullText");
+ const icon=document.querySelector("#ahmedkoPullRefresh .pullIcon");
+ const indicator=document.getElementById("ahmedkoPullRefresh");
+ if(text)text.textContent="جارٍ فحص التحديثات وتحميل أحمدكو…";
+ if(icon)icon.textContent="⟳";
+ if(indicator)indicator.classList.add("loading","visible");
+ let reloading=false;
+ const reload=()=>{if(reloading)return;reloading=true;location.reload();};
+ try{
+  if("serviceWorker" in navigator){
+   const reg=await navigator.serviceWorker.getRegistration();
+   if(reg){
+    await reg.update().catch(()=>{});
+    if(reg.waiting){reg.waiting.postMessage({type:"SKIP_WAITING"});}
+    if(reg.installing){
+     await new Promise(resolve=>{
+      const worker=reg.installing;
+      if(!worker||worker.state==="activated"){resolve();return;}
+      worker.addEventListener("statechange",()=>{if(worker.state==="activated"||worker.state==="redundant")resolve();});
+      setTimeout(resolve,1800);
+     });
+    }
+   }
+  }
+ }catch(error){console.warn("تعذر فحص تحديث أحمدكو:",error);}
+ setTimeout(reload,350);
+}
+
 (()=>{
  let startY=0,pulling=false,armed=false,refreshing=false;
- const manualButton=document.getElementById("ahmedkoManualRefresh");
- if(manualButton) manualButton.addEventListener("click",()=>{manualButton.disabled=true;manualButton.textContent="جارٍ التحديث…";location.reload();});
  const threshold=70;
  const indicator=document.createElement("div");
  indicator.id="ahmedkoPullRefresh";
@@ -608,7 +635,7 @@ html,body{overscroll-behavior-y:contain}
    indicator.style.transform="translate(-50%,0)";
    indicator.querySelector(".pullIcon").textContent="⟳";
    indicator.querySelector(".pullText").textContent="جارٍ تحديث أحمدكو…";
-   setTimeout(()=>location.reload(),180);
+   refreshAhmedkoNow();
   }else{
    indicator.classList.remove("visible");
    indicator.style.transform="translate(-50%,-110%)";
@@ -657,9 +684,10 @@ html,body{overscroll-behavior-y:contain}
 <script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" }).catch(error => {
-      console.warn("تعذر تسجيل خدمة التطبيق:", error);
-    });
+    navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" }).then(reg => {
+      reg.update().catch(()=>{});
+      document.addEventListener("visibilitychange",()=>{if(!document.hidden)reg.update().catch(()=>{});});
+    }).catch(error => { console.warn("تعذر تسجيل خدمة التطبيق:", error); });
   });
 }
 </script>

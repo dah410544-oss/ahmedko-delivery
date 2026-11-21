@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-shell-v32";
+const CACHE_NAME = "ahmedko-shell-v33";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
@@ -15,6 +15,10 @@ const APP_SHELL = [
   "icon-512.png",
   "icon.svg?v=20"
 ].map(appUrl);
+
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
 
 self.addEventListener("install", event => {
   event.waitUntil(
