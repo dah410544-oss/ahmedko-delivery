@@ -1,6 +1,6 @@
 // Auto O2 menu transcription from the supplied menu photo.
 // Only legible item names and prices are included. Unclear lines are intentionally omitted.
-const menu=[
+window.AUTO_O2_MENU=[
 ["الشاورما",[
 ["فرشوحة عادي",15],
 ["فرشوحة دبل",17],
