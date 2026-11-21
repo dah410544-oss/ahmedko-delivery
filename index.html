@@ -239,6 +239,18 @@ function makeLocalMenu(storeId,data){
  })));
  return {cats,items};
 }
+function mergeLocalMenu(storeId,data){
+ const generated=makeLocalMenu(storeId,data),categoryMap={};
+ generated.cats.forEach(cat=>{
+  const existing=categories.find(c=>String(c.store_id)===String(storeId)&&normalize(c.name)===normalize(cat.name));
+  if(existing)categoryMap[cat.id]=existing.id;
+  else{categories.push(cat);categoryMap[cat.id]=cat.id;}
+ });
+ generated.items.forEach(item=>{
+  const exists=products.some(p=>String(p.store_id)===String(storeId)&&normalize(p.name)===normalize(item.name));
+  if(!exists)products.push({...item,category_id:categoryMap[item.category_id]||item.category_id});
+ });
+}
 const altajMenuData=[
  ["شاورما",[
   ["فرشوحة عادي","20"],["فرشوحة دبل عادي","22"],["فرشوحة دبل لحمة","28"],["فرشوحة دبل دبل","30"],["بيتا شاورما دجاج","15"],["سوري دجاج","32"],["صحيفة (سادة)","35"],["صحيفة بالجبنة والزيتون","38"],["شاورما صاروخ","40"],["شاورما عربية","40"],["شاورما نابلسية","40"],["كريب شاورما","38"],["وجبة شاورما","30-50"]
@@ -495,14 +507,8 @@ async function init(){
   const babaId=babaExisting?babaExisting.id:babaStoreId;
   if(!muhandExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===muhandStoreId));
   if(!babaExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===babaStoreId));
-  const muhandLocal=makeLocalMenu(muhandId,muhandMenuData);
-  const babaLocal=makeLocalMenu(babaId,babaMenuData);
-  if(!categories.some(c=>String(c.store_id)===String(muhandId))&&!products.some(p=>String(p.store_id)===String(muhandId))){
-   categories=categories.concat(muhandLocal.cats);products=products.concat(muhandLocal.items);
-  }
-  if(!categories.some(c=>String(c.store_id)===String(babaId))&&!products.some(p=>String(p.store_id)===String(babaId))){
-   categories=categories.concat(babaLocal.cats);products=products.concat(babaLocal.items);
-  }
+  mergeLocalMenu(muhandId,muhandMenuData);
+  mergeLocalMenu(babaId,babaMenuData);
   const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
   const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
   if(!tajExisting){
