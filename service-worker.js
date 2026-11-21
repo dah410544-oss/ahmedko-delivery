@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-shell-v30";
+const CACHE_NAME = "ahmedko-shell-v31";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [
   "",
@@ -11,6 +11,8 @@ const APP_SHELL = [
   "taj-menu.html",
   "auto-o2-menu.js",
   "manifest.webmanifest",
+  "icon-192.png",
+  "icon-512.png",
   "icon.svg?v=20"
 ].map(appUrl);
 
