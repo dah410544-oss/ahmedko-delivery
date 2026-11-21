@@ -1420,7 +1420,7 @@ async function ensureOrderEarning(order){
  if(!Number.isFinite(amount)||amount<=0)throw new Error("أجرة التوصيل غير محددة أو غير صحيحة.");
  const settings=await db.from("business_settings").select("office_commission_percent").limit(1).maybeSingle();
  if(settings.error)throw new Error("تعذر قراءة نسبة عمولة المكتب: "+settings.error.message);
- const rate=Number(settings.data?.office_commission_percent ?? 15);
+ const rate=Number(settings.data?.office_commission_percent ?? 16);
  if(!Number.isFinite(rate)||rate<0||rate>100)throw new Error("نسبة عمولة المكتب غير صحيحة.");
  const officeCommission=Number((amount*rate/100).toFixed(2));
  const driverAmount=Number((amount-officeCommission).toFixed(2));
