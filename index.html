@@ -67,7 +67,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <button id="ahmedkoInstallBtn" class="small" type="button" hidden aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
+ <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
@@ -652,24 +652,20 @@ async function refreshAhmedkoNow(){
  if(!button)return;
  let deferredPrompt=null;
  const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
- const isCapacitorApp=!!(window.Capacitor&&(
-  (typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform())||
-  (typeof window.Capacitor.getPlatform==="function"&&window.Capacitor.getPlatform()==="android")
- ));
- const isAndroidWebView=navigator.userAgent.includes("; wv")||navigator.userAgent.includes(";wv");
- const isApp=isStandalone()||isCapacitorApp||isAndroidWebView;
  const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
  const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
- if(isApp){hideButton();return;}
+ // Show the install button in every normal browser tab, even if the app is installed elsewhere.
+ if(isStandalone()){hideButton();return;}
  showButton();
  window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   deferredPrompt=event;
+  button.textContent="⬇ تثبيت أحمدكو";
   showButton();
  });
  button.addEventListener("click",async()=>{
   if(!deferredPrompt){
-   button.textContent="للتثبيت: افتح قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية";
+   button.textContent="للتثبيت: افتح قائمة المتصفح ⋮ واختر «إضافة إلى الشاشة الرئيسية»";
    return;
   }
   const promptEvent=deferredPrompt;
@@ -678,9 +674,8 @@ async function refreshAhmedkoNow(){
   button.textContent="جارٍ فتح التثبيت…";
   try{
    await promptEvent.prompt();
-   await promptEvent.userChoice;
-   button.textContent="⬇ تثبيت أحمدكو";
-   showButton();
+   const choice=await promptEvent.userChoice;
+   button.textContent=choice&&choice.outcome==="accepted"?"تم طلب تثبيت أحمدكو":"⬇ تثبيت أحمدكو";
   }catch(error){
    button.textContent="⬇ تثبيت أحمدكو";
    console.warn("تعذر بدء تثبيت أحمدكو:",error);
