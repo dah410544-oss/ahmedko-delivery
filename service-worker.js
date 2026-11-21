@@ -1,6 +1,46 @@
-const CACHE_NAME = "ahmedko-live-v36";
+const CACHE_NAME = "ahmedko-live-v37";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [appUrl("index.html")];
+
+
+self.addEventListener("push", event => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = { body: event.data ? event.data.text() : "" };
+  }
+  const title = payload.title || "أحمدكو ديلفري";
+  const options = {
+    body: payload.body || payload.message || "لديك تحديث جديد من أحمدكو.",
+    icon: appUrl("icon.svg"),
+    badge: appUrl("icon.svg"),
+    tag: payload.tag || "ahmedko-update",
+    renotify: Boolean(payload.renotify),
+    data: { url: payload.url || appUrl("index.html") }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const target = new URL(
+    event.notification.data && event.notification.data.url
+      ? event.notification.data.url
+      : appUrl("index.html"),
+    self.registration.scope
+  ).toString();
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if (client.url.startsWith(self.registration.scope) && "focus" in client) {
+        await client.navigate(target);
+        return client.focus();
+      }
+    }
+    return self.clients.openWindow(target);
+  })());
+});
 
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
