@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071A35">
 <link rel="manifest" href="manifest.webmanifest?v=20">
 <link rel="icon" href="icon.svg?v=20" type="image/svg+xml">
@@ -115,6 +115,21 @@ input, select, textarea { max-width:100%; min-width:0; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}
+</style>
+<style id="ahmedko-app-comfort">
+/* Comfortable app frame: stable width, safe-area spacing and easy touch targets. */
+html { min-height:100%; overscroll-behavior-x:none; }
+body { min-height:100dvh; padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right); }
+button, .btn, .small, .add-cart, .cart-fab { min-height:44px; touch-action:manipulation; }
+input, select, textarea { font-size:16px; }
+a, button { -webkit-tap-highlight-color:transparent; }
+:focus-visible { outline:3px solid var(--yellow); outline-offset:3px; }
+.top { padding-top:max(12px,env(safe-area-inset-top)); }
+.cart-fab { bottom:max(14px,env(safe-area-inset-bottom)); }
+@media (min-width:760px) {
+  main { width:100%; max-width:1600px; margin-inline:auto; }
+  .hero, section { max-width:1600px; margin-inline:auto; }
 }
 </style>
 
@@ -655,12 +670,21 @@ function storeCard(store){
  return card;
 }
 function storeHasMenu(store){
- return categories.some(c=>String(c.store_id)===String(store.id)) ||
-        products.some(p=>String(p.store_id)===String(store.id));
+ // A real menu means at least one product is attached to this store.
+ return products.some(p=>String(p.store_id)===String(store.id) && p.is_available!==false);
 }
 function menuFirst(list){
- return [...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
+ const sorted=[...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
    String(a.store_name||"").localeCompare(String(b.store_name||""),"ar"));
+ // Collapse duplicate records for the 14 approved restaurants; prefer the record with products.
+ const seenCanonical=new Set();
+ return sorted.filter(store=>{
+  const key=restaurantNameKey(store.store_name||"");
+  if(!canonicalByKey.has(key))return true;
+  if(seenCanonical.has(key))return false;
+  seenCanonical.add(key);
+  return true;
+ });
 }
 function render(list){
  grid.innerHTML="";
