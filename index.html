@@ -192,7 +192,7 @@ a, button { -webkit-tap-highlight-color:transparent; }
 </section>
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
- <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="clearStoreSearch" class="small yellow" type="button" aria-label="تنفيذ البحث">بحث</button></div>
+ <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="submitStoreSearch" class="small yellow" type="button" aria-label="تنفيذ البحث">بحث</button></div>
  <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة.</p>
  <div id="storeLiveSuggestions" class="live-suggestions" role="listbox" aria-label="اقتراحات البحث" aria-live="polite" hidden></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
@@ -275,6 +275,8 @@ const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
+let catalogLoading = false;
+let lastCatalogRefresh = 0;
 const altajStoreId="local-altaj";
 const autoStoreId="local-auto";
 const verifiedLocalPlaces = [
@@ -705,7 +707,11 @@ function render(list){
  statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
 function restaurantSearchKey(value){
- return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمة|كافيه|كافى|و)\s*)+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+ return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمة|كافيه|كافى)\s+|و\s*)+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+}
+function searchTextMatches(value,q,key){
+ const full=normalize(value),short=restaurantSearchKey(value);
+ return Boolean((q&&full.includes(q))||(key&&short.includes(key)));
 }
 function updateRestaurantSuggestions(){
  const list=document.getElementById("restaurantSuggestions");
@@ -720,16 +726,8 @@ function renderLiveSuggestions(raw){
  const value=String(raw||"").trim();
  if(!value){panel.hidden=true;panel.innerHTML="";return;}
  const q=normalize(value),key=restaurantSearchKey(value);
- const storeMatches=stores.filter(s=>{
-  const name=normalize(s.store_name||"");
-  const short=restaurantSearchKey(s.store_name||"");
-  return name.includes(q)||(key&&short.includes(key));
- }).slice(0,6);
- const productMatches=products.filter(p=>{
-  const name=normalize([p.name,p.description].join(" "));
-  const short=restaurantSearchKey([p.name,p.description].join(" "));
-  return name.includes(q)||(key&&short.includes(key));
- }).slice(0,5);
+ const storeMatches=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)).slice(0,6);
+ const productMatches=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key)).slice(0,5);
  const items=[
   ...storeMatches.map(s=>({label:s.store_name,type:"مطعم / متجر"})),
   ...productMatches.map(p=>({label:p.name,type:"وجبة / منتج"}))
@@ -761,17 +759,8 @@ function search(){
  renderLiveSuggestions(raw);
  const q=normalize(raw),key=restaurantSearchKey(raw);
  if(!q){render(stores);return;}
- const matchingStores=stores.filter(s=>{
-  const name=normalize(s.store_name||"");
-  const shortName=restaurantSearchKey(s.store_name||"");
-  const details=normalize([s.store_type,s.address,s.contact_name].join(" "));
-  return name.includes(q)||shortName.includes(key)||details.includes(q);
- });
- const matchingProducts=products.filter(p=>{
-  const text=normalize([p.name,p.description].join(" "));
-  const shortText=restaurantSearchKey([p.name,p.description].join(" "));
-  return text.includes(q)||(key&&shortText.includes(key));
- });
+ const matchingStores=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)||normalize([s.store_type,s.address,s.contact_name].join(" ")).includes(q));
+ const matchingProducts=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key));
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
  statusBox.hidden=false;statusBox.className="notice";statusBox.textContent="نتائج البحث: "+matchingStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة.";
@@ -789,8 +778,16 @@ function saveCatalogCache(key,value){
  try{if(Array.isArray(value))localStorage.setItem("ahmedko_catalog_"+key,JSON.stringify(value));}catch(_){}
 }
 async function init(){
+ if(catalogLoading)return;
+ catalogLoading=true;
+ lastCatalogRefresh=Date.now();
+ try{
  stores=readCatalogCache("stores");
- if(!stores.length)stores=verifiedLocalPlaces.map(s=>({...s}));
+ const knownStoreKeys=new Set(stores.map(s=>restaurantSearchKey(s.store_name)).filter(Boolean));
+ verifiedLocalPlaces.forEach(place=>{
+  const key=restaurantSearchKey(place.store_name);
+  if(key&&!knownStoreKeys.has(key)){stores.push({...place});knownStoreKeys.add(key);}
+ });
  categories=readCatalogCache("categories");
  products=readCatalogCache("products");
  updateRestaurantSuggestions();
@@ -843,10 +840,8 @@ async function init(){
  const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
  const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
  if(!tajExisting){const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);if(localTaj)stores.push(localTaj);}
- if(!categories.some(c=>String(c.store_id)===String(tajStoreId))&&!products.some(p=>String(p.store_id)===String(tajStoreId))){
-  categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
-  products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
- }
+ if(!categories.some(c=>String(c.store_id)===String(tajStoreId)))categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
+ if(!products.some(p=>String(p.store_id)===String(tajStoreId)))products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
  const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
  if(!autoExisting){const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);if(localAuto)stores.push(localAuto);}
  const autoMatches=stores.filter(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
@@ -856,13 +851,19 @@ async function init(){
  }
  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
- updateRestaurantSuggestions();render(stores);
+ updateRestaurantSuggestions();
+ if(searchBox.value.trim())search();else render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تظهر المطاعم المتاحة. تعذر تحديث بعض البيانات من الخادم الآن؛ يمكنك البحث واستخدام البيانات المحفوظة.",true);
  else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
+ }finally{catalogLoading=false;}
 }
 searchBox.addEventListener("input",search);
-document.getElementById("clearStoreSearch").addEventListener("click",()=>{search();grid.scrollIntoView({behavior:"smooth",block:"start"});});
+document.getElementById("submitStoreSearch").addEventListener("click",()=>{search();grid.scrollIntoView({behavior:"smooth",block:"start"});});
 searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();search();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
+searchBox.addEventListener("keydown",event=>{if(event.key==="Escape"){searchBox.value="";search();}});
+window.addEventListener("focus",()=>{if(Date.now()-lastCatalogRefresh>45000)init();});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastCatalogRefresh>45000)init();});
+setInterval(()=>{if(!document.hidden)init();},60000);
 init();
 </script>
 <style>
