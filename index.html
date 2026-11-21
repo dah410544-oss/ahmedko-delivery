@@ -651,20 +651,23 @@ async function refreshAhmedkoNow(){
  const button=document.getElementById("ahmedkoInstallBtn");
  if(!button)return;
  let deferredPrompt=null;
- const isInstalled=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+ const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+ const isCapacitorApp=!!(window.Capacitor&&(
+  (typeof window.Capacitor.isNativePlatform==="function"&&window.Capacitor.isNativePlatform())||
+  (typeof window.Capacitor.getPlatform==="function"&&window.Capacitor.getPlatform()==="android")
+ ));
+ const isAndroidWebView=/;\\s*wv\\)/i.test(navigator.userAgent);
+ const isApp=isStandalone()||isCapacitorApp||isAndroidWebView;
  const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
  const showButton=()=>{button.hidden=false;button.removeAttribute("aria-hidden");};
- if(isInstalled()){hideButton();return;}
- // Keep the install button visible on the public website, even after an install.
+ if(isApp){hideButton();return;}
  showButton();
  window.addEventListener("beforeinstallprompt",event=>{
-  if(isInstalled())return;
   event.preventDefault();
   deferredPrompt=event;
   showButton();
  });
  button.addEventListener("click",async()=>{
-  if(isInstalled()){hideButton();return;}
   if(!deferredPrompt){
    button.textContent="للتثبيت: افتح قائمة المتصفح واختر إضافة إلى الشاشة الرئيسية";
    return;
@@ -683,7 +686,7 @@ async function refreshAhmedkoNow(){
    console.warn("تعذر بدء تثبيت أحمدكو:",error);
   }finally{button.disabled=false;}
  });
- window.addEventListener("appinstalled",()=>{deferredPrompt=null;});
+ window.addEventListener("appinstalled",()=>{deferredPrompt=null;hideButton();});
 })();
 </script>
 <script>
@@ -722,5 +725,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     }
   });
 }
+</script>
 </body>
 </html>
