@@ -262,12 +262,7 @@ begin
         v_driver_amount, 'pending',
         'عمولة المكتب ' || v_commission_rate || '% ومستحق السائق ' || (100 - v_commission_rate) || '%'
       )
-      on conflict (order_id) where order_id is not null do update
-      set delivery_amount = excluded.delivery_amount,
-          office_commission = excluded.office_commission,
-          driver_amount = excluded.driver_amount,
-          driver_id = excluded.driver_id
-      where driver_earnings.payment_status <> 'paid';
+      on conflict (order_id) where order_id is not null do nothing;
     end if;
 
     return jsonb_build_object('success', true, 'status', v_current_status, 'unchanged', true);
@@ -295,12 +290,7 @@ begin
       v_driver_amount, 'pending',
       'عمولة المكتب ' || v_commission_rate || '% ومستحق السائق ' || (100 - v_commission_rate) || '%'
     )
-    on conflict (order_id) where order_id is not null do update
-    set delivery_amount = excluded.delivery_amount,
-        office_commission = excluded.office_commission,
-        driver_amount = excluded.driver_amount,
-        driver_id = excluded.driver_id
-    where driver_earnings.payment_status <> 'paid';
+    on conflict (order_id) where order_id is not null do nothing;
   end if;
 
   return jsonb_build_object('success', true, 'status', p_new_status, 'unchanged', false);
