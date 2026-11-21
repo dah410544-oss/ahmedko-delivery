@@ -35,7 +35,7 @@ a{color:inherit}button,input{font:inherit}
 section{padding:42px 6%;background:var(--bg)}.heading{margin-bottom:20px}.heading h2{margin:0;font-size:25px;color:#fff}.heading h2:after{content:"";display:block;width:54px;height:4px;background:var(--yellow);border-radius:4px;margin-top:8px}.heading p{margin:7px 0;color:var(--muted);font-size:13px}
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card{background:linear-gradient(145deg,#102849,#0c2240);border:1px solid #294466;border-radius:18px;padding:20px;box-shadow:0 10px 25px #0002;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#F5C32B88}.ico{font-size:31px;margin-bottom:8px}.card h3{font-size:17px;margin:0 0 6px;color:#fff}.card p{font-size:13px;color:var(--muted);margin:0}
 .transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.transport .card{padding:18px}
-.toolbar{display:flex;gap:9px;margin:18px 0}.search{width:100%;min-width:0;border:1px solid #294466;border-radius:13px;padding:14px;background:#102849;color:#fff;outline:none}.search::placeholder{color:#9fb0c6}.search:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #f5c32b20}
+.toolbar{display:flex;gap:9px;margin:18px 0}.restaurant-search-toolbar{position:sticky;top:8px;z-index:8;padding:8px;border:1px solid #294466;border-radius:16px;background:#071a35ee;backdrop-filter:blur(10px);box-shadow:0 8px 24px #0003}.restaurant-search-toolbar .search{flex:1}.restaurant-search-toolbar button{white-space:nowrap}.search-hint{margin:-8px 2px 14px;color:#b9c7d9;font-size:12px}.search{width:100%;min-width:0;border:1px solid #294466;border-radius:13px;padding:14px;background:#102849;color:#fff;outline:none}.search::placeholder{color:#9fb0c6}.search:focus{border-color:var(--yellow);box-shadow:0 0 0 3px #f5c32b20}
 .store-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.store{background:linear-gradient(145deg,#102849,#0c2240);border:1px solid #294466;border-radius:18px;padding:17px;min-width:0;box-shadow:0 8px 22px #0002;transition:transform .2s,border-color .2s}.store:hover{transform:translateY(-3px);border-color:#F5C32B88}.store h3{margin:0 0 7px;font-size:17px;color:#fff}.meta{font-size:12px;color:#B9C7D9;line-height:2}
 .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.small{font-size:12px;padding:9px 11px;border-radius:9px;text-decoration:none;border:0;display:inline-block;font-weight:bold;cursor:pointer;transition:transform .2s}
 .menu-tag{display:inline-block;margin:3px 0 8px;padding:3px 9px;border-radius:20px;background:#f5c32b22;border:1px solid #f5c32b66;color:#f5c32b;font-size:11px;font-weight:bold}.menu-tag.no-menu{background:#ffffff0b;border-color:#ffffff22;color:#b9c7d9}.menu{margin-top:13px;padding:13px;border-radius:13px;background:#071A35;border:1px solid #294466;color:#fff}.menu h4{margin:0 0 10px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{background:#102849;border:1px solid #294466;border-radius:12px;padding:11px;min-width:0}.product h5{margin:5px 0;font-size:13px;color:#fff}.product p{font-size:11px;color:var(--muted);margin:0}.price{font-weight:900;color:var(--yellow);margin-top:7px}
@@ -181,7 +181,8 @@ a, button { -webkit-tap-highlight-color:transparent; }
 </section>
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
- <div class="toolbar"><input id="storeSearch" class="search" type="search" placeholder="ابحث عن مطعم أو متجر أو منتج..." aria-label="ابحث عن مطعم أو متجر أو منتج"></div>
+ <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="clearStoreSearch" class="small yellow" type="button" aria-label="مسح البحث">مسح</button></div>
+ <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة. لا تحتاج إلى تصفح القائمة كاملة.</p>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
  <div id="storeGrid" class="store-grid"></div>
 </section>
@@ -684,14 +685,36 @@ function render(list){
  if(!list.length){setStatus("لا توجد مطاعم أو متاجر نشطة منشورة حالياً. ستظهر هنا تلقائياً عند إضافتها وتفعيلها في قاعدة بيانات أحمدكو.");return;}
  statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
+function restaurantSearchKey(value){
+ return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمة|كافيه|كافى|و)\s*)+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+}
+function updateRestaurantSuggestions(){
+ const list=document.getElementById("restaurantSuggestions");
+ if(!list)return;
+ list.innerHTML=[...new Set(stores.map(s=>s.store_name).filter(Boolean))]
+  .sort((a,b)=>a.localeCompare(b,"ar"))
+  .map(name=>'<option value="'+esc(name)+'"></option>').join("");
+}
 function search(){
- const q=normalize(searchBox.value);if(!q){render(stores);return;}
- const matchingStores=stores.filter(s=>normalize([s.store_name,s.store_type,s.address,s.contact_name].join(" ")).includes(q));
+ const raw=searchBox.value.trim();
+ const q=normalize(raw),key=restaurantSearchKey(raw);
+ if(!q){render(stores);return;}
+ const matchingStores=stores.filter(s=>{
+  const name=normalize(s.store_name||"");
+  const shortName=restaurantSearchKey(s.store_name||"");
+  const details=normalize([s.store_type,s.address,s.contact_name].join(" "));
+  return name.includes(q)||shortName.includes(key)||details.includes(q);
+ });
  const matchingProducts=products.filter(p=>normalize([p.name,p.description].join(" ")).includes(q));
  grid.innerHTML="";
- if(!matchingStores.length&&!matchingProducts.length){setStatus("لا توجد نتائج مطابقة. جرّب كلمة أخرى.");return;}
- statusBox.hidden=true;menuFirst(matchingStores).forEach(s=>grid.appendChild(storeCard(s)));
- matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المتجر: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
+ if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
+ statusBox.hidden=false;statusBox.className="notice";statusBox.textContent="نتائج البحث: "+matchingStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة.";
+ menuFirst(matchingStores).forEach(s=>grid.appendChild(storeCard(s)));
+ matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المطعم: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
+ if(matchingStores.length===1&&matchingProducts.length===0){
+  const card=grid.querySelector(".store");
+  if(card)card.scrollIntoView({behavior:"smooth",block:"nearest"});
+ }
 }
 async function init(){
  setStatus("جارٍ الاتصال بقاعدة بيانات أحمدكو…");
@@ -767,10 +790,13 @@ async function init(){
   }
   const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
   if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
+  updateRestaurantSuggestions();
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
 searchBox.addEventListener("input",search);
+document.getElementById("clearStoreSearch").addEventListener("click",()=>{searchBox.value="";searchBox.focus();render(stores);});
+searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();search();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
 init();
 </script>
 <style>
