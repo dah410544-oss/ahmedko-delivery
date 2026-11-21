@@ -280,8 +280,6 @@ const canonicalRestaurantPlaces=[
  {id:"local-shawarma-alhelo",store_name:"مطعم شاورما ومشاوي الحلو",contact_name:"",phone:"0592345585",address:"غزة – النصر، مقابل مسجد النصر",store_type:"restaurant",is_active:true},
  {id:"local-shafout-abu-shadi",store_name:"مطعم شعفوط ابو شادي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
  {id:"local-ahed-alshawa",store_name:"مطعم عاهد الشوا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:tameesStoreId,store_name:"مطعم تميس حميد",contact_name:"",phone:"0599028881",address:"",store_type:"restaurant",is_active:true},
- {id:palmeraStoreId,store_name:"مطعم بالميرا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
 ];
 verifiedLocalPlaces.push(...canonicalRestaurantPlaces);
 
@@ -688,8 +686,9 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").replace(/^ال/,"").replace(/\\s+/g," ").trim();
+ const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\s*)+/,"").replace(/^ال/,"").replace(/\s+/g," ").trim();
  const canonicalByKey=new Map(canonicalRestaurantPlaces.map(place=>[restaurantNameKey(place.store_name),place.store_name]));
+ // توحيد أسماء سجلات قاعدة البيانات مع الأسماء المعتمدة.
  stores.forEach(store=>{
   const canonicalName=canonicalByKey.get(restaurantNameKey(store.store_name));
   if(canonicalName)store.store_name=canonicalName;
@@ -698,20 +697,8 @@ async function init(){
   const key=restaurantNameKey(place.store_name);
   if(!stores.some(store=>restaurantNameKey(store.store_name)===key))stores.push({...place});
  });
+ // عند وجود نسخ مكررة نحتفظ بالسجل الذي لديه منيو فعلي أولاً.
  stores.sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)));
- const uniqueStores=[];
- const uniqueRestaurantKeys=new Set();
- stores.forEach(store=>{
-  const key=restaurantNameKey(store.store_name);
-  if(!uniqueRestaurantKeys.has(key)){uniqueStores.push(store);uniqueRestaurantKeys.add(key);}
- });
- stores=uniqueStores;
- const seenRestaurantKeys=new Set(stores.map(s=>restaurantNameKey(s.store_name)));
- verifiedLocalPlaces.forEach(place=>{
-  const key=restaurantNameKey(place.store_name);
-  if(!seenRestaurantKeys.has(key)){stores.push(place);seenRestaurantKeys.add(key);}
- });
- // Remove any existing database/local duplicates by the same restaurant identity.
  const uniqueStores=[];
  const uniqueRestaurantKeys=new Set();
  stores.forEach(store=>{
