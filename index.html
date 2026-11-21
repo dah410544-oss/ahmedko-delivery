@@ -66,6 +66,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
+ <button id="ahmedkoManualRefresh" class="small yellow" type="button" aria-label="تحديث التطبيق" style="cursor:pointer;white-space:nowrap">↻ تحديث</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
@@ -559,6 +560,8 @@ html,body{overscroll-behavior-y:contain}
 <script>
 (()=>{
  let startY=0,pulling=false,armed=false,refreshing=false;
+ const manualButton=document.getElementById("ahmedkoManualRefresh");
+ if(manualButton) manualButton.addEventListener("click",()=>{manualButton.disabled=true;manualButton.textContent="جارٍ التحديث…";location.reload();});
  const threshold=70;
  const indicator=document.createElement("div");
  indicator.id="ahmedkoPullRefresh";
@@ -571,7 +574,7 @@ html,body{overscroll-behavior-y:contain}
   indicator.querySelector(".pullIcon").textContent=progress>=1?"↻":"↓";
   indicator.querySelector(".pullText").textContent=progress>=1?"اترك الشاشة للتحديث":"اسحب للأسفل للتحديث";
  }
- document.addEventListener("touchstart",event=>{
+ window.addEventListener("touchstart",event=>{
   if(refreshing||event.touches.length!==1||window.scrollY>0)return;
   const target=event.target;
   if(target&&target.closest&&target.closest("input,textarea,select,[contenteditable=true]"))return;
@@ -579,7 +582,7 @@ html,body{overscroll-behavior-y:contain}
   pulling=startY<220;
   armed=false;
  },{passive:true});
- document.addEventListener("touchmove",event=>{
+ window.addEventListener("touchmove",event=>{
   if(!pulling||refreshing||event.touches.length!==1||window.scrollY>0)return;
   const distance=event.touches[0].clientY-startY;
   if(distance<=0){indicator.classList.remove("visible");return;}
@@ -601,8 +604,8 @@ html,body{overscroll-behavior-y:contain}
   }
   armed=false;
  }
- document.addEventListener("touchend",finish,{passive:true});
- document.addEventListener("touchcancel",finish,{passive:true});
+ window.addEventListener("touchend",finish,{passive:true});
+ window.addEventListener("touchcancel",finish,{passive:true});
 })();
 </script>
 <script>
