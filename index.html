@@ -321,7 +321,16 @@ function renderMenu(store,holder){
  holder.className="menu";
  if(!list.length){holder.innerHTML="<p>لا توجد منتجات أو أصناف منشورة لهذا المكان حالياً. تواصل معنا لطلب المساعدة.</p>";return;}
  let html="<h4>المنيو والمنتجات</h4>";const grouped=new Set();
- cats.forEach(c=>{const items=list.filter(p=>String(p.category_id)===String(c.id));if(!items.length)return;grouped.add(String(c.id));html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';});
+ const isMuhannad=normalize(store.store_name).includes(normalize("مهند"));
+ cats.forEach(c=>{
+  const items=list.filter(p=>String(p.category_id)===String(c.id));
+  if(!items.length){
+   if(isMuhannad&&normalize(c.name).includes(normalize("المشاوي")))html+='<h5>'+esc(c.name||"المشاوي")+'</h5><p class="notice">المشاوي غير متوفرة حالياً لدى المطعم.</p>';
+   return;
+  }
+  grouped.add(String(c.id));
+  html+='<h5>'+esc(c.name||"قسم")+'</h5><div class="products">'+items.map(p=>productHTML(store,p)).join("")+'</div>';
+ });
  const rest=list.filter(p=>!p.category_id||!grouped.has(String(p.category_id)));
  if(rest.length)html+='<h5>أصناف أخرى</h5><div class="products">'+rest.map(p=>productHTML(store,p)).join("")+'</div>';
  holder.innerHTML=html;
