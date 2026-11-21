@@ -470,7 +470,8 @@ init();
   if (!installButton) return;
   let installPrompt = null;
   const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  if (standalone) {
+  const nativeAndroidApp = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
+  if (standalone || nativeAndroidApp) {
     installButton.hidden = true;
     return;
   }
