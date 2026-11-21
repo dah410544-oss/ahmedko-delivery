@@ -155,6 +155,7 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 </div>
 
 <footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة · <a href="privacy.html">سياسة الخصوصية</a></footer>
+<script src="auto-o2-menu.js"></script>
 <script>
 "use strict";
 const SUPABASE_URL = "https://pqulzfhisidcatrakxsx.supabase.co";
@@ -540,6 +541,8 @@ async function init(){
    const preferred=autoMatches.find(s=>s.id==="d404b052-08e6-4f99-9749-dac2226d5968")||autoMatches.find(s=>s.id&&!String(s.id).startsWith("local-"))||autoMatches[0];
    stores=stores.filter(s=>!(normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"))||s===preferred);
   }
+  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
+  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
   render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تم تحميل المطاعم، ومنيو مطعم التاج متاح. قد لا تظهر منيوهات بعض المتاجر الأخرى حتى تكتمل بياناتها في قاعدة أحمدكو.",true);
 }
