@@ -249,31 +249,41 @@ const searchBox = document.getElementById("storeSearch");
 let stores = [], categories = [], products = [];
 const altajStoreId="local-altaj";
 const autoStoreId="local-auto";
-const verifiedLocalPlaces = [{"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},{"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},{"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},{"store_name":"مطعم شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},{"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},{"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},{"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true},{"id":autoStoreId,"store_name":"مطعم أوتو","contact_name":"","phone":"","address":"","store_type":"restaurant","is_active":true}];
+const verifiedLocalPlaces = [
+ {"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},
+ {"store_name":"مسمكة حمادة","contact_name":"","phone":"0568120160","address":"معسكر الشاطئ – سوق السمك، غزة","store_type":"store","is_active":true},
+ {"store_name":"مطعم أوركا","contact_name":"","phone":"0595615332","address":"غزة – شارع الوحدة، عمارة نيرو، الطابق الأول","store_type":"restaurant","is_active":true},
+ {"store_name":"مطعم شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},
+ {"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},
+ {"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},
+ {"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true}
+];
 
-
-// Menus supplied by the restaurant owner: Muhannad (image menu) and Al-Baba (written menu).
+// الأسماء المعتمدة للمطاعم — جميع الأسماء الظاهرة تبدأ بكلمة «مطعم».
 const muhandStoreId="local-muhannad";
 const babaStoreId="local-baba";
 const tameesStoreId="local-tamees-hameed";
 const thaiStoreId="local-thai-restaurant";
 const palmeraStoreId="local-palmera";
-verifiedLocalPlaces.push(
+const canonicalRestaurantPlaces=[
  {id:muhandStoreId,store_name:"مطعم ومطبخ مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:altajStoreId,store_name:"مطعم ومطبخ التاج",contact_name:"",phone:"0593104000",address:"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1",store_type:"restaurant",is_active:true},
  {id:babaStoreId,store_name:"مطعم وملحمة البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:tameesStoreId,store_name:"تميس حميد",contact_name:"",phone:"0599028881",address:"",store_type:"restaurant",is_active:true},
  {id:thaiStoreId,store_name:"مطعم التايلندي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:palmeraStoreId,store_name:"PALMERA – بالميرا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-jarjawi",store_name:"مطعم ومطبخ الجرجاوي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-khudari",store_name:"مطعم الخضري",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-saada-shafout",store_name:"مطعم السعادة شعفوط",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-chef-reef",store_name:"مطعم الشيف وريف",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-chef-hamada",store_name:"مطعم الشيف حمادة",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-shawarma-eyad",store_name:"مطعم شاورما إياد",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-shawarma-haroun",store_name:"مطعم شاورما هارون",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-shafout-abu-shadi",store_name:"مطعم شعفوط أبو شادي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
- ,{id:"local-ahed-alshawa",store_name:"مطعم عاهد الشوا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
-);
+ {id:"local-jarjawi",store_name:"مطعم ومطبخ الجرجاوي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-khudari",store_name:"مطعم الخضري",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-saada-shafout",store_name:"مطعم السعادة شعفوط",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-chef-reef",store_name:"مطعم الشيف وريف",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-chef-hamada",store_name:"مطعم الشيف حمادة",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-shawarma-eyad",store_name:"مطعم شاورما اياد",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-shawarma-haroun",store_name:"مطعم شاورما هارون",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-shawarma-alhelo",store_name:"مطعم شاورما ومشاوي الحلو",contact_name:"",phone:"0592345585",address:"غزة – النصر، مقابل مسجد النصر",store_type:"restaurant",is_active:true},
+ {id:"local-shafout-abu-shadi",store_name:"مطعم شعفوط ابو شادي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:"local-ahed-alshawa",store_name:"مطعم عاهد الشوا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
+ {id:tameesStoreId,store_name:"مطعم تميس حميد",contact_name:"",phone:"0599028881",address:"",store_type:"restaurant",is_active:true},
+ {id:palmeraStoreId,store_name:"مطعم بالميرا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true}
+];
+verifiedLocalPlaces.push(...canonicalRestaurantPlaces);
 
 const tameesHameedMenuData=[
  ["التميس",[
@@ -678,7 +688,24 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- const restaurantNameKey=name=>normalize(name).replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\s*)+/,"").replace(/^ال/,"").replace(/\s+/g," ").trim();
+ const restaurantNameKey=name=>normalize(name).replace(/شاروما/g,"شاورما").replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").replace(/^ال/,"").replace(/\\s+/g," ").trim();
+ const canonicalByKey=new Map(canonicalRestaurantPlaces.map(place=>[restaurantNameKey(place.store_name),place.store_name]));
+ stores.forEach(store=>{
+  const canonicalName=canonicalByKey.get(restaurantNameKey(store.store_name));
+  if(canonicalName)store.store_name=canonicalName;
+ });
+ canonicalRestaurantPlaces.forEach(place=>{
+  const key=restaurantNameKey(place.store_name);
+  if(!stores.some(store=>restaurantNameKey(store.store_name)===key))stores.push({...place});
+ });
+ stores.sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)));
+ const uniqueStores=[];
+ const uniqueRestaurantKeys=new Set();
+ stores.forEach(store=>{
+  const key=restaurantNameKey(store.store_name);
+  if(!uniqueRestaurantKeys.has(key)){uniqueStores.push(store);uniqueRestaurantKeys.add(key);}
+ });
+ stores=uniqueStores;
  const seenRestaurantKeys=new Set(stores.map(s=>restaurantNameKey(s.store_name)));
  verifiedLocalPlaces.forEach(place=>{
   const key=restaurantNameKey(place.store_name);
