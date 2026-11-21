@@ -48,7 +48,7 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
 const labels={pending:"بانتظار رد المطعم",accepted:"تم قبول الطلب",rejected:"مرفوض",preparing:"قيد التحضير",ready:"جاهز للتسليم",completed:"مكتمل",cancelled:"ملغي"};
 const next={pending:[["accepted","قبول الطلب"],["rejected","رفض الطلب"]],accepted:[["preparing","بدء التحضير"],["cancelled","إلغاء الطلب"]],preparing:[["ready","الطلب جاهز"]],ready:[["completed","تم التسليم للمندوب"]]};
-let stores=[],activeStore="",session=null;
+let stores=[],activeStore="",session=null,ordersLoading=false;
 function msg(id,text,type){$(id).textContent=text;$(id).className="message"+(type?" "+type:"");}
 function showLogin(){ $("login").hidden=false;$("dashboard").hidden=true;}
 async function loadStores(){
@@ -63,23 +63,31 @@ async function loadStores(){
  $("storeSelect").innerHTML=stores.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.store_name)+'</option>').join("");
  activeStore=stores[0].id;$("storeTitle").textContent=stores[0].store_name;
 }
-async function loadOrders(){
- if(!activeStore)return;
- msg("dashboardMessage","جارٍ تحميل طلبات المتجر...");
- const {data:orders,error}=await db.from("store_orders").select("id,customer_name,customer_phone,delivery_address,notes,subtotal,delivery_fee,total,status,created_at,delivery_order_id").eq("store_id",activeStore).order("created_at",{ascending:false}).limit(100);
- if(error)throw error;
- $("orderCount").textContent=(orders||[]).length+" طلب";
- if(!orders?.length){$("orders").innerHTML='<div class="message">لا توجد طلبات واردة لهذا المتجر حالياً.</div>';msg("dashboardMessage","تم الاتصال بقاعدة أحمدكو بنجاح.","success");return;}
- const itemResults=await Promise.all(orders.map(o=>db.from("store_order_items").select("product_name,unit_price,quantity").eq("order_id",o.id)));
- $("orders").innerHTML=orders.map((o,i)=>{
-  const items=itemResults[i].data||[];
-  const itemHtml=items.map(it=>esc(it.product_name)+" × "+esc(it.quantity)+" — "+Number(it.unit_price).toFixed(2)+" ₪").join("<br>");
-  const buttons=(next[o.status]||[]).map(([status,label])=>'<button type="button" data-order="'+esc(o.id)+'" data-status="'+status+'">'+label+'</button>').join("");
-  return '<article class="order"><div class="order-head"><h3>طلب #'+esc(o.id.slice(0,8))+' · '+esc(o.customer_name)+'</h3><span class="pill">'+esc(labels[o.status]||o.status)+'</span></div><div class="details"><div class="detail"><b>هاتف العميل</b>'+esc(o.customer_phone)+'</div><div class="detail"><b>عنوان التسليم</b>'+esc(o.delivery_address)+'</div><div class="detail"><b>قيمة الأصناف</b>'+Number(o.subtotal||0).toFixed(2)+' ₪</div><div class="detail"><b>الإجمالي</b>'+Number(o.total||0).toFixed(2)+' ₪</div><div class="detail"><b>تاريخ الطلب</b>'+esc(new Date(o.created_at).toLocaleString("ar-PS"))+'</div><div class="detail"><b>رقم طلب التوصيل</b>'+esc(o.delivery_order_id||"بانتظار الربط")+'</div></div><div class="items"><b>الأصناف</b><br>'+(itemHtml||"لا توجد تفاصيل أصناف")+(o.notes?"<br><b>ملاحظات:</b> "+esc(o.notes):"")+'</div><div class="actions">'+(buttons||'<span class="muted">لا توجد خطوة تالية متاحة من هذه الحالة.</span>')+'</div></article>';
- }).join("");
- msg("dashboardMessage","تم تحميل الطلبات. جميع تغييرات الحالة تمر عبر تحقق قاعدة البيانات.","success");
+async function loadOrders(silent=false){
+ if(!activeStore||ordersLoading)return;
+ ordersLoading=true;
+ try{
+  if(!silent)msg("dashboardMessage","جارٍ تحميل طلبات المتجر...");
+  const {data:orders,error}=await db.from("store_orders").select("id,customer_name,customer_phone,delivery_address,notes,subtotal,delivery_fee,total,status,created_at,delivery_order_id").eq("store_id",activeStore).order("created_at",{ascending:false}).limit(100);
+  if(error)throw error;
+  $("orderCount").textContent=(orders||[]).length+" طلب";
+  if(!orders?.length){$("orders").innerHTML='<div class="message">لا توجد طلبات واردة لهذا المتجر حالياً.</div>';if(!silent)msg("dashboardMessage","تم الاتصال بقاعدة أحمدكو بنجاح.","success");return;}
+  const itemResults=await Promise.all(orders.map(o=>db.from("store_order_items").select("product_name,unit_price,quantity").eq("order_id",o.id)));
+  $("orders").innerHTML=orders.map((o,i)=>{
+   const items=itemResults[i].data||[];
+   const itemHtml=items.map(it=>esc(it.product_name)+" × "+esc(it.quantity)+" — "+Number(it.unit_price).toFixed(2)+" ₪").join("<br>");
+   const buttons=(next[o.status]||[]).map(([status,label])=>'<button type="button" data-order="'+esc(o.id)+'" data-status="'+status+'">'+label+'</button>').join("");
+   return '<article class="order"><div class="order-head"><h3>طلب #'+esc(o.id.slice(0,8))+' · '+esc(o.customer_name)+'</h3><span class="pill">'+esc(labels[o.status]||o.status)+'</span></div><div class="details"><div class="detail"><b>هاتف العميل</b>'+esc(o.customer_phone)+'</div><div class="detail"><b>عنوان التسليم</b>'+esc(o.delivery_address)+'</div><div class="detail"><b>قيمة الأصناف</b>'+Number(o.subtotal||0).toFixed(2)+' ₪</div><div class="detail"><b>الإجمالي</b>'+Number(o.total||0).toFixed(2)+' ₪</div><div class="detail"><b>تاريخ الطلب</b>'+esc(new Date(o.created_at).toLocaleString("ar-PS"))+'</div><div class="detail"><b>رقم طلب التوصيل</b>'+esc(o.delivery_order_id||"بانتظار الربط")+'</div></div><div class="items"><b>الأصناف</b><br>'+(itemHtml||"لا توجد تفاصيل أصناف")+(o.notes?"<br><b>ملاحظات:</b> "+esc(o.notes):"")+'</div><div class="actions">'+(buttons||'<span class="muted">لا توجد خطوة تالية متاحة من هذه الحالة.</span>')+'</div></article>';
+  }).join("");
+  if(!silent)msg("dashboardMessage","تم تحميل الطلبات. جميع تغييرات الحالة تمر عبر تحقق قاعدة البيانات.","success");
+ }finally{ordersLoading=false;}
 }
-async function refreshAll(){try{await loadOrders();}catch(e){msg("dashboardMessage","تعذر تحميل الطلبات: "+e.message,"error");}}
+async function refreshAll(silent=false,force=false){
+ if(!session||!activeStore)return;
+ const focused=document.activeElement;
+ if(!force&&(document.hidden||$("orders").contains(focused)||$("orders").querySelector("button:disabled")))return;
+ try{await loadOrders(silent);}catch(e){if(!silent)msg("dashboardMessage","تعذر تحميل الطلبات: "+e.message,"error");}
+}
 $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();$("loginButton").disabled=true;msg("loginMessage","جارٍ التحقق من الحساب...");
  try{
@@ -94,12 +102,14 @@ $("loginForm").addEventListener("submit",async e=>{
 $("storeSelect").addEventListener("change",async()=>{activeStore=$("storeSelect").value;const s=stores.find(x=>x.id===activeStore);$("storeTitle").textContent=s?.store_name||"طلبات المطعم";await refreshAll();});
 $("refresh").addEventListener("click",refreshAll);
 $("logout").addEventListener("click",async()=>{await db.auth.signOut();session=null;showLogin();});
+window.setInterval(()=>refreshAll(true),30000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAll(true);});
 $("orders").addEventListener("click",async e=>{
  const b=e.target.closest("button[data-order]");if(!b)return;
  b.disabled=true;
  try{
   const {data,error}=await db.rpc("restaurant_update_order_status",{p_order_id:b.dataset.order,p_new_status:b.dataset.status});
-  if(error)throw error;await refreshAll();
+  if(error)throw error;await refreshAll(false,true);
  }catch(err){msg("dashboardMessage","لم تتغير حالة الطلب: "+err.message,"error");b.disabled=false;}
 });
 (async()=>{
