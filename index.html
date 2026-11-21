@@ -411,10 +411,18 @@ function storeCard(store){
  button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
  return card;
 }
+function storeHasMenu(store){
+ return categories.some(c=>String(c.store_id)===String(store.id)) ||
+        products.some(p=>String(p.store_id)===String(store.id));
+}
+function menuFirst(list){
+ return [...list].sort((a,b)=>Number(storeHasMenu(b))-Number(storeHasMenu(a)) ||
+   String(a.store_name||"").localeCompare(String(b.store_name||""),"ar"));
+}
 function render(list){
  grid.innerHTML="";
  if(!list.length){setStatus("لا توجد مطاعم أو متاجر نشطة منشورة حالياً. ستظهر هنا تلقائياً عند إضافتها وتفعيلها في قاعدة بيانات أحمدكو.");return;}
- statusBox.hidden=true;list.forEach(s=>grid.appendChild(storeCard(s)));
+ statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
 function search(){
  const q=normalize(searchBox.value);if(!q){render(stores);return;}
@@ -422,7 +430,7 @@ function search(){
  const matchingProducts=products.filter(p=>normalize([p.name,p.description].join(" ")).includes(q));
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لا توجد نتائج مطابقة. جرّب كلمة أخرى.");return;}
- statusBox.hidden=true;matchingStores.forEach(s=>grid.appendChild(storeCard(s)));
+ statusBox.hidden=true;menuFirst(matchingStores).forEach(s=>grid.appendChild(storeCard(s)));
  matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المتجر: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
 }
 async function init(){
