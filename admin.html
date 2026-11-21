@@ -1456,6 +1456,31 @@ async function loadFinanceEarnings(){
 }
 $("refresh-earnings")?.addEventListener("click",loadFinanceEarnings);
 
+let adminRefreshRunning=false;
+async function refreshAdminData(silent=true){
+ if(adminRefreshRunning||document.hidden||$("app").hidden)return;
+ const active=document.activeElement;
+ if(active&&active.matches("input,textarea,select,[contenteditable='true']"))return;
+ if(document.querySelector("#app button:disabled"))return;
+ adminRefreshRunning=true;
+ try{
+  await Promise.all([
+   loadStatistics(),
+   loadOrderWorkflow(),
+   loadDriverApplications(),
+   loadFinanceEarnings(),
+   loadTable("orders"),
+   loadTable("drivers")
+  ]);
+  if(!silent) $("dashboard-message").innerHTML='<div class="success">تم تحديث بيانات الإدارة تلقائياً.</div>';
+ }catch(error){
+  if(!silent) $("dashboard-message").innerHTML='<div class="error">تعذر تحديث بعض البيانات: '+escapeHTML(error.message)+'</div>';
+ }finally{adminRefreshRunning=false;}
+}
+window.setInterval(()=>refreshAdminData(true),45000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAdminData(true);});
+window.addEventListener("focus",()=>refreshAdminData(true));
+
 async function loadDashboard(){
  await verifyAdmin();
  showApp();
