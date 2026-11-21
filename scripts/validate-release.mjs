@@ -48,6 +48,7 @@ const home = await readFile("www/index.html", "utf8");
 if (!home.includes("function menuFirst(") ||
     !home.includes("منيو متوفر") ||
     !home.includes("const canCreateStoreOrder=") ||
+    !home.includes("const allItemsPriced=") ||
     !home.includes('rpc/create_customer_order') ||
     !home.includes("أصناف هذا المنيو غير منشورة")) {
   throw new Error("Homepage menu priority or safe local-menu delivery checkout is incomplete.");
