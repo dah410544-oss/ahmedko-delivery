@@ -413,7 +413,7 @@ footer{
   </form>
  </div>
  <div class="panel">
-  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="import-auto-menu">استيراد منيو أوتو O2</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
+  <div class="toolbar"><h3>الأقسام والمنتجات المسجلة</h3><div class="workflow-controls"><button type="button" class="primary" id="import-taj-menu">استيراد منيو مطبخ التاج</button><button type="button" class="primary" id="import-auto-menu">استيراد منيو أوتو O2</button><button type="button" class="primary" id="import-muhannad-menu">استيراد منيو مهند</button><button type="button" class="primary" id="import-baba-menu">استيراد منيو البابا</button><button type="button" class="primary" id="refresh-menus">تحديث القوائم</button></div></div><p id="menu-import-status" class="workflow-status" aria-live="polite">الاستيراد يضيف الأصناف الناقصة فقط ولا يكرر الأقسام أو المنتجات الموجودة.</p>
   <div id="menu-manager-list" class="muted">جارٍ تحميل القوائم...</div>
  </div>
 </section>
@@ -1264,6 +1264,118 @@ async function importAutoO2Menu(){
 }
 $("import-auto-menu").addEventListener("click",()=>{
  if(confirm("سيتم استيراد الأصناف المقروءة بوضوح فقط من صورة منيو أوتو O2. الأصناف غير الواضحة مستبعدة، والموجود لن يتكرر. هل تريد المتابعة؟"))importAutoO2Menu();
+});
+
+
+const muhannadMenuImportData=[
+ ["الشاورما",[
+  ["كيلو شاورما","120"],["صحن شاورما وجبة","25"],["صحن شاورما نصف كيلو","50"],
+  ["فرشوحة عادي","15"],["فرشوحة دبل عادي","17"],["فرشوحة دبل لحمة","25"],
+  ["فرشوحة دبل دبل","27"],["فرشوحة صاروخ","30"],["فرشوحة عادي بالجبنة","20"],["خبز شاورما","10"]
+ ]],
+ ["الوجبات",[
+  ["وجبة سوري","35"],["وجبة صفيحة","40"],["وجبة أسوار بالجبنة","40"],
+  ["وجبة شاورما صغير","35"],["وجبة شاورما لشخصين","70"],["وجبة العرسان","150"]
+ ]],
+ ["المشاوي",[["المشاوي غير متوفرة حالياً","غير متوفر حالياً"]]],
+ ["السلطات والمقبلات",[
+  ["مايونيز","10"],["سلطة","10"],["بكرتاتي","10"],["فتوشة","10"],
+  ["ملوخيا أحمر","10"],["كول سلو","10"],["سلطة ساخنة (متنوع)","10"]
+ ]],
+ ["المشارب",[["مشروب غازي","حسب المتوفر"],["مياه معدنية","حسب المتوفر"]]]
+];
+const babaMenuImportData=[
+ ["الشاورما",[
+  ["كيلو شاورما","90"],["فرشوحة شاورما عادي","12"],["فرشوحة دبل عادي","15"],
+  ["فرشوحة دبل لحمة","20"],["فرشوحة دبل دبل","25"]
+ ]],
+ ["المشاوي",[
+  ["كيلو كباب","55"],["كيلو شيش طاووق فخد","45"],["كيلو جناح مشوي","18"],
+  ["كيلو كبدة دجاج مشوي","35"],["كيلو كبدة عجل","50"],["كيلو مشكل","40"],
+  ["وجبة عرسان","60"],["فرشوحة كباب","7"],["فرشوحة شيش","9"],["فرشوحة شيش دبل","12"]
+ ]]
+];
+function normalizeMenuName(value){
+ return String(value||"").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\sـ]+/g," ");
+}
+async function importPartnerMenu(kind){
+ const isMuhannad=kind==="muhannad";
+ const button=$(isMuhannad?"import-muhannad-menu":"import-baba-menu");
+ const status=$("menu-import-status");
+ const storeName=isMuhannad?"مطبخ ومطعم مهند":"ملحمة ومطعم البابا";
+ const searchWord=isMuhannad?"مهند":"البابا";
+ const menu=isMuhannad?muhannadMenuImportData:babaMenuImportData;
+ button.disabled=true;
+ let addedCategories=0,addedProducts=0,updatedProducts=0,skippedItems=0;
+ try{
+  status.textContent="جارٍ التحقق من المتجر وتجهيز منيو "+storeName+"...";
+  const storesResult=await db.from("stores").select("id,store_name,is_active").order("store_name");
+  if(storesResult.error)throw new Error("تعذر قراءة المتاجر: "+storesResult.error.message);
+  let store=(storesResult.data||[]).find(x=>normalizeMenuName(x.store_name).includes(normalizeMenuName(searchWord)));
+  if(!store){
+   const created=await db.from("stores").insert({
+    store_name:storeName,contact_name:null,phone:null,address:null,store_type:"restaurant",is_active:true
+   }).select("id,store_name,is_active").single();
+   if(created.error)throw new Error("تعذر تسجيل "+storeName+": "+created.error.message);
+   store=created.data;
+  }else if(store.is_active===false){
+   const activated=await db.from("stores").update({is_active:true}).eq("id",store.id).select("id,store_name,is_active").single();
+   if(activated.error)throw new Error("تعذر تفعيل المتجر: "+activated.error.message);
+   store=activated.data;
+  }
+  const [catResult,productResult]=await Promise.all([
+   db.from("product_categories").select("id,name,is_active").eq("store_id",store.id),
+   db.from("products").select("id,name,category_id,price,is_available").eq("store_id",store.id)
+  ]);
+  if(catResult.error)throw new Error("تعذر قراءة أقسام المتجر: "+catResult.error.message);
+  if(productResult.error)throw new Error("تعذر قراءة منتجات المتجر: "+productResult.error.message);
+  const knownCats=new Map((catResult.data||[]).map(x=>[normalizeMenuName(x.name),x]));
+  const knownProducts=new Map((productResult.data||[]).map(x=>[normalizeMenuName(x.name),x]));
+  for(const [categoryName,items] of menu){
+   const key=normalizeMenuName(categoryName);
+   let category=knownCats.get(key);
+   if(!category){
+    const created=await db.from("product_categories").insert({store_id:store.id,name:categoryName,is_active:true}).select("id,name,is_active").single();
+    if(created.error)throw new Error("تعذر إضافة قسم "+categoryName+": "+created.error.message);
+    category=created.data;knownCats.set(key,category);addedCategories++;
+   }else if(category.is_active===false){
+    const activated=await db.from("product_categories").update({is_active:true}).eq("id",category.id).select("id,name,is_active").single();
+    if(activated.error)throw new Error("تعذر تفعيل قسم "+categoryName+": "+activated.error.message);
+    category=activated.data;knownCats.set(key,category);
+   }
+   for(const [itemName,rawPrice] of items){
+    if(String(rawPrice)==="غير متوفر حالياً"){skippedItems++;continue;}
+    const price=String(rawPrice)==="حسب المتوفر"?null:Number(rawPrice);
+    if(price!==null&&(!Number.isFinite(price)||price<0))throw new Error("سعر غير صالح للصنف "+itemName);
+    const payload={
+     store_id:store.id,category_id:category.id,name:itemName,
+     price,description:price===null?"السعر حسب المتوفر ويؤكد عند الطلب.":null,is_available:true
+    };
+    const productKey=normalizeMenuName(itemName);
+    const existing=knownProducts.get(productKey);
+    if(existing){
+     const updated=await db.from("products").update(payload).eq("id",existing.id);
+     if(updated.error)throw new Error("تعذر تحديث سعر "+itemName+": "+updated.error.message);
+     updatedProducts++;
+    }else{
+     const created=await db.from("products").insert(payload).select("id,name,category_id,price,is_available").single();
+     if(created.error)throw new Error("تعذر إضافة "+itemName+": "+created.error.message);
+     knownProducts.set(productKey,created.data);addedProducts++;
+    }
+   }
+   status.textContent="تمت معالجة قسم "+categoryName+" في "+storeName+"...";
+  }
+  await loadMenuManager();
+  status.textContent="اكتمل استيراد "+storeName+": "+addedCategories+" أقسام جديدة، "+addedProducts+" أصناف جديدة، "+updatedProducts+" أسعار/أصناف محدثة. لم نكرر الموجود. "+(skippedItems?"تم إبقاء المشاوي غير متاحة دون إضافتها للسلة.":"");
+ }catch(error){
+  status.textContent="توقف الاستيراد: "+error.message+" — ما تم حفظه يبقى محفوظاً، ويمكن إعادة المحاولة دون تكرار.";
+ }finally{button.disabled=false;}
+}
+$("import-muhannad-menu").addEventListener("click",()=>{
+ if(confirm("سيتم إنشاء/تحديث متجر مهند وأقسامه وأصنافه بالأسعار التي تم تفريغها من المنيو المرسل. هل تريد المتابعة؟"))importPartnerMenu("muhannad");
+});
+$("import-baba-menu").addEventListener("click",()=>{
+ if(confirm("سيتم إنشاء/تحديث ملحمة البابا وأقسامها وأسعار الأصناف التي أرسلتها. هل تريد المتابعة؟"))importPartnerMenu("baba");
 });
 
 const orderStatusLabels={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده",picked_up:"استلم السائق الطلب – في الطريق",delivered:"تم التسليم",cancelled:"ملغي"};
