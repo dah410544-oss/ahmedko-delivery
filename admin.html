@@ -1477,7 +1477,7 @@ async function refreshAdminData(silent=true){
   if(!silent) $("dashboard-message").innerHTML='<div class="error">تعذر تحديث بعض البيانات: '+escapeHTML(error.message)+'</div>';
  }finally{adminRefreshRunning=false;}
 }
-window.setInterval(()=>refreshAdminData(true),45000);
+window.setInterval(()=>refreshAdminData(true),30000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAdminData(true);});
 window.addEventListener("focus",()=>refreshAdminData(true));
 
