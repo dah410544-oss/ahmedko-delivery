@@ -72,9 +72,19 @@ async function loadOrders(silent=false){
   if(error)throw error;
   $("orderCount").textContent=(orders||[]).length+" طلب";
   if(!orders?.length){$("orders").innerHTML='<div class="message">لا توجد طلبات واردة لهذا المتجر حالياً.</div>';if(!silent)msg("dashboardMessage","تم الاتصال بقاعدة أحمدكو بنجاح.","success");return;}
-  const itemResults=await Promise.all(orders.map(o=>db.from("store_order_items").select("product_name,unit_price,quantity").eq("order_id",o.id)));
-  $("orders").innerHTML=orders.map((o,i)=>{
-   const items=itemResults[i].data||[];
+  const orderIds=orders.map(o=>o.id);
+  const itemResult=orderIds.length
+   ?await db.from("store_order_items").select("order_id,product_name,unit_price,quantity").in("order_id",orderIds)
+   :{data:[],error:null};
+  if(itemResult.error)throw itemResult.error;
+  const itemsByOrder=new Map();
+  (itemResult.data||[]).forEach(item=>{
+   const key=String(item.order_id);
+   if(!itemsByOrder.has(key))itemsByOrder.set(key,[]);
+   itemsByOrder.get(key).push(item);
+  });
+  $("orders").innerHTML=orders.map(o=>{
+   const items=itemsByOrder.get(String(o.id))||[];
    const itemHtml=items.map(it=>esc(it.product_name)+" × "+esc(it.quantity)+" — "+Number(it.unit_price).toFixed(2)+" ₪").join("<br>");
    const buttons=(next[o.status]||[]).map(([status,label])=>'<button type="button" data-order="'+esc(o.id)+'" data-status="'+status+'">'+label+'</button>').join("");
    return '<article class="order"><div class="order-head"><h3>طلب #'+esc(o.id.slice(0,8))+' · '+esc(o.customer_name)+'</h3><span class="pill">'+esc(labels[o.status]||o.status)+'</span></div><div class="details"><div class="detail"><b>هاتف العميل</b>'+esc(o.customer_phone)+'</div><div class="detail"><b>عنوان التسليم</b>'+esc(o.delivery_address)+'</div><div class="detail"><b>قيمة الأصناف</b>'+Number(o.subtotal||0).toFixed(2)+' ₪</div><div class="detail"><b>الإجمالي</b>'+Number(o.total||0).toFixed(2)+' ₪</div><div class="detail"><b>تاريخ الطلب</b>'+esc(new Date(o.created_at).toLocaleString("ar-PS"))+'</div><div class="detail"><b>رقم طلب التوصيل</b>'+esc(o.delivery_order_id||"بانتظار الربط")+'</div></div><div class="items"><b>الأصناف</b><br>'+(itemHtml||"لا توجد تفاصيل أصناف")+(o.notes?"<br><b>ملاحظات:</b> "+esc(o.notes):"")+'</div><div class="actions">'+(buttons||'<span class="muted">لا توجد خطوة تالية متاحة من هذه الحالة.</span>')+'</div></article>';
