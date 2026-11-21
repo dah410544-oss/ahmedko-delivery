@@ -185,6 +185,30 @@ section{background:#f4f7fb}
  .cart-fab{bottom:calc(78px + env(safe-area-inset-bottom));}
 }
 </style>
+<style id="ahmedko-assistant-ui">
+.assistant-toggle{position:fixed;right:16px;bottom:18px;z-index:35;border:0;border-radius:999px;padding:13px 17px;background:#102849;color:#fff;font-weight:900;box-shadow:0 9px 26px #10284935;border:1px solid #f5c32b;cursor:pointer}
+.assistant-panel{position:fixed;right:14px;bottom:78px;z-index:36;width:min(370px,calc(100vw - 28px));height:min(570px,68dvh);display:flex;flex-direction:column;overflow:hidden;border:1px solid #dfe6ef;border-radius:20px;background:#fff;color:#17243a;box-shadow:0 18px 55px #071a3540}
+.assistant-panel[hidden]{display:none!important}
+.assistant-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;background:#071a35;color:#fff;border-bottom:3px solid #f5c32b}
+.assistant-head strong{font-size:14px}.assistant-head small{display:block;color:#c7d4e5;font-size:11px;font-weight:400}
+.assistant-close{min-height:36px;padding:5px 10px;background:#ffffff18;color:#fff;border:1px solid #ffffff30;border-radius:9px}
+.assistant-messages{flex:1;overflow:auto;padding:13px;display:flex;flex-direction:column;gap:9px;background:#f7f9fc}
+.assistant-bubble{max-width:90%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.assistant-bubble.bot{align-self:flex-start;background:#fff;border:1px solid #e5eaf1;color:#24344d;border-bottom-right-radius:4px}
+.assistant-bubble.user{align-self:flex-end;background:#fff2bf;color:#24344d;border:1px solid #f5d76b;border-bottom-left-radius:4px}
+.assistant-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.assistant-actions button,.assistant-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 10px;border:1px solid #dce4ee;border-radius:9px;background:#fff;color:#102849;text-decoration:none;font-size:12px;font-weight:700}
+.assistant-actions button:hover,.assistant-actions a:hover{border-color:#f5c32b;background:#fff9e5}
+.assistant-quick{display:flex;gap:6px;overflow:auto;padding:8px 10px;border-top:1px solid #edf1f6;background:#fff}
+.assistant-quick button{flex:0 0 auto;min-height:32px;padding:5px 9px;border:1px solid #e2e8f0;border-radius:20px;background:#f7f9fc;color:#40516b;font-size:11px}
+.assistant-form{display:flex;gap:7px;padding:10px;border-top:1px solid #e5eaf1;background:#fff}
+.assistant-form input{flex:1;min-width:0;border:1px solid #d8e1ec;border-radius:11px;padding:10px 12px;color:#17243a;background:#fff;font-size:16px}
+.assistant-form button{min-width:62px;border-radius:10px;background:#f5c32b;color:#071a35;font-weight:900}
+@media(max-width:699px){
+ .assistant-toggle{right:12px;bottom:calc(78px + env(safe-area-inset-bottom));}
+ .assistant-panel{right:10px;bottom:calc(140px + env(safe-area-inset-bottom));width:calc(100vw - 20px);height:min(65dvh,560px)}
+}
+</style>
 </head>
 <body>
 <header class="top">
@@ -260,6 +284,13 @@ section{background:#f4f7fb}
  <a href="customer.html"><span>📦</span><small>طلباتي</small></a>
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
+<section id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
+ <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>اسأل عن المطاعم والوجبات والطلبات</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
+ <div id="ahmedkoAssistantMessages" class="assistant-messages" role="log" aria-live="polite"><div class="assistant-bubble bot">أهلاً بك في أحمدكو! أستطيع مساعدتك في العثور على مطعم أو وجبة، وشرح طريقة الطلب والتتبع.</div></div>
+ <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم">المطاعم</button><button type="button" data-assistant-query="التاج">التاج</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button></div>
+ <form id="ahmedkoAssistantForm" class="assistant-form"><input id="ahmedkoAssistantInput" type="text" maxlength="240" placeholder="اكتب سؤالك هنا…" autocomplete="off" aria-label="اكتب سؤالك للمساعد"><button type="submit">إرسال</button></form>
+</section>
+<button id="ahmedkoAssistantToggle" class="assistant-toggle" type="button" aria-expanded="false">💬 مساعد أحمدكو</button>
 <button class="cart-fab" id="cartOpen" type="button">🛒 سلة الطلب <span class="cart-count" id="cartCount">0</span></button>
 <div class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-label="سلة المشتريات">
  <div class="cart-box">
@@ -928,6 +959,94 @@ try{
    .subscribe(status=>{if(status==="CHANNEL_ERROR")console.warn("AHMEDKO catalog realtime unavailable; periodic refresh remains active.");});
  }
 }catch(error){console.warn("AHMEDKO catalog realtime setup:",error);}
+
+// مساعد إرشادي يعمل مباشرة مع كتالوج أحمدكو المحمّل.
+const assistantPanel=document.getElementById("ahmedkoAssistantPanel");
+const assistantToggle=document.getElementById("ahmedkoAssistantToggle");
+const assistantMessages=document.getElementById("ahmedkoAssistantMessages");
+const assistantInput=document.getElementById("ahmedkoAssistantInput");
+function assistantBubble(message,role="bot"){
+ const bubble=document.createElement("div");
+ bubble.className="assistant-bubble "+role;
+ bubble.textContent=message;
+ assistantMessages.appendChild(bubble);
+ assistantMessages.scrollTop=assistantMessages.scrollHeight;
+ return bubble;
+}
+function assistantAction(parent,label,callback){
+ const actions=document.createElement("div");actions.className="assistant-actions";
+ const button=document.createElement("button");button.type="button";button.textContent=label;
+ button.addEventListener("click",callback);actions.appendChild(button);parent.appendChild(actions);
+}
+function assistantLink(parent,label,url){
+ const actions=document.createElement("div");actions.className="assistant-actions";
+ const link=document.createElement("a");link.href=url;link.textContent=label;actions.appendChild(link);parent.appendChild(actions);
+}
+function assistantSearch(query){
+ const q=normalize(query),key=restaurantSearchKey(query);
+ const storeMatches=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)).slice(0,5);
+ const productMatches=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key)).slice(0,5);
+ return {storeMatches,productMatches};
+}
+function assistantReply(raw){
+ const q=normalize(raw);
+ if(q.includes("كيف اطلب")||q.includes("طريقه الطلب")||q==="طلب"){
+  const bubble=assistantBubble("للطلب بسهولة:
+1) اختر المطعم والوجبة.
+2) أضف الأصناف إلى السلة.
+3) أدخل بياناتك وعنوان التسليم.
+4) أرسل الطلب وانتظر تأكيد أحمدكو.");
+  assistantLink(bubble,"فتح الطلبات والتوصيل","customer.html");
+  return;
+ }
+ if(q.includes("تتبع")||q.includes("طلباتي")||q.includes("حاله الطلب")){
+  const bubble=assistantBubble("يمكنك متابعة طلباتك بعد إدخال رقم هاتفك والتحقق منه في صفحة الطلبات.");
+  assistantLink(bubble,"فتح صفحة الطلبات والتتبع","customer.html");
+  return;
+ }
+ if(q.includes("سائق")||q.includes("مندوب")||q.includes("كابتن")){
+  const bubble=assistantBubble("إذا أردت الانضمام إلى فريق أحمدكو كسائق، افتح بوابة السائقين وقدّم طلب الانضمام.");
+  assistantLink(bubble,"بوابة السائقين","driver.html");
+  return;
+ }
+ if(q.includes("واتساب")||q.includes("تواصل")||q.includes("خدمه العملاء")){
+  const bubble=assistantBubble("فريق أحمدكو جاهز لاستقبال استفسارك حسب التوفر.");
+  assistantLink(bubble,"التواصل عبر واتساب","https://wa.me/972598407547");
+  return;
+ }
+ if(q.includes("مطاعم")||q.includes("منيو")||q==="مطعم"||q.includes("وجبات")){
+  const list=stores.filter(s=>s&&s.store_name).slice(0,7);
+  const bubble=assistantBubble(list.length?"هذه بعض المطاعم والمتاجر المتاحة في كتالوج أحمدكو:":"جارٍ تحميل قائمة المطاعم. جرّب بعد لحظات.");
+  list.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  return;
+ }
+ const {storeMatches,productMatches}=assistantSearch(raw);
+ if(storeMatches.length||productMatches.length){
+  const bubble=assistantBubble("وجدت لك هذه النتائج. اختر مطعماً أو وجبة لعرضها في صفحة المطاعم:");
+  storeMatches.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  productMatches.forEach(p=>assistantAction(bubble,p.name,()=>{searchBox.value=p.name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  return;
+ }
+ const bubble=assistantBubble("لم أجد نتيجة مطابقة في الكتالوج الحالي. جرّب كتابة اسم المطعم أو الوجبة بشكل أقصر، أو تواصل مع أحمدكو مباشرة.");
+ assistantLink(bubble,"مراسلة أحمدكو","https://wa.me/972598407547");
+}
+function sendAssistantQuery(value){
+ const query=String(value||"").trim();if(!query)return;
+ assistantBubble(query,"user");assistantInput.value="";assistantReply(query);
+}
+assistantToggle.addEventListener("click",()=>{
+ assistantPanel.hidden=!assistantPanel.hidden;
+ assistantToggle.setAttribute("aria-expanded",String(!assistantPanel.hidden));
+ if(!assistantPanel.hidden)assistantInput.focus();
+});
+document.getElementById("ahmedkoAssistantClose").addEventListener("click",()=>{
+ assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");
+});
+document.getElementById("ahmedkoAssistantForm").addEventListener("submit",event=>{
+ event.preventDefault();sendAssistantQuery(assistantInput.value);
+});
+assistantPanel.querySelectorAll("[data-assistant-query]").forEach(button=>button.addEventListener("click",()=>sendAssistantQuery(button.dataset.assistantQuery)));
+
 init();
 </script>
 <style>
