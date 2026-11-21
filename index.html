@@ -709,7 +709,7 @@ function render(list){
  statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
 function restaurantSearchKey(value){
- return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمة|كافيه|كافى)\s+|و(?=(?:مطعم|مطبخ|ملحمة)\s))+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+ return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمه|كافيه|كافى)\s+|و(?=(?:مطعم|مطبخ|ملحمة)\s))+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
 }
 function searchTextMatches(value,q,key){
  const full=normalize(value),short=restaurantSearchKey(value);
