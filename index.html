@@ -212,7 +212,7 @@ const muhandMenuData=[
   ["وجبة سوري","35"],["وجبة صفيحة","40"],["وجبة أسوار بالجبنة","40"],
   ["وجبة شاورما صغير","35"],["وجبة شاورما لشخصين","70"],["وجبة العرسان","150"]
  ]],
- ["المشاوي",[["المشاوي غير متوفرة حالياً",""]]],
+ ["المشاوي",[["المشاوي غير متوفرة حالياً","غير متوفر حالياً"]]],
  ["السلطات والمقبلات",[
   ["مايونيز","10"],["سلطة","10"],["بكرتاتي","10"],["فتوشة","10"],
   ["ملوخيا أحمر","10"],["كول سلو","10"],["سلطة ساخنة (متنوع)","10"]
@@ -234,8 +234,9 @@ function makeLocalMenu(storeId,data){
  const cats=data.map((entry,i)=>({id:storeId+"-cat-"+i,store_id:storeId,name:entry[0]}));
  const items=data.flatMap((entry,i)=>entry[1].map((item,j)=>({
   id:storeId+"-product-"+i+"-"+j,store_id:storeId,category_id:storeId+"-cat-"+i,
-  name:item[0],price:item[1]===""||item[1]==="حسب المتوفر"?null:item[1],
-  price_display:item[1]&&item[1]!=="حسب المتوفر"?item[1]+" ₪":(item[1]==="حسب المتوفر"?"حسب المتوفر":"غير متوفر حالياً")
+  name:item[0],price:item[1]===""||item[1]==="حسب المتوفر"||item[1]==="غير متوفر حالياً"?null:item[1],
+  price_display:item[1]&&item[1]!=="حسب المتوفر"&&item[1]!=="غير متوفر حالياً"?item[1]+" ₪":(item[1]==="حسب المتوفر"?"حسب المتوفر":"غير متوفر حالياً"),
+  is_available:item[1]!=="غير متوفر حالياً"
  })));
  return {cats,items};
 }
@@ -307,7 +308,8 @@ function waLink(store,product){
 
 function productHTML(store,p){
  const price=p.price_display?esc(p.price_display):((p.price===null||p.price===undefined||p.price==="")?"السعر عند التواصل":esc(p.price)+" ₪");
- return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+price+'</div><button type="button" class="add-cart" data-product-id="'+esc(p.id)+'" data-store-id="'+esc(p.store_id)+'">أضف إلى السلة</button></article>';
+ const unavailable=p.is_available===false;
+ return '<article class="product"><div>🍽️</div><h5>'+esc(p.name||"منتج")+'</h5><p>'+esc(p.description||"")+'</p><div class="price">'+(unavailable?"غير متوفر حالياً":price)+'</div><button type="button" class="add-cart" data-product-id="'+esc(p.id)+'" data-store-id="'+esc(p.store_id)+'" '+(unavailable?"disabled":"")+'>'+(unavailable?"غير متوفر حالياً":"أضف إلى السلة")+'</button></article>';
 }
 
 function renderMenu(store,holder){
