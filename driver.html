@@ -110,4 +110,5 @@ $("login").addEventListener("click",signIn);$("signup").addEventListener("click"
 (async()=>{const r=await db.auth.getSession();if(r.data.session){user=r.data.session.user;await loadProfile();}})();
 })();
 </script>
+  <script src="live-app.js?v=1" defer></script>
 </body></html>
