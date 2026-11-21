@@ -61,12 +61,14 @@ footer{text-align:center;background:#041124;color:#cbd5e1;padding:25px 6%;font-s
 .add-cart{display:block;width:100%;border:0;border-radius:9px;padding:10px;background:var(--yellow);color:var(--navy);font-weight:900;cursor:pointer;margin-top:8px}
 @media(max-width:520px){.cart-form{grid-template-columns:1fr}.cart-form textarea{grid-column:auto}.cart-box{padding:16px}}
 
+@media (display-mode: standalone){#ahmedkoInstallBtn{display:none!important}}
 </style>
 </head>
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
  <button id="ahmedkoManualRefresh" class="small yellow" type="button" aria-label="تحديث التطبيق" style="cursor:pointer;white-space:nowrap">↻ تحديث</button>
+ <button id="ahmedkoInstallBtn" class="small" type="button" hidden aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#fff;color:#071A35">⬇ تثبيت أحمدكو</button>
  <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
@@ -606,6 +608,41 @@ html,body{overscroll-behavior-y:contain}
  }
  window.addEventListener("touchend",finish,{passive:true});
  window.addEventListener("touchcancel",finish,{passive:true});
+})();
+</script>
+<script>
+(()=>{
+ const button=document.getElementById("ahmedkoInstallBtn");
+ if(!button)return;
+ let deferredPrompt=null;
+ const isInstalled=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+ const hideButton=()=>{button.hidden=true;button.setAttribute("aria-hidden","true");};
+ if(isInstalled()){hideButton();return;}
+ window.addEventListener("beforeinstallprompt",event=>{
+  if(isInstalled())return;
+  event.preventDefault();
+  deferredPrompt=event;
+  button.hidden=false;
+  button.removeAttribute("aria-hidden");
+ });
+ button.addEventListener("click",async()=>{
+  if(!deferredPrompt){hideButton();return;}
+  const promptEvent=deferredPrompt;
+  deferredPrompt=null;
+  button.disabled=true;
+  button.textContent="جارٍ فتح التثبيت…";
+  try{
+   await promptEvent.prompt();
+   const choice=await promptEvent.userChoice;
+   if(choice&&choice.outcome==="accepted"){hideButton();}
+   else{hideButton();}
+  }catch(error){
+   button.textContent="تعذر بدء التثبيت";
+   console.warn("تعذر بدء تثبيت أحمدكو:",error);
+   setTimeout(hideButton,2200);
+  }finally{button.disabled=false;}
+ });
+ window.addEventListener("appinstalled",()=>{deferredPrompt=null;hideButton();});
 })();
 </script>
 <script>
