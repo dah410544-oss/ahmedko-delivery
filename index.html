@@ -678,7 +678,20 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- verifiedLocalPlaces.forEach(place=>{if(!stores.some(s=>normalize(s.store_name)===normalize(place.store_name)))stores.push(place);});
+ const restaurantNameKey=name=>normalize(name).replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").trim();
+ const seenRestaurantKeys=new Set(stores.map(s=>restaurantNameKey(s.store_name)));
+ verifiedLocalPlaces.forEach(place=>{
+  const key=restaurantNameKey(place.store_name);
+  if(!seenRestaurantKeys.has(key)){stores.push(place);seenRestaurantKeys.add(key);}
+ });
+ // Remove any existing database/local duplicates by the same restaurant identity.
+ const uniqueStores=[];
+ const uniqueRestaurantKeys=new Set();
+ stores.forEach(store=>{
+  const key=restaurantNameKey(store.store_name);
+  if(!uniqueRestaurantKeys.has(key)){uniqueStores.push(store);uniqueRestaurantKeys.add(key);}
+ });
+ stores=uniqueStores;
  const muhandExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
   const babaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("البابا")));
   const muhandId=muhandExisting?muhandExisting.id:muhandStoreId;
