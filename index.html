@@ -548,6 +548,63 @@ async function init(){
 searchBox.addEventListener("input",search);
 init();
 </script>
+<style>
+html,body{overscroll-behavior-y:contain}
+#ahmedkoPullRefresh{position:fixed;top:0;left:50%;z-index:9999;transform:translate(-50%,-110%);opacity:0;pointer-events:none;display:flex;align-items:center;gap:9px;padding:9px 17px;border:1px solid #f5c32b88;border-radius:0 0 16px 16px;background:#102849;color:#fff;font: bold 13px Arial,Tahoma,sans-serif;box-shadow:0 8px 22px #0005;transition:transform .16s ease,opacity .16s ease}
+#ahmedkoPullRefresh.visible{opacity:1}
+#ahmedkoPullRefresh .pullIcon{display:inline-block;color:#f5c32b;font-size:20px;line-height:1}
+#ahmedkoPullRefresh.loading .pullIcon{animation:ahmedkoSpin .8s linear infinite}
+@keyframes ahmedkoSpin{to{transform:rotate(360deg)}}
+</style>
+<script>
+(()=>{
+ let startY=0,pulling=false,armed=false,refreshing=false;
+ const threshold=95;
+ const indicator=document.createElement("div");
+ indicator.id="ahmedkoPullRefresh";
+ indicator.innerHTML='<span class="pullIcon">↓</span><span class="pullText">اسحب للأسفل للتحديث</span>';
+ document.addEventListener("DOMContentLoaded",()=>document.body.appendChild(indicator));
+ function show(distance){
+  const progress=Math.min(distance/threshold,1);
+  indicator.classList.add("visible");
+  indicator.style.transform="translate(-50%,"+Math.max(-2,Math.min(18,distance*.22)-28)+"px)";
+  indicator.querySelector(".pullIcon").textContent=progress>=1?"↻":"↓";
+  indicator.querySelector(".pullText").textContent=progress>=1?"اترك الشاشة للتحديث":"اسحب للأسفل للتحديث";
+ }
+ document.addEventListener("touchstart",event=>{
+  if(refreshing||event.touches.length!==1||window.scrollY>0)return;
+  const target=event.target;
+  if(target&&target.closest&&target.closest("input,textarea,select,[contenteditable=true]"))return;
+  startY=event.touches[0].clientY;
+  pulling=startY<150;
+  armed=false;
+ },{passive:true});
+ document.addEventListener("touchmove",event=>{
+  if(!pulling||refreshing||event.touches.length!==1||window.scrollY>0)return;
+  const distance=event.touches[0].clientY-startY;
+  if(distance<=0){indicator.classList.remove("visible");return;}
+  show(distance);
+  armed=distance>=threshold;
+ },{passive:true});
+ function finish(){
+  if(!pulling)return;
+  pulling=false;
+  if(armed&&!refreshing){
+   refreshing=true;indicator.classList.add("visible","loading");
+   indicator.style.transform="translate(-50%,0)";
+   indicator.querySelector(".pullIcon").textContent="⟳";
+   indicator.querySelector(".pullText").textContent="جارٍ تحديث أحمدكو…";
+   setTimeout(()=>location.reload(),180);
+  }else{
+   indicator.classList.remove("visible");
+   indicator.style.transform="translate(-50%,-110%)";
+  }
+  armed=false;
+ }
+ document.addEventListener("touchend",finish,{passive:true});
+ document.addEventListener("touchcancel",finish,{passive:true});
+})();
+</script>
 <script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
