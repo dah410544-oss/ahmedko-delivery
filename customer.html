@@ -160,7 +160,7 @@ async function loadCustomerOrders(silent=true){
   if(!silent)setMessage("trackingMessage","تعذر تحديث الطلبات: "+(error.message||"خطأ غير معروف."),"error");
  }finally{customerOrdersLoading=false;}
 }
-window.setInterval(()=>loadCustomerOrders(true),30000);
+window.setInterval(()=>loadCustomerOrders(true),20000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadCustomerOrders(true);});
 
 $("otpForm").addEventListener("submit",async event=>{
