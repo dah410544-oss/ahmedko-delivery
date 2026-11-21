@@ -678,7 +678,7 @@ async function init(){
  ]);
  if(results[0].status==="fulfilled")categories=results[0].value;else console.error("Categories:",results[0].reason);
  if(results[1].status==="fulfilled")products=results[1].value;else console.error("Products:",results[1].reason);
- const restaurantNameKey=name=>normalize(name).replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\\s*)+/,"").trim();
+ const restaurantNameKey=name=>normalize(name).replace(/^(?:(?:مطعم|مطبخ|ملحمة|و)\s*)+/,"").trim();
  const seenRestaurantKeys=new Set(stores.map(s=>restaurantNameKey(s.store_name)));
  verifiedLocalPlaces.forEach(place=>{
   const key=restaurantNameKey(place.store_name);
