@@ -559,15 +559,15 @@ html,body{overscroll-behavior-y:contain}
 <script>
 (()=>{
  let startY=0,pulling=false,armed=false,refreshing=false;
- const threshold=95;
+ const threshold=70;
  const indicator=document.createElement("div");
  indicator.id="ahmedkoPullRefresh";
  indicator.innerHTML='<span class="pullIcon">↓</span><span class="pullText">اسحب للأسفل للتحديث</span>';
- document.addEventListener("DOMContentLoaded",()=>document.body.appendChild(indicator));
+ if(document.body) document.body.appendChild(indicator);
  function show(distance){
   const progress=Math.min(distance/threshold,1);
   indicator.classList.add("visible");
-  indicator.style.transform="translate(-50%,"+Math.max(-2,Math.min(18,distance*.22)-28)+"px)";
+  indicator.style.transform="translate(-50%,"+Math.max(0,Math.min(22,distance*.28))+"px)";
   indicator.querySelector(".pullIcon").textContent=progress>=1?"↻":"↓";
   indicator.querySelector(".pullText").textContent=progress>=1?"اترك الشاشة للتحديث":"اسحب للأسفل للتحديث";
  }
@@ -576,7 +576,7 @@ html,body{overscroll-behavior-y:contain}
   const target=event.target;
   if(target&&target.closest&&target.closest("input,textarea,select,[contenteditable=true]"))return;
   startY=event.touches[0].clientY;
-  pulling=startY<150;
+  pulling=startY<220;
   armed=false;
  },{passive:true});
  document.addEventListener("touchmove",event=>{
