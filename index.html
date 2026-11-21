@@ -133,6 +133,17 @@ a, button { -webkit-tap-highlight-color:transparent; }
 }
 </style>
 
+
+<style id="ahmedko-live-search">
+.live-suggestions{position:relative;z-index:9;margin:-7px 0 15px;border:1px solid #3b587a;border-radius:14px;background:#102849;box-shadow:0 12px 28px #0005;overflow:hidden}
+.live-suggestions[hidden]{display:none!important}
+.live-suggestions button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:46px;padding:10px 14px;border:0;border-bottom:1px solid #294466;background:transparent;color:#fff;text-align:right;cursor:pointer}
+.live-suggestions button:last-child{border-bottom:0}
+.live-suggestions button:hover,.live-suggestions button:focus{background:#173c68;outline:none}
+.live-suggestions small{color:#f5c32b;white-space:nowrap}
+.live-suggestions .suggestion-empty{padding:11px 14px;color:#b9c7d9;font-size:13px}
+</style>
+
 </head>
 <body>
 <header class="top">
@@ -183,6 +194,7 @@ a, button { -webkit-tap-highlight-color:transparent; }
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
  <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="clearStoreSearch" class="small yellow" type="button" aria-label="مسح البحث">مسح</button></div>
  <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة.</p>
+ <div id="storeLiveSuggestions" class="live-suggestions" role="listbox" aria-label="اقتراحات البحث" aria-live="polite" hidden></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
  <div id="storeGrid" class="store-grid"></div>
 </section>
@@ -702,8 +714,51 @@ function updateRestaurantSuggestions(){
   .sort((a,b)=>a.localeCompare(b,"ar"))
   .map(name=>'<option value="'+esc(name)+'"></option>').join("");
 }
+function renderLiveSuggestions(raw){
+ const panel=document.getElementById("storeLiveSuggestions");
+ if(!panel)return;
+ const value=String(raw||"").trim();
+ if(!value){panel.hidden=true;panel.innerHTML="";return;}
+ const q=normalize(value),key=restaurantSearchKey(value);
+ const storeMatches=stores.filter(s=>{
+  const name=normalize(s.store_name||"");
+  const short=restaurantSearchKey(s.store_name||"");
+  return name.includes(q)||(key&&short.includes(key));
+ }).slice(0,6);
+ const productMatches=products.filter(p=>{
+  const name=normalize([p.name,p.description].join(" "));
+  const short=restaurantSearchKey([p.name,p.description].join(" "));
+  return name.includes(q)||(key&&short.includes(key));
+ }).slice(0,5);
+ const items=[
+  ...storeMatches.map(s=>({label:s.store_name,type:"مطعم / متجر"})),
+  ...productMatches.map(p=>({label:p.name,type:"وجبة / منتج"}))
+ ].slice(0,8);
+ panel.innerHTML="";
+ if(!items.length){
+  panel.innerHTML='<div class="suggestion-empty">لا توجد اقتراحات مطابقة حتى الآن… أكمل الكتابة.</div>';
+  panel.hidden=false;return;
+ }
+ items.forEach(item=>{
+  const button=document.createElement("button");
+  button.type="button";button.setAttribute("role","option");
+  const label=document.createElement("span");label.textContent=item.label;
+  const type=document.createElement("small");type.textContent=item.type;
+  button.append(label,type);
+  button.addEventListener("click",()=>{
+   searchBox.value=item.label;
+   panel.hidden=true;
+   search();
+   grid.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  panel.appendChild(button);
+ });
+ panel.hidden=false;
+}
+
 function search(){
  const raw=searchBox.value.trim();
+ renderLiveSuggestions(raw);
  const q=normalize(raw),key=restaurantSearchKey(raw);
  if(!q){render(stores);return;}
  const matchingStores=stores.filter(s=>{
