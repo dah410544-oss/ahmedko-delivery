@@ -45,6 +45,19 @@ for (const file of ["www/index.html", "www/customer.html", "www/driver.html", "w
   }
 }
 
+// New Supabase publishable keys (sb_publishable_*) are API keys, not JWTs.
+ // Raw REST/RPC fetch calls must send them in apikey only, never as Bearer tokens.
+for (const file of [
+  "www/index.html", "www/customer.html", "www/driver.html",
+  "www/restaurant.html", "www/admin.html", "www/live-app.js"
+]) {
+  const source = await readFile(file, "utf8");
+  if (/Authorization["']?\\s*:\\s*["']Bearer\\s*["']\\s*\\+\\s*SUPABASE_KEY/i.test(source) ||
+      /Authorization["']?\\s*:\\s*["']Bearer\\s+sb_publishable_/i.test(source)) {
+    throw new Error("Supabase publishable key must not be sent as a Bearer token in " + file);
+  }
+}
+
 const customer = await readFile("www/customer.html", "utf8");
 if (!customer.includes('rpc("create_customer_order"') ||
     !customer.includes("signInWithOtp") ||
