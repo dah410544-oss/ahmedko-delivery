@@ -374,7 +374,7 @@ async function loadPublicAnnouncement(){
  try{
   const startsFilter=encodeURIComponent("(starts_at.is.null,starts_at.lte."+new Date().toISOString()+")");
   const url=SUPABASE_URL+"/rest/v1/public_announcements?select=title,message,starts_at,ends_at&is_active=eq.true&or="+startsFilter+"&order=created_at.desc&limit=50";
-  const res=await fetch(url,{headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
+  const res=await fetch(url,{headers:{"apikey":SUPABASE_KEY,"Accept":"application/json"}});
   if(!res.ok)throw new Error("announcement read failed");
   const rows=await res.json();
   const item=rows.find(x=>!x.ends_at||new Date(x.ends_at)>new Date());
@@ -623,7 +623,7 @@ async function readTable(table,params){
  const controller=new AbortController();
  const timeout=setTimeout(()=>controller.abort(),8000);
  try{
-  const res=await fetch(url.toString(),{signal:controller.signal,headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Accept":"application/json"}});
+  const res=await fetch(url.toString(),{signal:controller.signal,headers:{"apikey":SUPABASE_KEY,"Accept":"application/json"}});
   if(!res.ok){const body=await res.text();throw new Error(table+" ("+res.status+"): "+body.slice(0,220));}
   return await res.json();
  }catch(error){
@@ -752,7 +752,7 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  try{
   const response=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_customer_order",{
    method:"POST",
-   headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+   headers:{"apikey":SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
    body:JSON.stringify({
     p_customer_name:name,p_customer_phone:phone,p_pickup_address:pickup,p_delivery_address:address,
     p_pickup_region_id:pickupRegion,p_delivery_region_id:deliveryRegion,p_vehicle_type:vehicle,
@@ -771,7 +771,7 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
    try{
     const restaurantResponse=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_store_order_for_delivery",{
      method:"POST",
-     headers:{"apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
+     headers:{"apikey":SUPABASE_KEY,"Content-Type":"application/json","Accept":"application/json"},
      body:JSON.stringify({
       p_store_id:shoppingCart[0].storeId,
       p_delivery_order_id:saved.order_id,
