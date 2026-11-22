@@ -3,6 +3,24 @@ name: Build AHMEDKO signed Android release
 on:
   push:
     branches: [main]
+    paths:
+      - 'index.html'
+      - 'customer.html'
+      - 'driver.html'
+      - 'restaurant.html'
+      - 'admin.html'
+      - 'privacy.html'
+      - 'taj-menu.html'
+      - 'auto-o2-menu.js'
+      - 'manifest.webmanifest'
+      - 'service-worker.js'
+      - 'live-app.js'
+      - 'icon.svg'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
+      - 'scripts/**'
+      - '.github/workflows/android-release.yml'
   workflow_dispatch:
 
 permissions:
