@@ -859,8 +859,14 @@ function renderLiveSuggestions(raw){
  const value=String(raw||"").trim();
  if(!value){panel.hidden=true;panel.innerHTML="";return;}
  const q=normalize(value),key=restaurantSearchKey(value);
- const storeMatches=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)).slice(0,6);
- const productMatches=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key)).slice(0,5);
+ const storeMatches=stores.filter(s=>searchTextMatches(
+  [s.store_name,s.store_type,s.address,s.contact_name,s.phone].filter(Boolean).join(" "),q,key
+ )).slice(0,6);
+ const productMatches=products.filter(p=>{
+  const category=categories.find(c=>String(c.id)===String(p.category_id));
+  const store=stores.find(x=>String(x.id)===String(p.store_id));
+  return searchTextMatches([p.name,p.description,category?.name,store?.store_name].filter(Boolean).join(" "),q,key);
+ }).slice(0,5);
  const items=[
   ...storeMatches.map(s=>({label:s.store_name,type:"مطعم / متجر"})),
   ...productMatches.map(p=>({label:p.name,type:"وجبة / منتج"}))
@@ -1043,8 +1049,14 @@ function assistantLink(parent,label,url){
 }
 function assistantSearch(query){
  const q=normalize(query),key=restaurantSearchKey(query);
- const storeMatches=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)).slice(0,5);
- const productMatches=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key)).slice(0,5);
+ const storeMatches=stores.filter(s=>searchTextMatches(
+  [s.store_name,s.store_type,s.address,s.contact_name,s.phone].filter(Boolean).join(" "),q,key
+ )).slice(0,5);
+ const productMatches=products.filter(p=>{
+  const category=categories.find(c=>String(c.id)===String(p.category_id));
+  const store=stores.find(x=>String(x.id)===String(p.store_id));
+  return searchTextMatches([p.name,p.description,category?.name,store?.store_name].filter(Boolean).join(" "),q,key);
+ }).slice(0,5);
  return {storeMatches,productMatches};
 }
 function assistantReply(raw){
