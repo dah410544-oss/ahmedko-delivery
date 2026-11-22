@@ -1041,7 +1041,7 @@ async function loadMenuManager(){
  const publicRead=async(table,params)=>{
   const url=new URL(SUPABASE_URL+"/rest/v1/"+table);
   Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
-  const response=await fetch(url.toString(),{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY,Accept:"application/json"}});
+  const response=await fetch(url.toString(),{headers:{apikey:SUPABASE_KEY,Accept:"application/json"}});
   if(!response.ok)throw new Error(table+" ("+response.status+"): "+(await response.text()).slice(0,180));
   return response.json();
  };
