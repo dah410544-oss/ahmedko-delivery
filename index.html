@@ -606,7 +606,15 @@ const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
 })));
 
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function normalize(v){return String(v ?? "").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");}
+function normalize(v){
+ return String(v??"").toLowerCase().normalize("NFKC")
+  .replace(/[\u064B-\u065F\u0670\u0640]/g,"")
+  .replace(/[أإآٱ]/g,"ا").replace(/ؤ/g,"و").replace(/ئ/g,"ي")
+  .replace(/ة/g,"ه").replace(/ى/g,"ي")
+  .replace(/[ـًٌٍَُِّْ]/g,"")
+  .replace(/[.,،؛:!?؟()[\]{}"'«»/\\|_+=*#@-]/g," ")
+  .replace(/\s+/g," ").trim();
+}
 function setStatus(message,error=false){statusBox.hidden=false;statusBox.className=error?"notice error":"notice";statusBox.textContent=message;}
 function icon(type){const t=normalize(type);if(t.includes("restaurant")||t.includes("مطعم"))return "🍔";if(t.includes("cafe")||t.includes("مقهي"))return "☕";return "🛍️";}
 async function readTable(table,params){
@@ -827,11 +835,16 @@ function render(list){
  statusBox.hidden=true;menuFirst(list).forEach(s=>grid.appendChild(storeCard(s)));
 }
 function restaurantSearchKey(value){
- return normalize(value).replace(/[\u0640]/g,"").replace(/^(?:(?:مطعم|مطبخ|ملحمه|كافيه|كافى)\s+|و(?=(?:مطعم|مطبخ|ملحمة)\s))+/,"").replace(/^ال/,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+ return normalize(value)
+  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|ملحمة|كافيه|كافى|كافٍ)\\s+|و(?=(?:مطعم|مطبخ|ملحمة)\\s))+/g,"")
+  .replace(/^(?:ال)+/,"").trim();
 }
 function searchTextMatches(value,q,key){
  const full=normalize(value),short=restaurantSearchKey(value);
- return Boolean((q&&full.includes(q))||(key&&short.includes(key)));
+ if(!q&&!key)return true;
+ if((q&&full.includes(q))||(key&&short.includes(key)))return true;
+ const tokens=(key||q).split(/\\s+/).filter(token=>token.length>0);
+ return tokens.length>0&&tokens.every(token=>full.includes(token)||short.includes(token));
 }
 function updateRestaurantSuggestions(){
  const list=document.getElementById("restaurantSuggestions");
@@ -879,8 +892,14 @@ function search(){
  renderLiveSuggestions(raw);
  const q=normalize(raw),key=restaurantSearchKey(raw);
  if(!q){render(stores);return;}
- const matchingStores=stores.filter(s=>searchTextMatches(s.store_name||"",q,key)||normalize([s.store_type,s.address,s.contact_name].join(" ")).includes(q));
- const matchingProducts=products.filter(p=>searchTextMatches([p.name,p.description].join(" "),q,key));
+ const matchingStores=stores.filter(s=>{
+  const searchable=[s.store_name,s.store_type,s.address,s.contact_name,s.phone].filter(Boolean).join(" ");
+  return searchTextMatches(searchable,q,key);
+ });
+ const matchingProducts=products.filter(p=>{
+  const category=categories.find(c=>String(c.id)===String(p.category_id));
+  return searchTextMatches([p.name,p.description,category?.name].filter(Boolean).join(" "),q,key);
+ });
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
  statusBox.hidden=false;statusBox.className="notice";statusBox.textContent="نتائج البحث: "+matchingStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة.";
