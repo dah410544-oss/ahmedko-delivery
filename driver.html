@@ -64,8 +64,29 @@ const statusNames={new:"طلب جديد",confirmed:"تم التأكيد",assigne
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function msg(id,text,type){const el=$(id);el.textContent=text;el.className="message"+(type?" "+type:"");}
 function show(id,on){$(id).classList.toggle("hidden",!on);}
-async function signIn(){const email=$("email").value.trim(),password=$("password").value;if(!email||!password){msg("auth-message","أدخل البريد الإلكتروني وكلمة المرور.","error");return;}const b=$("login");b.disabled=true;msg("auth-message","جارٍ تسجيل الدخول...");const r=await db.auth.signInWithPassword({email,password});b.disabled=false;if(r.error){msg("auth-message","تعذر الدخول: "+r.error.message,"error");return;}user=r.data.user;await loadProfile();}
-async function signUp(){const email=$("email").value.trim(),password=$("password").value;if(!email||password.length<6){msg("auth-message","أدخل بريداً صحيحاً وكلمة مرور من 6 أحرف على الأقل.","error");return;}const b=$("signup");b.disabled=true;const r=await db.auth.signUp({email,password});b.disabled=false;if(r.error){msg("auth-message","تعذر إنشاء الحساب: "+r.error.message,"error");return;}if(r.data.session){user=r.data.user;msg("auth-message","تم إنشاء الحساب. أكمل طلب الانضمام.","success");await loadProfile();}else{msg("auth-message","تم إنشاء الحساب. تحقق من بريدك الإلكتروني ثم ارجع وسجّل الدخول لإكمال طلب الانضمام.","success");}}
+async function signIn(){
+ const email=$("email").value.trim(),password=$("password").value;
+ if(!email||!password){msg("auth-message","أدخل البريد الإلكتروني وكلمة المرور.","error");return;}
+ const b=$("login");b.disabled=true;msg("auth-message","جارٍ تسجيل الدخول...");
+ try{
+  const r=await db.auth.signInWithPassword({email,password});
+  if(r.error)throw r.error;
+  user=r.data.user;await loadProfile();
+ }catch(error){msg("auth-message","تعذر الدخول: "+(error.message||"تحقق من الاتصال وحاول مجدداً."),"error");}
+ finally{b.disabled=false;}
+}
+async function signUp(){
+ const email=$("email").value.trim(),password=$("password").value;
+ if(!email||password.length<6){msg("auth-message","أدخل بريداً صحيحاً وكلمة مرور من 6 أحرف على الأقل.","error");return;}
+ const b=$("signup");b.disabled=true;msg("auth-message","جارٍ إنشاء الحساب...");
+ try{
+  const r=await db.auth.signUp({email,password});
+  if(r.error)throw r.error;
+  if(r.data.session){user=r.data.user;msg("auth-message","تم إنشاء الحساب. أكمل طلب الانضمام.","success");await loadProfile();}
+  else{msg("auth-message","تم إنشاء الحساب. تحقق من بريدك الإلكتروني ثم ارجع وسجّل الدخول لإكمال طلب الانضمام.","success");}
+ }catch(error){msg("auth-message","تعذر إنشاء الحساب: "+(error.message||"تحقق من الاتصال وحاول مجدداً."),"error");}
+ finally{b.disabled=false;}
+}
 async function loadProfile(){show("auth-panel",false);const r=await db.from("drivers").select("id,full_name,phone,vehicle_type,is_active,application_status").eq("user_id",user.id).maybeSingle();if(r.error){show("auth-panel",true);msg("auth-message","تعذر قراءة ملف السائق: "+r.error.message,"error");return;}if(!r.data){show("application-panel",true);show("profile-panel",false);show("orders-panel",false);return;}driver=r.data;show("application-panel",false);show("profile-panel",true);$("profile-title").textContent="مرحباً "+driver.full_name;$("profile-details").textContent="رقم الهاتف: "+driver.phone+" · وسيلة النقل: "+(vehicleNames[driver.vehicle_type]||driver.vehicle_type);if(driver.application_status==="pending"){msg("profile-state","طلبك قيد المراجعة لدى إدارة أحمدكو. سنفعّل حسابك بعد الموافقة.","");show("orders-panel",false);}else if(driver.application_status==="rejected"){msg("profile-state","لم تتم الموافقة على طلب الانضمام. تواصل مع الإدارة للاستفسار.","error");show("orders-panel",false);}else if(driver.application_status==="approved"&&driver.is_active){msg("profile-state","حسابك معتمد ونشط. يمكنك متابعة الطلبات المسندة إليك أدناه.","success");show("orders-panel",true);await loadOrders();}else{msg("profile-state","حسابك مسجل، لكنه غير نشط حالياً. تواصل مع الإدارة.","");show("orders-panel",false);}}
 async function submitApplication(){if(!user){msg("application-message","سجّل الدخول أولاً.","error");return;}const full_name=$("full-name").value.trim(),phone=$("phone").value.trim(),vehicle_type=$("vehicle").value;if(full_name.length<2||phone.length<7||!vehicle_type){msg("application-message","أكمل الاسم ورقم الهاتف ووسيلة النقل بشكل صحيح.","error");return;}const b=$("submit-application");b.disabled=true;const r=await db.from("drivers").insert({user_id:user.id,full_name,phone,vehicle_type,application_status:"pending",is_active:false});b.disabled=false;if(r.error){msg("application-message","تعذر إرسال الطلب: "+r.error.message,"error");return;}msg("application-message","تم إرسال طلبك بنجاح. انتظر مراجعة الإدارة.","success");await loadProfile();}
 async function updateOrderStatus(orderId,nextStatus,button,statusBox){
