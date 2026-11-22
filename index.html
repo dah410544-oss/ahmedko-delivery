@@ -836,14 +836,14 @@ function render(list){
 }
 function restaurantSearchKey(value){
  return normalize(value)
-  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|ملحمة|كافيه|كافى|كافٍ)\\s+|و(?=(?:مطعم|مطبخ|ملحمة)\\s))+/g,"")
+  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|ملحمة|كافيه|كافى|كافٍ)\s+|و(?=(?:مطعم|مطبخ|ملحمة)\s))+/g,"")
   .replace(/^(?:ال)+/,"").trim();
 }
 function searchTextMatches(value,q,key){
  const full=normalize(value),short=restaurantSearchKey(value);
  if(!q&&!key)return true;
  if((q&&full.includes(q))||(key&&short.includes(key)))return true;
- const tokens=(key||q).split(/\\s+/).filter(token=>token.length>0);
+ const tokens=(key||q).split(/\s+/).filter(token=>token.length>0);
  return tokens.length>0&&tokens.every(token=>full.includes(token)||short.includes(token));
 }
 function updateRestaurantSuggestions(){
