@@ -1,26 +1,10 @@
 name: Build AHMEDKO signed Android release
 
+# Manual-only: website/PWA updates are served live through Capacitor's remote URL.
+# Build a new signed APK/AAB only for native Android changes and after verifying the
+# original persistent signing keystore. This prevents routine website edits from
+# triggering a failed or unnecessary Android release build.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'index.html'
-      - 'customer.html'
-      - 'driver.html'
-      - 'restaurant.html'
-      - 'admin.html'
-      - 'privacy.html'
-      - 'taj-menu.html'
-      - 'auto-o2-menu.js'
-      - 'manifest.webmanifest'
-      - 'service-worker.js'
-      - 'live-app.js'
-      - 'icon.svg'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'capacitor.config.json'
-      - 'scripts/**'
-      - '.github/workflows/android-release.yml'
   workflow_dispatch:
 
 permissions:
