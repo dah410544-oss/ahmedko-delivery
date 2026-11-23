@@ -297,7 +297,7 @@ section{background:#f4f7fb}
 </section>
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
- <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل التاج أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="submitStoreSearch" class="small yellow" type="button" aria-label="تنفيذ البحث">بحث</button></div>
+ <div class="toolbar restaurant-search-toolbar"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل الرمال أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="submitStoreSearch" class="small yellow" type="button" aria-label="تنفيذ البحث">بحث</button></div>
  <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة.</p>
  <div id="storeLiveSuggestions" class="live-suggestions" role="listbox" aria-label="اقتراحات البحث" aria-live="polite" hidden></div>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
@@ -327,7 +327,7 @@ section{background:#f4f7fb}
 <div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
  <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>اسأل عن المطاعم والوجبات والطلبات</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
  <div id="ahmedkoAssistantMessages" class="assistant-messages" role="log" aria-live="polite"><div class="assistant-bubble bot">أهلاً بك في أحمدكو! أستطيع مساعدتك في العثور على مطعم أو وجبة، وشرح طريقة الطلب والتتبع.</div></div>
- <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم">المطاعم</button><button type="button" data-assistant-query="التاج">التاج</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button></div>
+ <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم">المطاعم</button><button type="button" data-assistant-query="الرمال">الرمال</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button></div>
  <form id="ahmedkoAssistantForm" class="assistant-form"><input id="ahmedkoAssistantInput" type="text" maxlength="240" placeholder="اكتب سؤالك هنا…" autocomplete="off" aria-label="اكتب سؤالك للمساعد"><button type="submit">إرسال</button></form>
 </div>
 <button id="ahmedkoAssistantToggle" class="assistant-toggle" type="button" aria-expanded="false">💬 مساعد أحمدكو</button>
@@ -397,7 +397,7 @@ let stores = [], categories = [], products = [];
 let catalogLoading = false;
 let catalogRefreshQueued = false;
 let lastCatalogRefresh = 0;
-const altajStoreId="local-altaj";
+const alrimalStoreId="local-alrimal";
 const autoStoreId="local-auto";
 const verifiedLocalPlaces = [
  {"store_name":"كافيه ومطعم دافنشي","contact_name":"","phone":"0592083207","address":"مفترق شارع الثورة مع النصر – غزة","store_type":"cafe","is_active":true},
@@ -406,7 +406,7 @@ const verifiedLocalPlaces = [
  {"store_name":"مطعم شاورما ومشاوي الحلو","contact_name":"","phone":"0592345585","address":"غزة – النصر، مقابل مسجد النصر","store_type":"restaurant","is_active":true},
  {"store_name":"مطعم أبو حمودة للمأكولات الشعبية","contact_name":"","phone":"0597450001","address":"غزة – الرمال، غرب بنك فلسطين","store_type":"restaurant","is_active":true},
  {"store_name":"مطعم السلام أبو حصيرة","contact_name":"","phone":"0566106080","address":"غزة – شارع الرشيد، دوار الميناء – أبو حصيرة","store_type":"restaurant","is_active":true},
- {"id":altajStoreId,"store_name":"مطعم ومطبخ التاج","contact_name":"","phone":"0593104000","address":"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1","store_type":"restaurant","is_active":true}
+ {"id":alrimalStoreId,"store_name":"مطعم ومطبخ الرمال","contact_name":"","phone":"","address":"غزة – الرمال","store_type":"restaurant","is_active":true}
 ];
 
 // الأسماء المعتمدة للمطاعم — جميع الأسماء الظاهرة تبدأ بكلمة «مطعم».
@@ -417,7 +417,7 @@ const thaiStoreId="local-thai-restaurant";
 const palmeraStoreId="local-palmera";
 const canonicalRestaurantPlaces=[
  {id:muhandStoreId,store_name:"مطعم ومطبخ مهند",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
- {id:altajStoreId,store_name:"مطعم ومطبخ التاج",contact_name:"",phone:"0593104000",address:"غزة – الرمال – شارع اليرموك – شرق مفترق الزهارنة – عمارة التاج هوم 1",store_type:"restaurant",is_active:true},
+ {id:alrimalStoreId,store_name:"مطعم ومطبخ الرمال",contact_name:"",phone:"",address:"غزة – الرمال",store_type:"restaurant",is_active:true},
  {id:babaStoreId,store_name:"مطعم وملحمة البابا",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
  {id:thaiStoreId,store_name:"مطعم التايلندي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
  {id:"local-jarjawi",store_name:"مطعم ومطبخ الجرجاوي",contact_name:"",phone:"",address:"",store_type:"restaurant",is_active:true},
@@ -643,11 +643,7 @@ const altajMenuData=[
  ]]
 ];
 
-const altajCategories=altajMenuData.map((entry,i)=>({id:"altaj-cat-"+i,store_id:altajStoreId,name:entry[0]}));
-const altajProducts=altajMenuData.flatMap((entry,i)=>entry[1].map((item,j)=>({
- id:"altaj-product-"+i+"-"+j,store_id:altajStoreId,category_id:"altaj-cat-"+i,
- name:item[0],price:item[1],price_display:item.length===3?"صالة: "+item[1]+" ₪ | T.W: "+item[2]+" ₪":item[1]+" ₪"
-})));
+
 
 function esc(v){return String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function normalize(v){
@@ -1031,11 +1027,10 @@ async function init(){
  const saadaId=saadaExisting?saadaExisting.id:"local-saada-shafout";
  if(!saadaExisting){const localSaada=verifiedLocalPlaces.find(s=>s.id==="local-saada-shafout");if(localSaada)stores.push(localSaada);}
  mergeLocalMenu(saadaId,saadaShafoutOriginalMenuData);
- const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
- const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
- if(!tajExisting){const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);if(localTaj)stores.push(localTaj);}
- if(!categories.some(c=>String(c.store_id)===String(tajStoreId)))categories=categories.concat(altajCategories.map(c=>({...c,store_id:tajStoreId})));
- if(!products.some(p=>String(p.store_id)===String(tajStoreId)))products=products.concat(altajProducts.map(p=>({...p,store_id:tajStoreId})));
+ // استبدال ظهور التاج في واجهة أحمدكو بمطعم ومطبخ الرمال.
+ stores=stores.filter(s=>!normalize(s.store_name).includes(normalize("التاج")));
+ const alrimalExisting=stores.find(s=>normalize(s.store_name).includes(normalize("مطعم ومطبخ الرمال")));
+ if(!alrimalExisting){const localRimal=verifiedLocalPlaces.find(s=>s.id===alrimalStoreId);if(localRimal)stores.push(localRimal);}
  const autoExisting=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
  if(!autoExisting){const localAuto=verifiedLocalPlaces.find(s=>s.id===autoStoreId);if(localAuto)stores.push(localAuto);}
  const autoMatches=stores.filter(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
