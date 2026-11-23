@@ -488,6 +488,50 @@ const thaiMenuData=[
   ["هوت شوكليت","15"],["نسكافيه","8"],["كابتشينو","8"]
  ]]
 ];
+const saadaShafoutOriginalMenuData=[
+ ["المشروبات الساخنة",[
+  ["شاي","5"],["قهوة","5-8"],["زهورات","8"],["نسكافيه","10"],
+  ["هوت شوكليت","10"],["كافي لاتيه","10"],["كافي أوليه","10"],["كابتشينو","10"]
+ ]],
+ ["السلطات",[
+  ["ذرة بالمايونيز","10"],["ملفوف أحمر","10"],["كول سلو","10"],["تركية","10"],
+  ["دراما","10"],["سلطة خضار","5"],["صوص منومة","10"],["صوص بيكانتي","10"],
+  ["بقدونسية","10"],["حمص","10"],["سيزر سلطة","20"],["يوناني","20"]
+ ]],
+ ["البيتزا",[
+  ["بيتزا السعادة","35"],["بيتزا دجاج","30"],["بيتزا خضار","25"],["كالزوني","35"],
+  ["بيتزا شاورما","25"],["بيتزا ذرة","25"],["بيتزا مارجريتا","25"],["سنفورة","35"]
+ ]],
+ ["الشاورما",[
+  ["بيتا شاورما","15"],["شاورما عادي","25"],["شاورما دبل عادي","27"],
+  ["شاورما دبل لحمة","35"],["شاورما دبل دبل","35"],["شاورما سوري","40"],
+  ["شاورما فينو","25"],["صفيحة","45"],["شاورما صاروخ","50"],
+  ["بيجي شاورما","40"],["كيكة شاورما","40"]
+ ]],
+ ["السندويشات والوجبات الغربية",[
+  ["ستيك دجاج بالمشروم","50"],["ستيك فليه بالمشروم","55"],
+  ["ستيك فليه بالفلفل الأسود","50"],["كوردن بلو","55"],["اسكلوبيني","50"]
+ ]],
+ ["المشاوي",[
+  ["كباب","حسب المتوفر"],["شيش","حسب المتوفر"],["جناحات","حسب المتوفر"],
+  ["فخد","حسب المتوفر"],["دبابيس","حسب المتوفر"],["دجاج على الفحم","حسب المتوفر"],
+  ["كبدة عجل","حسب المتوفر"],["ستيك خروف","حسب المتوفر"],["فليه","حسب المتوفر"],
+  ["ستيك دجاج","حسب المتوفر"]
+ ]],
+ ["الحلويات",[
+  ["كريب","20"],["وافل","20"],["لقيمات","20"],["كنافة نوتيلا","15"],
+  ["تشيز كيك بستاشيو","15"],["تشيز كيك بلوبيري","15"],["تشيز كيك لوتس","15"],
+  ["تشيز كيك نوتيلا","15"]
+ ]],
+ ["المشروبات الباردة",[
+  ["مياه","5"],["آيس كوفي","12"],["آيس لاتيه","12"],["آيس موكا","12"],
+  ["كولا","5"],["فيمتو","12"],["آيس تي","12"],["موهيتو","20"]
+ ]],
+ ["العصائر الطبيعية",[
+  ["عصير مانجا","20"],["عصير فراولة","20"],["عصير ليمون ونعنع","15"],
+  ["عصير موز بالحليب","20"],["كوكتيل فواكه","20"]
+ ]]
+];
 const palmeraMenuData=[
  ["السلطات",[
   ["ذرة مايونيز","10"],["تركي","10"],["ملفوف أحمر بالمايونيز","10"],["كول سلو","10"],
@@ -945,6 +989,7 @@ async function init(){
  mergeLocalMenu(tameesStoreId,tameesHameedMenuData);
  mergeLocalMenu(thaiStoreId,thaiMenuData);
  mergeLocalMenu(palmeraStoreId,palmeraMenuData);
+ mergeLocalMenu("local-saada-shafout",saadaShafoutOriginalMenuData);
  if(Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoStoreId,window.AUTO_O2_MENU);
  render(stores);
  const results=await Promise.allSettled([
@@ -982,6 +1027,10 @@ async function init(){
  const palmeraId=palmeraExisting?palmeraExisting.id:palmeraStoreId;
  if(!palmeraExisting)stores.push(verifiedLocalPlaces.find(s=>s.id===palmeraStoreId));
  mergeLocalMenu(palmeraId,palmeraMenuData);
+ const saadaExisting=stores.find(s=>normalize(s.store_name).includes(normalize("السعادة"))&&normalize(s.store_name).includes(normalize("شعفوط")));
+ const saadaId=saadaExisting?saadaExisting.id:"local-saada-shafout";
+ if(!saadaExisting){const localSaada=verifiedLocalPlaces.find(s=>s.id==="local-saada-shafout");if(localSaada)stores.push(localSaada);}
+ mergeLocalMenu(saadaId,saadaShafoutOriginalMenuData);
  const tajExisting=stores.find(s=>normalize(s.store_name).includes(normalize("التاج")));
  const tajStoreId=tajExisting?tajExisting.id:altajStoreId;
  if(!tajExisting){const localTaj=verifiedLocalPlaces.find(s=>s.id===altajStoreId);if(localTaj)stores.push(localTaj);}
