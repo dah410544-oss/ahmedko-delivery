@@ -876,14 +876,16 @@ function render(list){
 }
 function restaurantSearchKey(value){
  return normalize(value)
-  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|ملحمة|كافيه|كافى|كافٍ)\s+|و(?=(?:مطعم|مطبخ|ملحمة)\s))+/g,"")
+  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|كافيه|كافى|كافٍ|و)\s*)+/g,"")
   .replace(/^(?:ال)+/,"").trim();
 }
 function searchTextMatches(value,q,key){
  const full=normalize(value),short=restaurantSearchKey(value);
  if(!q&&!key)return true;
  if((q&&full.includes(q))||(key&&short.includes(key)))return true;
- const tokens=(key||q).split(/\s+/).filter(token=>token.length>0);
+ // Match every meaningful search word independently, even when users omit
+ // prefixes such as "مطعم" or type only part of a restaurant/product name.
+ const tokens=[...new Set((key||q).split(/\s+/).filter(token=>token.length>=2))];
  return tokens.length>0&&tokens.every(token=>full.includes(token)||short.includes(token));
 }
 function updateRestaurantSuggestions(){
@@ -944,7 +946,8 @@ function search(){
  });
  const matchingProducts=products.filter(p=>{
   const category=categories.find(c=>String(c.id)===String(p.category_id));
-  return searchTextMatches([p.name,p.description,category?.name].filter(Boolean).join(" "),q,key);
+  const parentStore=stores.find(x=>String(x.id)===String(p.store_id));
+  return searchTextMatches([p.name,p.description,category?.name,parentStore?.store_name].filter(Boolean).join(" "),q,key);
  });
  grid.innerHTML="";
  if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
