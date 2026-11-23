@@ -892,17 +892,24 @@ function render(list){
 }
 function restaurantSearchKey(value){
  return normalize(value)
-  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|كافيه|كافى|كافٍ|و)\s*)+/g,"")
+  .replace(/^(?:(?:مطعم|مطبخ|ملحمه|كافيه|كافى|كافٍ|كافيهات|و)\s*)+/g,"")
   .replace(/^(?:ال)+/,"").trim();
+}
+const SEARCH_STOP_WORDS=new Set(["مطعم","مطاعم","مطبخ","ملحمه","ملحمة","كافيه","كافى","كافٍ","متجر","وجبه","وجبة","اكل","الاكل","منيو","المنيو"]);
+function searchTokens(value){
+ return [...new Set(restaurantSearchKey(value).split(/\s+/)
+  .map(token=>token.replace(/^ال/,""))
+  .filter(token=>token.length>=2&&!SEARCH_STOP_WORDS.has(token)))];
 }
 function searchTextMatches(value,q,key){
  const full=normalize(value),short=restaurantSearchKey(value);
  if(!q&&!key)return true;
  if((q&&full.includes(q))||(key&&short.includes(key)))return true;
- // Match every meaningful search word independently, even when users omit
- // prefixes such as "مطعم" or type only part of a restaurant/product name.
- const tokens=[...new Set((key||q).split(/\s+/).filter(token=>token.length>=2))];
- return tokens.length>0&&tokens.every(token=>full.includes(token)||short.includes(token));
+ // Search by all meaningful words, ignoring generic terms like "مطعم" and "منيو".
+ // This handles Arabic prefixes, hamza variants, partial names and multi-word queries.
+ const tokens=[...new Set([...searchTokens(q),...searchTokens(key)])];
+ if(!tokens.length)return true;
+ return tokens.every(token=>full.includes(token)||short.includes(token));
 }
 function updateRestaurantSuggestions(){
  const list=document.getElementById("restaurantSuggestions");
@@ -952,10 +959,11 @@ function renderLiveSuggestions(raw){
 }
 
 function search(){
- const raw=searchBox.value.trim();
- renderLiveSuggestions(raw);
+ const raw=String(searchBox?.value||"").trim();
+ const panel=document.getElementById("storeLiveSuggestions");
  const q=normalize(raw),key=restaurantSearchKey(raw);
- if(!q){render(stores);return;}
+ if(!raw){if(panel)panel.hidden=true;render(stores);return;}
+ renderLiveSuggestions(raw);
  const matchingStores=stores.filter(s=>{
   const searchable=[s.store_name,s.store_type,s.address,s.contact_name,s.phone].filter(Boolean).join(" ");
   return searchTextMatches(searchable,q,key);
@@ -965,15 +973,30 @@ function search(){
   const parentStore=stores.find(x=>String(x.id)===String(p.store_id));
   return searchTextMatches([p.name,p.description,category?.name,parentStore?.store_name].filter(Boolean).join(" "),q,key);
  });
+ // If a product matched, also show its restaurant card once so the user can
+ // open the full menu instead of seeing an isolated product only.
+ const resultStores=[...matchingStores];
+ matchingProducts.forEach(p=>{
+  const parent=stores.find(s=>String(s.id)===String(p.store_id));
+  if(parent&&!resultStores.some(s=>String(s.id)===String(parent.id)))resultStores.push(parent);
+ });
  grid.innerHTML="";
- if(!matchingStores.length&&!matchingProducts.length){setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب جزءاً أقصر من الاسم.");return;}
- statusBox.hidden=false;statusBox.className="notice";statusBox.textContent="نتائج البحث: "+matchingStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة.";
- menuFirst(matchingStores).forEach(s=>grid.appendChild(storeCard(s)));
- matchingProducts.forEach(p=>{const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);const el=wrap.firstElementChild;el.insertAdjacentHTML("afterbegin",'<p>المطعم: '+esc(s.store_name)+'</p>');grid.appendChild(el);});
- if(matchingStores.length===1&&matchingProducts.length===0){
-  const card=grid.querySelector(".store");
-  if(card)card.scrollIntoView({behavior:"smooth",block:"nearest"});
+ if(!resultStores.length&&!matchingProducts.length){
+  if(panel)panel.hidden=true;
+  setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب كلمة أقصر أو جزءاً من الاسم.");
+  return;
  }
+ if(panel)panel.hidden=true;
+ statusBox.hidden=false;statusBox.className="notice";
+ statusBox.textContent="نتائج البحث: "+resultStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة أو منتج.";
+ menuFirst(resultStores).forEach(s=>grid.appendChild(storeCard(s)));
+ matchingProducts.forEach(p=>{
+  const s=stores.find(x=>String(x.id)===String(p.store_id));if(!s)return;
+  const wrap=document.createElement("div");wrap.innerHTML=productHTML(s,p);
+  const el=wrap.firstElementChild;
+  el.insertAdjacentHTML("afterbegin",'<p>المطعم: '+esc(s.store_name)+'</p>');
+  grid.appendChild(el);
+ });
 }
 function readCatalogCache(key){
  try{const value=JSON.parse(localStorage.getItem("ahmedko_catalog_"+key)||"null");return Array.isArray(value)?value:[];}catch(_){return [];}
