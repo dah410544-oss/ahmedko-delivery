@@ -1,4 +1,4 @@
-const CACHE_NAME = "ahmedko-live-v39";
+const CACHE_NAME = "ahmedko-live-v40";
 const appUrl = path => new URL(path, self.registration.scope).toString();
 const APP_SHELL = [appUrl("index.html")];
 
