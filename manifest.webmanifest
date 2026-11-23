@@ -15,10 +15,10 @@
   "categories": ["shopping", "food", "travel"],
   "prefer_related_applications": false,
   "icons": [
-    { "src": "icon.svg?v=21", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "icon.svg?v=22", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ],
   "shortcuts": [
-    { "name": "اطلب عبر واتساب", "short_name": "طلب جديد", "url": "https://wa.me/972598407547", "icons": [{ "src": "icon.svg?v=20", "sizes": "any", "type": "image/svg+xml" }] },
-    { "name": "المطاعم والمنيو", "short_name": "المطاعم", "url": "/ahmedko-delivery/#market", "icons": [{ "src": "icon.svg?v=20", "sizes": "any", "type": "image/svg+xml" }] }
+    { "name": "اطلب عبر واتساب", "short_name": "طلب جديد", "url": "https://wa.me/972598407547", "icons": [{ "src": "icon.svg?v=22", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "المطاعم والمنيو", "short_name": "المطاعم", "url": "/ahmedko-delivery/#market", "icons": [{ "src": "icon.svg?v=22", "sizes": "any", "type": "image/svg+xml" }] }
   ]
 }
