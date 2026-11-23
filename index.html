@@ -393,6 +393,22 @@ loadPublicAnnouncement();
 const grid = document.getElementById("storeGrid");
 const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
+function runAhmedkoRestaurantSearch(){
+ try{
+  if(typeof search!=="function")throw new Error("Search function unavailable");
+  search();
+ }catch(error){
+  console.error("Ahmedko search error:",error);
+  if(statusBox){statusBox.hidden=false;statusBox.className="notice error";statusBox.textContent="تعذر تنفيذ البحث. أعد تحميل الصفحة وحاول مرة أخرى.";}
+ }
+}
+searchBox.addEventListener("input",runAhmedkoRestaurantSearch);
+searchBox.addEventListener("change",runAhmedkoRestaurantSearch);
+document.getElementById("submitStoreSearch")?.addEventListener("click",()=>{
+ runAhmedkoRestaurantSearch();
+ grid?.scrollIntoView({behavior:"smooth",block:"start"});
+});
+
 let stores = [], categories = [], products = [];
 let catalogLoading = false;
 let catalogRefreshQueued = false;
@@ -1052,8 +1068,8 @@ async function init(){
   if(catalogRefreshQueued){catalogRefreshQueued=false;setTimeout(()=>init(),250);}
  }
 }
-searchBox.addEventListener("input",search);
-document.getElementById("submitStoreSearch").addEventListener("click",()=>{search();grid.scrollIntoView({behavior:"smooth",block:"start"});});
+
+
 searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();search();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
 searchBox.addEventListener("keydown",event=>{if(event.key==="Escape"){searchBox.value="";search();}});
 window.addEventListener("focus",()=>{if(Date.now()-lastCatalogRefresh>45000)init();});
