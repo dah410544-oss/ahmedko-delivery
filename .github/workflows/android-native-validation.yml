@@ -1,0 +1,33 @@
+name: Validate AHMEDKO native Android foundation
+
+on:
+  push:
+    branches: [feature/native-android-foundation]
+    paths:
+      - "native-android/**"
+      - ".github/workflows/android-native-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  assemble-native-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Assemble native Android debug APK
+        run: gradle -p native-android :app:assembleDebug
