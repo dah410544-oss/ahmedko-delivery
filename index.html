@@ -249,12 +249,22 @@ section{background:#f4f7fb}
   #contact .contact-item{font-size:14px}
 }
 </style>
+<style id="ahmedko-store-detail-and-navigation">
+.store-title-button{display:block;width:100%;padding:0;margin:7px 0 9px;border:0;background:transparent;color:var(--yellow);font:inherit;font-size:19px;font-weight:900;text-align:right;cursor:pointer;box-shadow:none}
+.store-title-button:hover{transform:none;box-shadow:none;text-decoration:underline}
+.store-detail-summary{padding:13px;margin:10px 0;border:1px solid #365477;border-radius:13px;background:#0a203c;line-height:1.9}
+.store-detail-summary strong{display:block;color:var(--yellow);margin-bottom:6px}
+.store-detail-summary p{margin:3px 0;color:#e5edf7;font-size:13px}
+.store-detail-summary a{display:inline-block;margin-top:8px}
+.store-detail-menu{padding-top:6px}
+@media(max-width:699px){.mobile-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}.mobile-bottom-nav small{font-size:10px}}
+</style>
 </head>
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
- <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#F5C32B;color:#071A35;border:1px solid #ffdc65;box-shadow:0 5px 16px #f5c32b35">⬇ ثبّت تطبيق أحمدكو</button>
- <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
+ <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" hidden style="cursor:pointer;white-space:nowrap;background:#F5C32B;color:#071A35;border:1px solid #ffdc65;box-shadow:0 5px 16px #f5c32b35">⬇ ثبّت تطبيق أحمدكو</button>
+ <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="wallet.html">المحفظة والدفع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
 <section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
@@ -264,6 +274,7 @@ section{background:#f4f7fb}
  <h1>طلبك علينا…<br><span>وصوله علينا.</span></h1>
  <p>أحمدكو ديلفري — خدمات التوصيل والشحن والنقل والخدمات اللوجستية، وربطك بالمطاعم والمتاجر في غزة والجنوب حسب التوفر.</p>
  <a class="btn yellow" href="customer.html">اطلب توصيلاً وتابع طلبك</a>
+ <a class="btn" style="border:1px solid #ffffff66;color:white" href="wallet.html">💳 محفظتي وطرق الدفع</a>
  <a class="btn" style="border:1px solid #ffffff66;color:white" href="#market">تصفح المطاعم والمنيو</a>
  <a class="btn" style="border:1px solid #ffffff66;color:white" href="https://wa.me/972598407547" target="_blank" rel="noopener">اطلب عبر واتساب</a>
  <div class="actions" style="position:relative;z-index:2;display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
@@ -322,6 +333,7 @@ section{background:#f4f7fb}
  <a href="#home"><span>⌂</span><small>الرئيسية</small></a>
  <a href="#market"><span>🍽️</span><small>المطاعم</small></a>
  <a href="customer.html"><span>📦</span><small>طلباتي</small></a>
+ <a href="wallet.html"><span>💳</span><small>المحفظة</small></a>
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
 <div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
@@ -894,12 +906,31 @@ function storeCard(store){
  const phone=String(store.phone||"").replace(/[^\d+]/g,"");
  const normalizedName=normalize(store.store_name);
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
- const typeName=({restaurant:"مطعم",store:"مطعم",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم";
- const phoneLink=phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال</a>':"";
+ const typeName=({restaurant:"مطعم",store:"متجر",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم أو متجر";
  const menuTag=storeHasMenu(store)?'<span class="menu-tag">📋 منيو متوفر</span>':'<span class="menu-tag no-menu">المنيو غير منشور</span>';
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><h3>'+esc(displayName)+'</h3>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"")+(phone?"📞 "+esc(store.phone)+"<br>":"")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">عرض المنيو</button>'+phoneLink+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><button type="button" class="store-title-button" aria-expanded="false">'+esc(displayName)+'</button>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"📍 العنوان غير مضاف بعد<br>")+(phone?"📞 "+esc(store.phone)+"<br>":"📞 رقم المطعم غير منشور حالياً<br>")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">تفاصيل المطعم والمنيو</button>'+(phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال بالمطعم</a>':'')+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
+ const titleButton=card.querySelector(".store-title-button");
  const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
- button.addEventListener("click",()=>{if(holder.hidden){if(!holder.dataset.ready){renderMenu(store,holder);holder.dataset.ready="1";}holder.hidden=false;button.textContent="إخفاء المنيو";}else{holder.hidden=true;button.textContent="عرض المنيو";}});
+ const openDetails=()=>{
+  if(!holder.dataset.ready){
+   const details=document.createElement("div");details.className="store-detail-summary";
+   const detailHeading=document.createElement("strong");detailHeading.textContent="تفاصيل المطعم";
+   const address=document.createElement("p");address.textContent="العنوان: "+(store.address||"غير مضاف حالياً");
+   const contact=document.createElement("p");contact.textContent="رقم التواصل: "+(store.phone||"غير منشور حالياً");
+   const manager=document.createElement("p");manager.textContent="جهة التواصل: "+(store.contact_name||"فريق المطعم");
+   details.append(detailHeading,address,contact,manager);
+   if(!phone){
+    const help=document.createElement("a");help.className="small light";help.href="https://wa.me/972598407547?text="+encodeURIComponent("مرحباً أحمدكو، أريد رقم التواصل أو تفاصيل مطعم "+displayName);help.target="_blank";help.rel="noopener";help.textContent="اطلب رقم المطعم من أحمدكو";details.appendChild(help);
+   }
+   const menu=document.createElement("div");menu.className="store-detail-menu";renderMenu(store,menu);
+   holder.replaceChildren(details,menu);holder.dataset.ready="1";
+  }
+  holder.hidden=!holder.hidden;
+  const label=holder.hidden?"تفاصيل المطعم والمنيو":"إخفاء التفاصيل";
+  button.textContent=label;titleButton.setAttribute("aria-expanded",String(!holder.hidden));
+ };
+ titleButton.addEventListener("click",openDetails);
+ button.addEventListener("click",openDetails);
  return card;
 }
 function storeHasMenu(store){
@@ -1432,11 +1463,9 @@ async function refreshAhmedkoNow(){
 </script>
 <script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
-  let refreshingForNewVersion = false;
+  // Keep the customer's current screen and cart intact when a new worker takes control.
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (refreshingForNewVersion) return;
-    refreshingForNewVersion = true;
-    location.reload();
+    console.info("تحديث أحمدكو جاهز؛ ستُحمّل الملفات الجديدة مع التنقل أو التحديث التالي.");
   });
 
   window.addEventListener("load", async () => {
