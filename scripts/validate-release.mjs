@@ -2,6 +2,8 @@ import { access, readFile } from "node:fs/promises";
 
 const requiredFiles = [
   "www/index.html",
+  "www/account.html",
+  "www/wallet.html",
   "www/customer.html",
   "www/driver.html",
   "www/restaurant.html",
@@ -35,7 +37,10 @@ if (config.appId !== "com.ahmedko.delivery" || config.webDir !== "www") {
   throw new Error("Unexpected Capacitor appId or webDir.");
 }
 
-for (const file of ["www/index.html", "www/customer.html", "www/driver.html", "www/admin.html"]) {
+for (const file of [
+  "www/index.html", "www/account.html", "www/wallet.html",
+  "www/customer.html", "www/driver.html", "www/restaurant.html", "www/admin.html"
+]) {
   const source = await readFile(file, "utf8");
   if (/service_role|SUPABASE_SERVICE_ROLE|-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----/i.test(source)) {
     throw new Error("Potential server secret or private key found in " + file);
@@ -46,14 +51,14 @@ for (const file of ["www/index.html", "www/customer.html", "www/driver.html", "w
 }
 
 // New Supabase publishable keys (sb_publishable_*) are API keys, not JWTs.
- // Raw REST/RPC fetch calls must send them in apikey only, never as Bearer tokens.
+// Raw REST/RPC fetch calls must send them in apikey only, never as Bearer tokens.
 for (const file of [
-  "www/index.html", "www/customer.html", "www/driver.html",
-  "www/restaurant.html", "www/admin.html", "www/live-app.js"
+  "www/index.html", "www/account.html", "www/wallet.html", "www/customer.html",
+  "www/driver.html", "www/restaurant.html", "www/admin.html", "www/live-app.js"
 ]) {
   const source = await readFile(file, "utf8");
-  if (/Authorization["']?\s*:\s*["']Bearer\s*["']\s*\+\s*SUPABASE_KEY/i.test(source) ||
-      /Authorization["']?\s*:\s*["']Bearer\s+sb_publishable_/i.test(source)) {
+  if (/Authorization["']?\\s*:\\s*["']Bearer\\s*["']\\s*\\+\\s*SUPABASE_KEY/i.test(source) ||
+      /Authorization["']?\\s*:\\s*["']Bearer\\s+sb_publishable_/i.test(source)) {
     throw new Error("Supabase publishable key must not be sent as a Bearer token in " + file);
   }
 }
@@ -63,6 +68,13 @@ if (!customer.includes('rpc("create_customer_order"') ||
     !customer.includes("signInWithOtp") ||
     !customer.includes('rpc("get_my_customer_orders"')) {
   throw new Error("Customer order creation or verified-phone tracking flow is incomplete.");
+}
+
+const account = await readFile("www/account.html", "utf8");
+if (!account.includes("signInWithOtp") ||
+    !account.includes('signInWithPassword') ||
+    !account.includes('verifyOtp')) {
+  throw new Error("Unified account login and phone verification flow is incomplete.");
 }
 
 const restaurant = await readFile("www/restaurant.html", "utf8");
@@ -77,4 +89,4 @@ if (!driver.includes('rpc("driver_update_order_status"')) {
   throw new Error("Driver status updates are not routed through the protected RPC.");
 }
 
-console.log("AHMEDKO release validation passed: web bundle, manifest, app identity, privacy page and protected flows.");
+console.log("AHMEDKO release validation passed: all app pages, manifest, app identity, privacy page and protected flows.");
