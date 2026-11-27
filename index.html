@@ -399,7 +399,33 @@ function runAhmedkoRestaurantSearch(){
   filterRestaurants();
  }catch(error){
   console.error("Ahmedko search error:",error);
-  if(statusBox){statusBox.hidden=false;statusBox.className="notice error";statusBox.textContent="تعذر تنفيذ البحث. أعد تحميل الصفحة وحاول مرة أخرى.";}
+  // Safe fallback: keep basic restaurant-name search usable even if an enhanced
+  // suggestion/menu renderer encounters a runtime error.
+  try{
+   const raw=String(searchBox&&searchBox.value||"").trim();
+   const query=String(raw).toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\u064B-\u065F\u0670\u0640]/g,"").trim();
+   const rows=Array.isArray(stores)?stores:[];
+   const matches=rows.filter(item=>{
+    const name=String(item&&item.store_name||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");
+    return !query||name.includes(query)||query.split(/\s+/).filter(Boolean).every(word=>name.includes(word));
+   });
+   if(grid){
+    grid.replaceChildren();
+    matches.forEach(item=>{
+     const card=document.createElement("article");card.className="store";
+     const title=document.createElement("h3");title.textContent=item.store_name||"مطعم أو متجر";
+     const detail=document.createElement("p");detail.className="meta";detail.textContent=item.address||"";
+     card.append(title,detail);grid.appendChild(card);
+    });
+   }
+   if(statusBox){
+    statusBox.hidden=false;statusBox.className="notice";
+    statusBox.textContent=matches.length?"نتائج البحث: "+matches.length+" مطعم/متجر.":"لم نعثر على مطعم بهذا الاسم. جرّب كلمة أقصر.";
+   }
+  }catch(fallbackError){
+   console.error("Ahmedko search fallback error:",fallbackError);
+   if(statusBox){statusBox.hidden=false;statusBox.className="notice error";statusBox.textContent="تعذر عرض نتائج البحث حالياً. امسح كلمة البحث وحاول مجدداً.";}
+  }
  }
 }
 searchBox.addEventListener("input",runAhmedkoRestaurantSearch);
@@ -1400,10 +1426,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       const checkForUpdate = () => reg.update().catch(() => {});
       checkForUpdate();
       // Check periodically while the app remains open, and immediately when it returns to foreground.
-      window.setInterval(checkForUpdate, 60 * 1000);
-      document.addEventListener("visibilitychange", () => {
+      window.setInterval(checkForUpdate, 30 * 1000);
+      const checkOnReturn = () => {
         if (!document.hidden) checkForUpdate();
-      });
+      };
+      document.addEventListener("visibilitychange", checkOnReturn);
+      window.addEventListener("focus", checkOnReturn);
+      window.addEventListener("pageshow", checkOnReturn);
       reg.addEventListener("updatefound", () => {
         const worker = reg.installing;
         if (!worker) return;
