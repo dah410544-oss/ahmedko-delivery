@@ -1,6 +1,6 @@
-const CACHE_NAME = "ahmedko-live-v46";
+const CACHE_NAME = "ahmedko-live-v47";
 const appUrl = path => new URL(path, self.registration.scope).toString();
-const APP_SHELL = [appUrl("index.html"), appUrl("wallet.html"), appUrl("customer.html"), appUrl("account.html")];
+const APP_SHELL = [appUrl("index.html"), appUrl("wallet.html"), appUrl("customer.html"), appUrl("account.html"), appUrl("admin.html"), appUrl("driver.html"), appUrl("restaurant.html")];
 
 
 self.addEventListener("push", event => {
@@ -17,6 +17,8 @@ self.addEventListener("push", event => {
     badge: appUrl("icon.svg"),
     tag: payload.tag || "ahmedko-update",
     renotify: Boolean(payload.renotify),
+    requireInteraction: Boolean(payload.requireInteraction),
+    vibrate: Array.isArray(payload.vibrate) ? payload.vibrate : [160, 80, 160],
     data: { url: payload.url || appUrl("index.html") }
   };
   event.waitUntil(self.registration.showNotification(title, options));
