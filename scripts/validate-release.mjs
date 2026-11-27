@@ -57,8 +57,8 @@ for (const file of [
   "www/driver.html", "www/restaurant.html", "www/admin.html", "www/live-app.js"
 ]) {
   const source = await readFile(file, "utf8");
-  if (/Authorization["']?\\s*:\\s*["']Bearer\\s*["']\\s*\\+\\s*SUPABASE_KEY/i.test(source) ||
-      /Authorization["']?\\s*:\\s*["']Bearer\\s+sb_publishable_/i.test(source)) {
+  if (/Authorization["']?\s*:\s*["']Bearer\s*["']\s*\\+\s*SUPABASE_KEY/i.test(source) ||
+      /Authorization["']?\s*:\s*["']Bearer\s+sb_publishable_/i.test(source)) {
     throw new Error("Supabase publishable key must not be sent as a Bearer token in " + file);
   }
 }
