@@ -20,8 +20,8 @@ create table if not exists public.wallet_payment_methods (
   updated_at timestamptz not null default now()
 );
 
--- Owner-provided receiving details. Bank transfer stays disabled until its
--- actual account number / IBAN and transfer route are confirmed.
+-- Owner-provided receiving details supplied for this wallet setup.
+-- Bank transfer is manual; customers submit a reference for admin verification.
 insert into public.wallet_payment_methods(
   code, display_name, instructions, account_label, is_active, sort_order
 )
