@@ -20,12 +20,42 @@ create table if not exists public.wallet_payment_methods (
   updated_at timestamptz not null default now()
 );
 
-insert into public.wallet_payment_methods(code,display_name,sort_order)
+-- Owner-provided receiving details. Bank transfer stays disabled until its
+-- actual account number / IBAN and transfer route are confirmed.
+insert into public.wallet_payment_methods(
+  code, display_name, instructions, account_label, is_active, sort_order
+)
 values
- ('palpay','PalPay',1),
- ('jawwal_pay','Jawwal Pay',2),
- ('bank_palestine','بنك فلسطين',3)
-on conflict (code) do update set display_name=excluded.display_name, sort_order=excluded.sort_order;
+ (
+  'palpay',
+  'PalPay',
+  'حوّل المبلغ إلى محفظة PalPay على الرقم 0598407547، باسم أحمد سمير الدحبور. أرسل رقم/مرجع الحوالة، وسيُضاف الرصيد بعد مراجعة المكتب.',
+  'صاحب المحفظة: أحمد سمير الدحبور | رقم الاستلام: 0598407547',
+  true,
+  1
+ ),
+ (
+  'jawwal_pay',
+  'Jawwal Pay',
+  'حوّل المبلغ إلى محفظة Jawwal Pay على الرقم 0598407547، باسم أحمد سمير الدحبور. أرسل رقم/مرجع الحوالة، وسيُضاف الرصيد بعد مراجعة المكتب.',
+  'صاحب المحفظة: أحمد سمير الدحبور | رقم الاستلام: 0598407547',
+  true,
+  2
+ ),
+ (
+  'bank_palestine',
+  'بنك فلسطين',
+  'التحويل البنكي غير متاح حالياً. يرجى التواصل مع مكتب أحمدكو للحصول على بيانات الحساب البنكي المعتمدة.',
+  'بيانات الحساب البنكي / IBAN قيد التأكيد',
+  false,
+  3
+ )
+on conflict (code) do update set
+  display_name=excluded.display_name,
+  instructions=excluded.instructions,
+  account_label=excluded.account_label,
+  is_active=excluded.is_active,
+  sort_order=excluded.sort_order;
 
 create table if not exists public.wallet_topup_requests (
   id uuid primary key default gen_random_uuid(),
