@@ -1220,7 +1220,7 @@ async function refreshAhmedkoNow(){
  if(icon)icon.textContent="⟳";
  if(indicator)indicator.classList.add("loading","visible");
  let reloading=false;
- const reload=()=>{if(reloading)return;reloading=true;location.reload();};
+ const reload=()=>{if(reloading)return;reloading=true;const freshUrl=new URL(location.href);freshUrl.searchParams.set("_ahmedko_refresh",String(Date.now()));location.replace(freshUrl.toString());};
  try{
   if("serviceWorker" in navigator){
    const reg=await navigator.serviceWorker.getRegistration();
