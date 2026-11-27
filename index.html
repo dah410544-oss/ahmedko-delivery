@@ -1108,7 +1108,6 @@ async function init(){
  });
  categories=readCatalogCache("categories");
  products=readCatalogCache("products");
- updateRestaurantSuggestions();
  render(stores);
  setStatus("تظهر المطاعم الآن؛ جارٍ تحديث الأسماء والمنيو من قاعدة بيانات أحمدكو…");
  const cachedMuhannad=stores.find(s=>normalize(s.store_name).includes(normalize("مهند")));
@@ -1173,7 +1172,6 @@ async function init(){
  }
  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
- updateRestaurantSuggestions();
  if(searchBox.value.trim())filterRestaurants();else render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تظهر المطاعم المتاحة. تعذر تحديث بعض البيانات من الخادم الآن؛ يمكنك البحث واستخدام البيانات المحفوظة.",true);
  else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
