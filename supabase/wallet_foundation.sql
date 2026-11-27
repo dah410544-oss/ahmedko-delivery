@@ -45,9 +45,9 @@ values
  (
   'bank_palestine',
   'بنك فلسطين',
-  'بنك فلسطين: رقم الحساب 570183، الهاتف المرتبط 0598407547، ورقم الآيبان (IBAN): PS06PALS045105701830993000000، باسم أحمد سمير الدحبور. أرسل مرجع الحوالة ليتم التحقق من وصولها فعلياً قبل إضافة الرصيد.',
-  'صاحب الحساب: أحمد سمير الدحبور | رقم الحساب: 570183 | الهاتف المرتبط: 0598407547 | رقم الآيبان (IBAN): PS06PALS045105701830993000000',
-  true,
+  'التحويل البنكي غير متاح مؤقتاً حتى مطابقة اسم المستفيد ورقم الحساب رسمياً. لا تحوّل قبل ظهور بيانات مؤكدة داخل التطبيق.',
+  'بيانات الحساب قيد التحقق الرسمي',
+  false,
   3
  )
 on conflict (code) do update set
@@ -164,9 +164,19 @@ set search_path = ''
 as $$
 declare
   v_user_id uuid := auth.uid();
+  v_phone_confirmed_at timestamptz;
   v_id uuid;
 begin
   if v_user_id is null then raise exception 'يجب تسجيل الدخول أولاً'; end if;
+
+  select u.phone_confirmed_at into v_phone_confirmed_at
+  from auth.users u
+  where u.id = v_user_id;
+
+  if v_phone_confirmed_at is null then
+    raise exception 'يجب التحقق من رقم الهاتف قبل إنشاء طلب شحن المحفظة';
+  end if;
+
   if p_amount is null or p_amount <= 0 or p_amount > 10000 then
     raise exception 'قيمة الشحن يجب أن تكون أكبر من صفر ولا تتجاوز 10000 شيكل';
   end if;
