@@ -39,15 +39,24 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 <section class="hero">
  <h1>المحفظة وطرق الدفع 💳</h1>
  <p>مركز موحد للاستفسار عن الدفع، وإرسال طلب مراجعة التحويل إلى مكتب أحمدكو.</p>
- <div class="balance"><strong>محفظة أحمدكو</strong><small>تفعيل عرض الرصيد والحركات المالية ينتظر استكمال ربط قاعدة المحفظة والتحقق الآمن من رقم الهاتف. لا يظهر هنا رصيد تقديري أو غير مؤكد.</small></div>
+ <div class="balance" aria-live="polite">
+  <small>رصيدك المتاح حالياً</small>
+  <strong style="font-size:24px">غير مفعّل بعد</strong>
+  <small>لن نعرض رقماً تقديرياً. سيظهر رصيدك الحقيقي بعد تسجيل الدخول والتحقق من الحساب وربط قاعدة المحفظة.</small>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">
+   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">🔒 لا خصم دون تأكيد</span>
+   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">🧾 سجل عمليات موثق</span>
+   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">₪ العملة: شيكل</span>
+  </div>
+ </div>
 </section>
 <h2 class="section-title">اختر وسيلة الدفع</h2>
 <div class="methods">
  <article class="method"><div class="symbol">📱</div><h3>جوال باي</h3><p>رقم المحفظة المعتمد لاستقبال التحويلات.</p><strong class="pay-detail" dir="ltr">0598407547</strong><button class="gold copy-payment" type="button" data-copy="0598407547">نسخ الرقم</button></article>
  <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>رقم الحساب/المحفظة لاستقبال التحويلات.</p><strong class="pay-detail" dir="ltr">0598407547</strong><button class="gold copy-payment" type="button" data-copy="0598407547">نسخ الرقم</button></article>
- <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>تحويل بنكي إلى الحساب التالي.</p><strong class="pay-detail">رقم الحساب: 570183</strong><strong class="pay-detail" dir="ltr">PS06PALS045105701830993000000</strong><button class="gold copy-payment" type="button" data-copy="PS06PALS045105701830993000000">نسخ IBAN</button></article>
+ <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>التحويل البنكي سيُفعّل بعد مطابقة اسم المستفيد وبيانات الحساب رسمياً لضمان وصول أموالك إلى الحساب الصحيح.</p><strong class="pay-detail">التفعيل قيد التحقق</strong><button class="copy-payment" type="button" disabled aria-disabled="true">غير متاح مؤقتاً</button></article>
 </div>
-<div class="notice">اسم المستفيد المعتمد للعرض: <strong>أحمد سمير الدحبور</strong>. يرجى مطابقة اسم المستفيد وبيانات الحساب مع مستند البنك قبل التحويل. رقم التواصل للمحافظ: 0598407547.</div>
+<div class="notice">وسائل الدفع المعروضة لا تعني أن الرصيد أُضيف. احتفظ بإيصال التحويل ورقم العملية، ولا تشارك رمز التحقق أو كلمة المرور مع أي شخص. تم إيقاف عرض بيانات التحويل البنكي مؤقتاً حتى مطابقة اسم المستفيد والحساب رسمياً.</div>
 <section class="panel" id="review">
  <h2>إرسال طلب مراجعة تحويل</h2>
  <p class="muted">املأ التفاصيل بعد تنفيذ التحويل. ستفتح رسالة واتساب جاهزة للمكتب؛ يجب إرسالها بنفسك، ثم ينتظر الطلب التحقق اليدوي.</p>
@@ -61,13 +70,22 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
   <label for="reference">رقم مرجع التحويل</label><input id="reference" maxlength="100" placeholder="أدخل رقم العملية كما يظهر في إيصال التحويل">
   <label for="receiptFile">إرفاق صورة أو PDF للإيصال (اختياري)</label>
   <input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
-  <p class="muted" id="receiptStatus" aria-live="polite">يمكنك إرفاق صورة أو ملف PDF حتى 5 ميغابايت. سيُحفظ على هذا الجهاز، ويمكن مشاركته مع واتساب.</p>
+  <p class="muted" id="receiptStatus" aria-live="polite">يمكنك إرفاق صورة أو ملف PDF حتى 5 ميغابايت. الحفظ الحالي محلي على هذا الجهاز فقط، وليس في حسابك السحابي أو لدى المكتب.</p>
   <label for="note">ملاحظة (اختياري)</label><textarea id="note" rows="3" maxlength="400" placeholder="أي تفاصيل تساعد المكتب في مطابقة الحوالة"></textarea>
   <button class="gold" type="submit" style="width:100%;margin-top:15px">حفظ الطلب وإرساله إلى واتساب</button>
   <div class="notice" id="savedReceiptNotice" hidden aria-live="polite"></div>
  </form>
  <div class="notice security">تنبيه أمان: لا ترسل كلمة المرور أو رمز التحقق لأي شخص. لا تعتبر المحفظة مشحونة بمجرد إرسال الرسالة؛ يضاف الرصيد فقط بعد التحقق الفعلي واعتماد المكتب.</div>
- <div class="notice">حالياً هذه الصفحة تستقبل طلبات المراجعة اليدوية عبر واتساب فقط. لا تنشئ رصيداً داخل التطبيق ولا تنفذ خصماً أو تحويلاً تلقائياً حتى يكتمل تفعيل قاعدة المحفظة ومزود التحقق الهاتفي.</div>
+ <div class="notice security">
+ <strong>كيف نحافظ على أموالك؟</strong>
+ <ul style="margin:7px 0;padding-right:20px">
+  <li>إرسال الإيصال لا يعني شحن الرصيد؛ تتم المطابقة قبل الاعتماد.</li>
+  <li>لا يُخصم أي مبلغ عند تقديم الطلب أو تصفح المتاجر.</li>
+  <li>بعد تفعيل المحفظة سيظهر لكل شحن أو شراء رقم مرجعي وحالة واضحة وسجل عمليات.</li>
+  <li>لن يتم تفعيل الدفع من الرصيد قبل تشغيل التحقق الهاتفي وقاعدة البيانات واختبار منع تكرار الخصم.</li>
+ </ul>
+ <strong>الحالة الحالية:</strong> طلبات المراجعة يدوية عبر واتساب. لا يوجد حتى الآن رصيد قابل للاستخدام أو خصم تلقائي.
+ </div>
 </section>
 </main>
 <footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
@@ -131,7 +149,7 @@ form.addEventListener("submit",async event=>{
  try{
   await saveLocalRequest(record);
   savedReceiptNotice.hidden=false;
-  savedReceiptNotice.textContent="تم حفظ طلبك"+(selectedReceipt?" والإيصال":"")+" داخل هذا التطبيق على هذا الجهاز. احتفظ بنسخة من الإيصال حتى يؤكد المكتب الاستلام.";
+  savedReceiptNotice.textContent="تم حفظ طلبك"+(selectedReceipt?" والإيصال":"")+" محلياً على هذا الجهاز فقط. لم يصل الطلب إلى قاعدة بيانات المكتب بعد؛ أرسل رسالة واتساب واحتفظ بالإيصال حتى يؤكد المكتب الاستلام.";
  }catch(error){
   savedReceiptNotice.hidden=false;
   savedReceiptNotice.textContent="تعذر الحفظ المحلي على هذا الجهاز. سنحاول فتح واتساب لإرسال بيانات الطلب.";
