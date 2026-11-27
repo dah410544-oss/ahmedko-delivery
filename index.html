@@ -259,7 +259,33 @@ section{background:#f4f7fb}
 .store-detail-menu{padding-top:6px}
 @media(max-width:699px){.mobile-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}.mobile-bottom-nav small{font-size:10px}}
 </style>
-</head>
+<style id="ahmedko-store-modal">
+body.store-modal-open{overflow:hidden}
+#storeDetailsModal{position:fixed;inset:0;z-index:1000;background:#041326d9;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(5px)}
+#storeDetailsModal[hidden]{display:none!important}
+.store-modal-card{width:min(760px,100%);max-height:min(92dvh,900px);overflow:auto;border-radius:24px;background:#f5f7fb;box-shadow:0 28px 90px #0007;border:1px solid #ffffff40}
+.store-modal-top{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#071a35;color:#fff;border-bottom:3px solid #f5c32b}
+.store-modal-top strong{font-size:14px;letter-spacing:.3px}
+#storeDetailsClose{border:1px solid #ffffff45;background:#ffffff18;color:#fff;border-radius:11px;width:40px;height:40px;font-size:22px;cursor:pointer}
+#storeDetailsBody{padding:18px}
+.store-modal-hero{display:flex;align-items:center;gap:14px;padding:20px;border-radius:19px;background:linear-gradient(120deg,#071a35,#173c68);color:#fff}
+.store-modal-icon{display:grid;place-items:center;width:66px;height:66px;flex:0 0 66px;border-radius:18px;background:#f5c32b;color:#071a35;font-size:32px}
+.store-modal-heading h2{margin:0;color:#fff;font-size:24px;line-height:1.5}
+.store-modal-heading span{display:inline-block;margin-top:5px;padding:3px 11px;border-radius:30px;background:#ffffff20;color:#f5d76b;font-size:12px}
+.store-modal-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.store-modal-info>div{padding:13px;border:1px solid #e0e7f0;border-radius:14px;background:#fff}
+.store-modal-info span{display:block;color:#66758a;font-size:12px}
+.store-modal-info strong{display:block;margin-top:5px;color:#102849;font-size:14px;overflow-wrap:anywhere}
+.store-modal-actions{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0 20px}
+.store-modal-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:12px;text-decoration:none;font-weight:900;font-size:13px}
+.store-modal-action.call{background:#e7eef8;color:#102849}
+.store-modal-action.order{background:#f5c32b;color:#071a35}
+.store-modal-action.help{background:#102849;color:#fff}
+.store-modal-menu-title{margin:22px 0 10px;padding-bottom:9px;border-bottom:2px solid #f5c32b;color:#071a35;font-size:20px}
+.store-modal-menu{background:transparent;padding:0}
+.store-modal-menu .products{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+@media(max-width:560px){#storeDetailsModal{padding:0;align-items:flex-end}.store-modal-card{max-height:94dvh;border-radius:22px 22px 0 0}.store-modal-info{grid-template-columns:1fr}#storeDetailsBody{padding:13px}.store-modal-heading h2{font-size:20px}.store-modal-actions>*{flex:1 1 42%}}
+</style></head>
 <body>
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
@@ -336,6 +362,12 @@ section{background:#f4f7fb}
  <a href="wallet.html"><span>💳</span><small>المحفظة</small></a>
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
+<div id="storeDetailsModal" hidden role="dialog" aria-modal="true" aria-labelledby="storeDetailsTitle">
+ <section class="store-modal-card">
+  <div class="store-modal-top"><strong id="storeDetailsTitle">تفاصيل المطعم في أحمدكو</strong><button id="storeDetailsClose" type="button" aria-label="إغلاق تفاصيل المطعم">×</button></div>
+  <div id="storeDetailsBody"></div>
+ </section>
+</div>
 <div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
  <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>موجودين لمساعدتك بالطلبات والاستفسارات 💛</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
  <div id="ahmedkoAssistantMessages" class="assistant-messages" role="log" aria-live="polite"><div class="assistant-bubble bot">أهلاً بك في أحمدكو! أستطيع مساعدتك في العثور على مطعم أو وجبة، وشرح طريقة الطلب والتتبع.</div></div>
@@ -901,36 +933,54 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  }finally{button.disabled=false;}
 });
 
+function openStoreDetails(store){
+ const modal=document.getElementById("storeDetailsModal");
+ const body=document.getElementById("storeDetailsBody");
+ if(!modal||!body)return;
+ const phone=String(store.phone||"").replace(/[^\\d+]/g,"");
+ const name=store.store_name||"مطعم أو متجر";
+ const type=({restaurant:"مطعم",store:"متجر",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم أو متجر";
+ body.replaceChildren();
+ const hero=document.createElement("div");hero.className="store-modal-hero";
+ const iconBox=document.createElement("div");iconBox.className="store-modal-icon";iconBox.textContent=icon(store.store_type);
+ const heading=document.createElement("div");heading.className="store-modal-heading";
+ const title=document.createElement("h2");title.textContent=name;
+ const kind=document.createElement("span");kind.textContent=type;
+ heading.append(title,kind);hero.append(iconBox,heading);body.appendChild(hero);
+ const info=document.createElement("div");info.className="store-modal-info";
+ const address=document.createElement("div");address.innerHTML="<span>📍 العنوان</span>";const addressValue=document.createElement("strong");addressValue.textContent=store.address||"لم يضف المطعم عنوانه بعد";address.appendChild(addressValue);
+ const contact=document.createElement("div");contact.innerHTML="<span>📞 رقم التواصل</span>";const phoneValue=document.createElement("strong");phoneValue.textContent=store.phone||"رقم المطعم غير منشور حالياً";contact.appendChild(phoneValue);
+ info.append(address,contact);
+ if(store.contact_name){const manager=document.createElement("div");manager.innerHTML="<span>👤 مسؤول التواصل</span>";const managerValue=document.createElement("strong");managerValue.textContent=store.contact_name;manager.appendChild(managerValue);info.appendChild(manager);}
+ body.appendChild(info);
+ const actions=document.createElement("div");actions.className="store-modal-actions";
+ if(phone){const call=document.createElement("a");call.className="store-modal-action call";call.href="tel:"+phone;call.textContent="اتصال بالمطعم";actions.appendChild(call);}
+ const order=document.createElement("a");order.className="store-modal-action order";order.href=waLink(store);order.target="_blank";order.rel="noopener";order.textContent="اطلب عبر أحمدكو";actions.appendChild(order);
+ if(!phone){const help=document.createElement("a");help.className="store-modal-action help";help.href="https://wa.me/972598407547?text="+encodeURIComponent("مرحباً أحمدكو، أريد رقم التواصل مع "+name);help.target="_blank";help.rel="noopener";help.textContent="اسأل أحمدكو عن رقم المطعم";actions.appendChild(help);}
+ body.appendChild(actions);
+ const menuTitle=document.createElement("h3");menuTitle.className="store-modal-menu-title";menuTitle.textContent="قائمة الطعام والمنيو";body.appendChild(menuTitle);
+ const menu=document.createElement("div");menu.className="menu store-modal-menu";renderMenu(store,menu);body.appendChild(menu);
+ modal.hidden=false;document.body.classList.add("store-modal-open");
+ document.getElementById("storeDetailsClose").focus();
+}
+function closeStoreDetails(){
+ const modal=document.getElementById("storeDetailsModal");
+ if(modal){modal.hidden=true;document.body.classList.remove("store-modal-open");}
+}
+document.addEventListener("click",event=>{
+ if(event.target.closest("#storeDetailsClose"))closeStoreDetails();
+ if(event.target.id==="storeDetailsModal")closeStoreDetails();
+});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeStoreDetails();});
 function storeCard(store){
  const card=document.createElement("article");card.className="store";
- const phone=String(store.phone||"").replace(/[^\d+]/g,"");
  const normalizedName=normalize(store.store_name);
  const displayName=normalizedName==="فهد"?"مطعم فهد":(normalizedName==="ايوان"?"مطعم إيوان":(store.store_name||"مطعم أو متجر"));
- const typeName=({restaurant:"مطعم",store:"متجر",cafe:"كافيه ومطعم"})[normalize(store.store_type)]||"مطعم أو متجر";
  const menuTag=storeHasMenu(store)?'<span class="menu-tag">📋 منيو متوفر</span>':'<span class="menu-tag no-menu">المنيو غير منشور</span>';
- card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><button type="button" class="store-title-button" aria-expanded="false">'+esc(displayName)+'</button>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"📍 العنوان غير مضاف بعد<br>")+(phone?"📞 "+esc(store.phone)+"<br>":"📞 رقم المطعم غير منشور حالياً<br>")+esc(typeName)+'</div><div class="actions"><button type="button" class="small dark menuButton">تفاصيل المطعم والمنيو</button>'+(phone?'<a class="small light" href="tel:'+esc(phone)+'">اتصال بالمطعم</a>':'')+'<a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div><div class="menuHolder" hidden></div>';
- const titleButton=card.querySelector(".store-title-button");
- const button=card.querySelector(".menuButton"),holder=card.querySelector(".menuHolder");
- const openDetails=()=>{
-  if(!holder.dataset.ready){
-   const details=document.createElement("div");details.className="store-detail-summary";
-   const detailHeading=document.createElement("strong");detailHeading.textContent="تفاصيل المطعم";
-   const address=document.createElement("p");address.textContent="العنوان: "+(store.address||"غير مضاف حالياً");
-   const contact=document.createElement("p");contact.textContent="رقم التواصل: "+(store.phone||"غير منشور حالياً");
-   const manager=document.createElement("p");manager.textContent="جهة التواصل: "+(store.contact_name||"فريق المطعم");
-   details.append(detailHeading,address,contact,manager);
-   if(!phone){
-    const help=document.createElement("a");help.className="small light";help.href="https://wa.me/972598407547?text="+encodeURIComponent("مرحباً أحمدكو، أريد رقم التواصل أو تفاصيل مطعم "+displayName);help.target="_blank";help.rel="noopener";help.textContent="اطلب رقم المطعم من أحمدكو";details.appendChild(help);
-   }
-   const menu=document.createElement("div");menu.className="store-detail-menu";renderMenu(store,menu);
-   holder.replaceChildren(details,menu);holder.dataset.ready="1";
-  }
-  holder.hidden=!holder.hidden;
-  const label=holder.hidden?"تفاصيل المطعم والمنيو":"إخفاء التفاصيل";
-  button.textContent=label;titleButton.setAttribute("aria-expanded",String(!holder.hidden));
- };
- titleButton.addEventListener("click",openDetails);
- button.addEventListener("click",openDetails);
+ card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><button type="button" class="store-title-button">'+esc(displayName)+'</button>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"📍 العنوان غير مضاف بعد<br>")+(store.phone?"📞 "+esc(store.phone)+"<br>":"📞 رقم التواصل غير منشور حالياً<br>")+'</div><div class="actions"><button type="button" class="small dark menuButton">فتح واجهة المطعم</button><a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div>';
+ const open=()=>openStoreDetails(store);
+ card.querySelector(".store-title-button").addEventListener("click",open);
+ card.querySelector(".menuButton").addEventListener("click",open);
  return card;
 }
 function storeHasMenu(store){
