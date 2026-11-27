@@ -325,9 +325,9 @@ section{background:#f4f7fb}
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
 <div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
- <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>اسأل عن المطاعم والوجبات والطلبات</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
+ <div class="assistant-head"><div><strong>مساعد أحمدكو 💛</strong><small>موجودين لمساعدتك بالطلبات والاستفسارات 💛</small></div><button id="ahmedkoAssistantClose" class="assistant-close" type="button" aria-label="إغلاق المساعد">✕</button></div>
  <div id="ahmedkoAssistantMessages" class="assistant-messages" role="log" aria-live="polite"><div class="assistant-bubble bot">أهلاً بك في أحمدكو! أستطيع مساعدتك في العثور على مطعم أو وجبة، وشرح طريقة الطلب والتتبع.</div></div>
- <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم">المطاعم</button><button type="button" data-assistant-query="الرمال">الرمال</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button></div>
+ <div class="assistant-quick"><button type="button" data-assistant-query="المطاعم والمنيو">المطاعم والمنيو</button><button type="button" data-assistant-query="أسعار التوصيل">أسعار التوصيل</button><button type="button" data-assistant-query="كيف أطلب؟">كيف أطلب؟</button><button type="button" data-assistant-query="تتبع طلبي">تتبع طلبي</button><button type="button" data-assistant-query="رقم التواصل">اتصل بنا</button></div>
  <form id="ahmedkoAssistantForm" class="assistant-form"><input id="ahmedkoAssistantInput" type="text" maxlength="240" placeholder="اكتب سؤالك هنا…" autocomplete="off" aria-label="اكتب سؤالك للمساعد"><button type="submit">إرسال</button></form>
 </div>
 <button id="ahmedkoAssistantToggle" class="assistant-toggle" type="button" aria-expanded="false">💬 مساعد أحمدكو</button>
@@ -1145,43 +1145,84 @@ function assistantSearch(query){
  }).slice(0,5);
  return {storeMatches,productMatches};
 }
+function assistantContact(parent,message="إذا بتحب، فريق أحمدكو بيساعدك مباشرة. اتصل أو ابعتلنا واتساب:"){
+ const note=document.createElement("p");
+ note.style.cssText="margin:8px 0 4px;font-size:12px;line-height:1.7;color:#52627a";
+ note.textContent=message+" 0598407547";
+ parent.appendChild(note);
+ assistantLink(parent,"اتصال مباشر بأحمدكو","tel:+970598407547");
+ assistantLink(parent,"مراسلة أحمدكو عبر واتساب","https://wa.me/970598407547");
+}
 function assistantReply(raw){
  const q=normalize(raw);
- if(q.includes("كيف اطلب")||q.includes("طريقه الطلب")||q==="طلب"){
-  const bubble=assistantBubble("للطلب بسهولة:\n1) اختر المطعم والوجبة.\n2) أضف الأصناف إلى السلة.\n3) أدخل بياناتك وعنوان التسليم.\n4) أرسل الطلب وانتظر تأكيد أحمدكو.");
-  assistantLink(bubble,"فتح الطلبات والتوصيل","customer.html");
+ const has=(...words)=>words.some(word=>q.includes(normalize(word)));
+ const contact=()=>{const b=assistantBubble("أكيد، يسعدنا نساعدك 💛");assistantContact(b);};
+ if(has("مرحبا","اهلا","السلام عليكم","يسعد صباحك","مساء الخير","هاي")){
+  const b=assistantBubble("أهلاً وسهلاً فيك بأحمدكو ديلفري 💙💛\nنورتنا! احكيلي شو حابب تعمل؟ بدك تطلب توصيل، تلاقي مطعم أو وجبة، تتابع طلبك، تستفسر عن الأسعار، أو تتواصل مع المكتب؟ أنا معك خطوة بخطوة.");
+  ["كيف أطلب؟","المطاعم والمنيو","أسعار التوصيل","تتبع طلبي","التواصل مع المكتب"].forEach(label=>assistantAction(b,label,()=>sendAssistantQuery(label)));
   return;
  }
- if(q.includes("تتبع")||q.includes("طلباتي")||q.includes("حاله الطلب")){
-  const bubble=assistantBubble("يمكنك متابعة طلباتك بعد إدخال رقم هاتفك والتحقق منه في صفحة الطلبات.");
-  assistantLink(bubble,"فتح صفحة الطلبات والتتبع","customer.html");
+ if(has("رقم الهاتف","رقم تلفون","رقم التواصل","رقمكم","اتصال","اتصل","تواصل","واتساب","استفسار","خدمة العملاء","المكتب")){
+  const b=assistantBubble("تفضل، هذا رقم التواصل الرسمي مع مكتب أحمدكو 💛\n0598407547\nتقدر تتصل مباشرة أو تراسلنا على واتساب، واكتب لنا استفسارك أو تفاصيل طلبك.");
+  assistantContact(b,"للتواصل المباشر:");
   return;
  }
- if(q.includes("سائق")||q.includes("مندوب")||q.includes("كابتن")){
-  const bubble=assistantBubble("إذا أردت الانضمام إلى فريق أحمدكو كسائق، افتح بوابة السائقين وقدّم طلب الانضمام.");
-  assistantLink(bubble,"بوابة السائقين","driver.html");
+ if(has("كيف اطلب","طريقه الطلب","طلب توصيل","اعمل طلب","بدي اطلب","اريد اطلب")){
+  const b=assistantBubble("ولا يهمك، طلبك سهل 😊\n1) افتح صفحة الطلبات والتوصيل.\n2) اكتب بياناتك ورقم هاتفك.\n3) حدّد مكان الاستلام والتسليم والمنطقة ووسيلة النقل.\n4) أرسل الطلب، وفريق أحمدكو يتابع معك لتأكيد التفاصيل والأجرة.\nإذا واجهتك أي خطوة، ابعتلنا وبنساعدك.");
+  assistantLink(b,"ابدأ طلب التوصيل","customer.html");
+  assistantContact(b,"للمساعدة أثناء تسجيل الطلب:");
   return;
  }
- if(q.includes("واتساب")||q.includes("تواصل")||q.includes("خدمه العملاء")){
-  const bubble=assistantBubble("فريق أحمدكو جاهز لاستقبال استفسارك حسب التوفر.");
-  assistantLink(bubble,"التواصل عبر واتساب","https://wa.me/972598407547");
+ if(has("تتبع","طلباتي","حاله الطلب","وين طلبي","وصل طلبي")){
+  const b=assistantBubble("أكيد، خلينا نساعدك تتابع طلبك 📦\nافتح صفحة طلباتي وأدخل رقم الهاتف المستخدم عند إنشاء الطلب. إذا ما ظهر الطلب أو تأخر التحديث، تواصل معنا برقم الطلب ورقم هاتفك حتى نراجع الحالة.");
+  assistantLink(b,"فتح صفحة الطلبات والتتبع","customer.html");
+  assistantContact(b,"إذا احتجت مساعدة بالتتبع:");
   return;
  }
- if(q==="مطاعم"||q==="منيو"||q==="مطعم"||q==="وجبات"||q==="اكل"){
-  const list=stores.filter(s=>s&&s.store_name).slice(0,7);
-  const bubble=assistantBubble(list.length?"هذه بعض المطاعم والمتاجر المتاحة في كتالوج أحمدكو:":"جارٍ تحميل قائمة المطاعم. جرّب بعد لحظات.");
-  list.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+ if(has("سعر","الاسعار","كم التوصيل","اجرة","الأجرة","التكلفه","بكم","رسوم")){
+  const b=assistantBubble("أجرة التوصيل بتعتمد على منطقة الاستلام ومنطقة التسليم ووسيلة النقل، ومش كل المسارات إلها سعر ثابت حالياً. إذا ما كان السعر محدداً بالنظام، مكتب أحمدكو براجع الطلب وبيبلغك بالأجرة قبل التأكيد.\nابعث لنا المنطقتين ونوع التوصيل لنساعدك.");
+  assistantContact(b,"للتأكد من أجرة مشوارك:");
+  return;
+ }
+ if(has("سائق","مندوب","كابتن","اشتغل","وظيفه","انضم")){
+  const b=assistantBubble("يا أهلاً فيك، أحمدكو بترحب بالسائقين الراغبين بالانضمام لفريقها 🚴\nافتح بوابة السائقين وقدّم بياناتك، وفريقنا بتواصل معك لمراجعة الطلب حسب الحاجة والتوفر.");
+  assistantLink(b,"بوابة السائقين والتسجيل","driver.html");
+  assistantContact(b,"للاستفسار عن الانضمام:");
+  return;
+ }
+ if(has("مطعم","مطاعم","منيو","وجبات","اكل","أكل","الطعام","الطبيخ")){
+  const matches=assistantSearch(raw);
+  const list=matches.storeMatches.length?matches.storeMatches:stores.filter(s=>s&&s.store_name).slice(0,8);
+  const b=assistantBubble(list.length?"أكيد! هاي المطاعم والمتاجر الموجودة حالياً في كتالوج أحمدكو. اختار الاسم لعرض صفحته والمنيو إذا كان منشوراً:":"قاعدة المطاعم قيد التحميل حالياً. جرّب بعد لحظات أو تواصل معنا لنساعدك.");
+  list.forEach(s=>assistantAction(b,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  assistantContact(b,"إذا بتدور على مطعم مش ظاهر بالقائمة:");
+  return;
+ }
+ if(has("تاكسي","سياره","سيارة","مشوار","نقل ركاب","مواصلات","جيب","باص")){
+  const b=assistantBubble("أحمدكو بتنسّق خدمات النقل والمشاوير وتوفير المركبات حسب المنطقة والتوفر 🚗\nاحكيلنا من وين لوين، وعدد الركاب ونوع المركبة المطلوبة، حتى نراجع إمكانية توفير الخدمة.");
+  assistantContact(b,"لتنسيق مشوارك:");
+  return;
+ }
+ if(has("طرد","شحن","بضاعه","بضاعة","شحنه","شحنة","متجر","طلبات متجر")){
+  const b=assistantBubble("بنساعدك بتوصيل الطرود والبضائع وطلبات المتاجر حسب المنطقة وحجم الشحنة والتوفر 📦\nابعث نقطة الاستلام والتسليم ووصفاً مختصراً للشحنة، وبننسق معك التفاصيل.");
+  assistantContact(b,"لتنسيق شحنة أو طلب متجر:");
+  return;
+ }
+ if(has("شكوى","متاخر","متأخر","تأخير","مشكله","مشكلة","سيء","الغاء","إلغاء")){
+  const b=assistantBubble("حقك علينا، ومن المهم نتابع ملاحظتك. اكتب لنا رقم الطلب ورقم الهاتف ووصف المشكلة باختصار، وفريق أحمدكو يراجعها معك. لا ترسل أي رمز تحقق أو كلمة مرور.");
+  assistantContact(b,"لتقديم شكوى أو متابعة مشكلة:");
   return;
  }
  const {storeMatches,productMatches}=assistantSearch(raw);
  if(storeMatches.length||productMatches.length){
-  const bubble=assistantBubble("وجدت لك هذه النتائج. اختر مطعماً أو وجبة لعرضها في صفحة المطاعم:");
-  storeMatches.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
-  productMatches.forEach(p=>assistantAction(bubble,p.name,()=>{searchBox.value=p.name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  const b=assistantBubble("لقيت نتائج ممكن تكون اللي بتدور عليها 😊 اختار المطعم أو الوجبة، وبفتحلك مكانها في قائمة أحمدكو:");
+  storeMatches.forEach(s=>assistantAction(b,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  productMatches.forEach(p=>assistantAction(b,p.name,()=>{searchBox.value=p.name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  assistantContact(b,"إذا قصدك شيء ثاني أو بدك مساعدة بالطلب:");
   return;
  }
- const bubble=assistantBubble("لم أجد نتيجة مطابقة في الكتالوج الحالي. جرّب كتابة اسم المطعم أو الوجبة بشكل أقصر، أو تواصل مع أحمدكو مباشرة.");
- assistantLink(bubble,"مراسلة أحمدكو","https://wa.me/972598407547");
+ const b=assistantBubble("أكيد، أنا معك وبحاول أساعدك 💛\nممكن توضحلي أكثر شو بتحتاج؟ مثلاً: طلب توصيل، مطعم أو وجبة، سعر مشوار، تتبع طلب، شحن طرد، أو الانضمام كسائق. وإذا بتحب تحكي مع موظف أحمدكو مباشرة، رقمنا 0598407547.");
+ assistantContact(b,"موظفونا جاهزون لمساعدتك عبر:");
 }
 function sendAssistantQuery(value){
  const query=String(value||"").trim();if(!query)return;
