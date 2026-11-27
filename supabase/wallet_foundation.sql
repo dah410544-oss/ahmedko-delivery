@@ -107,7 +107,7 @@ create policy wallet_accounts_admin_read on public.wallet_accounts
 
 drop policy if exists wallet_methods_read_active on public.wallet_payment_methods;
 create policy wallet_methods_read_active on public.wallet_payment_methods
-  for select to anon, authenticated using (is_active or (select auth.uid()) is not null and public.is_admin());
+  for select to authenticated using (is_active or public.is_admin());
 drop policy if exists wallet_methods_admin_manage on public.wallet_payment_methods;
 create policy wallet_methods_admin_manage on public.wallet_payment_methods
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
@@ -252,4 +252,3 @@ grant execute on function public.wallet_review_topup(uuid,boolean,text) to authe
 
 grant select on public.wallet_accounts, public.wallet_payment_methods,
   public.wallet_topup_requests, public.wallet_transactions to authenticated;
-grant select on public.wallet_payment_methods to anon;
