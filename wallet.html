@@ -59,8 +59,12 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
    <div><label for="amount">المبلغ (₪)</label><input id="amount" required type="number" min="1" max="50000" step="0.01" placeholder="مثال: 50"></div>
   </div>
   <label for="reference">رقم مرجع التحويل</label><input id="reference" maxlength="100" placeholder="أدخل رقم العملية كما يظهر في إيصال التحويل">
+  <label for="receiptFile">إرفاق صورة أو PDF للإيصال (اختياري)</label>
+  <input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+  <p class="muted" id="receiptStatus" aria-live="polite">يمكنك إرفاق صورة أو ملف PDF حتى 5 ميغابايت. سيُحفظ على هذا الجهاز، ويمكن مشاركته مع واتساب.</p>
   <label for="note">ملاحظة (اختياري)</label><textarea id="note" rows="3" maxlength="400" placeholder="أي تفاصيل تساعد المكتب في مطابقة الحوالة"></textarea>
-  <button class="gold" type="submit" style="width:100%;margin-top:15px">إرسال طلب المراجعة عبر واتساب</button>
+  <button class="gold" type="submit" style="width:100%;margin-top:15px">حفظ الطلب وإرساله إلى واتساب</button>
+  <div class="notice" id="savedReceiptNotice" hidden aria-live="polite"></div>
  </form>
  <div class="notice security">تنبيه أمان: لا ترسل كلمة المرور أو رمز التحقق لأي شخص. لا تعتبر المحفظة مشحونة بمجرد إرسال الرسالة؛ يضاف الرصيد فقط بعد التحقق الفعلي واعتماد المكتب.</div>
  <div class="notice">حالياً هذه الصفحة تستقبل طلبات المراجعة اليدوية عبر واتساب فقط. لا تنشئ رصيداً داخل التطبيق ولا تنفذ خصماً أو تحويلاً تلقائياً حتى يكتمل تفعيل قاعدة المحفظة ومزود التحقق الهاتفي.</div>
@@ -70,13 +74,48 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 <script>
 "use strict";
 const form=document.getElementById("paymentForm");
+const receiptInput=document.getElementById("receiptFile");
+const receiptStatus=document.getElementById("receiptStatus");
+const savedReceiptNotice=document.getElementById("savedReceiptNotice");
+const MAX_RECEIPT=5*1024*1024;
+let selectedReceipt=null;
+receiptInput.addEventListener("change",()=>{
+ const file=receiptInput.files&&receiptInput.files[0];
+ selectedReceipt=null;
+ if(!file){receiptStatus.textContent="لم يتم اختيار ملف.";return;}
+ const allowed=["image/jpeg","image/png","image/webp","application/pdf"];
+ if(!allowed.includes(file.type)||file.size>MAX_RECEIPT){
+  receiptInput.value="";
+  receiptStatus.textContent="الملف غير مناسب. اختر JPG أو PNG أو WEBP أو PDF بحجم لا يتجاوز 5 ميغابايت.";
+  return;
+ }
+ selectedReceipt=file;
+ receiptStatus.textContent="تم اختيار: "+file.name+" — "+(file.size/1024/1024).toFixed(2)+" MB";
+});
+function openReceiptDB(){
+ return new Promise((resolve,reject)=>{
+  const request=indexedDB.open("ahmedko-wallet-local",1);
+  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains("topups"))db.createObjectStore("topups",{keyPath:"id"});};
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+async function saveLocalRequest(record){
+ const db=await openReceiptDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction("topups","readwrite");
+  tx.objectStore("topups").put(record);
+  tx.oncomplete=()=>{db.close();resolve();};
+  tx.onerror=()=>{db.close();reject(tx.error);};
+ });
+}
 document.querySelectorAll("[data-copy]").forEach(button=>button.addEventListener("click",async()=>{const value=button.dataset.copy;try{await navigator.clipboard.writeText(value);button.textContent="تم النسخ ✓";}catch(_){button.textContent=value;} }));
 const method=document.getElementById("paymentMethod");
 document.querySelectorAll("[data-method]").forEach(button=>button.addEventListener("click",()=>{
  method.value=button.dataset.method;
  document.getElementById("review").scrollIntoView({behavior:"smooth",block:"start"});
 }));
-form.addEventListener("submit",event=>{
+form.addEventListener("submit",async event=>{
  event.preventDefault();
  if(!form.reportValidity())return;
  const values={
