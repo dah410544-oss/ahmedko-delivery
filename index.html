@@ -1075,9 +1075,10 @@ function filterRestaurants(){
   catch(error){
    console.error("Ahmedko restaurant card error:",error);
    const card=document.createElement("article");card.className="store";
-   const title=document.createElement("h3");title.textContent=store.store_name||"مطعم أو متجر";
+   const title=document.createElement("button");title.type="button";title.className="store-title-button";title.textContent=store.store_name||"مطعم أو متجر";
    const detail=document.createElement("p");detail.className="meta";detail.textContent=store.address||"";
-   card.append(title,detail);grid.appendChild(card);
+   const open=document.createElement("button");open.type="button";open.className="small dark";open.textContent="عرض المنيو والتفاصيل";open.addEventListener("click",()=>openStoreDetails(store));
+   title.addEventListener("click",()=>openStoreDetails(store));card.append(title,detail,open);grid.appendChild(card);
   }
  });
  matchingProducts.forEach(product=>{
@@ -1085,7 +1086,9 @@ function filterRestaurants(){
   const card=document.createElement("article");card.className="product-result";
   const title=document.createElement("strong");title.textContent=product.name||"وجبة";
   const owner=document.createElement("span");owner.textContent=store?.store_name||"";
-  card.append(title,owner);grid.appendChild(card);
+  card.append(title,owner);
+  if(store){card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","فتح "+(store.store_name||"المطعم")+" والمنيو");card.addEventListener("click",()=>openStoreDetails(store));}
+  grid.appendChild(card);
  });
 }
 
