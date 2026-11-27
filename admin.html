@@ -244,6 +244,8 @@ footer{
 .workflow-status{font-size:12px;margin-top:8px;line-height:1.7}
 @media(max-width:600px){.workflow-grid{grid-template-columns:1fr}}
 
+
+#ahmedko-office-toast{position:fixed;top:12px;left:12px;right:12px;z-index:100000;max-width:520px;margin:auto;background:#071a35;color:#fff;border:2px solid #f5c542;border-radius:14px;padding:14px 16px;box-shadow:0 12px 35px #0005;display:none}#ahmedko-office-toast.show{display:block;animation:ahmedkoToastIn .2s ease-out}#ahmedko-office-toast strong{display:block;color:#f5c542;margin-bottom:3px}#ahmedko-office-toast small{color:#e2e8f0}@keyframes ahmedkoToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 
@@ -255,11 +257,12 @@ footer{
   <small>نظام إدارة الخدمات اللوجستية</small>
  </div>
  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-  <small id="account-label">إدارة المكتب</small>
+  <small id="account-label">إدارة المكتب</small><button id="enable-office-alerts" type="button" style="background:#f5c542;color:#081a35;border:0;border-radius:9px;padding:9px 12px;font-weight:bold;cursor:pointer">🔔 تفعيل إشعارات المكتب</button><small id="office-alert-state" aria-live="polite">التنبيهات غير مفعّلة</small>
   <a href="./index.html" style="display:inline-block;background:#f5c542;color:#081a35;text-decoration:none;font-weight:bold;padding:9px 12px;border-radius:9px;font-size:13px">العودة للموقع الرئيسي ←</a>
  </div>
 </header>
 
+<div id="ahmedko-office-toast" role="status" aria-live="assertive"><strong id="ahmedko-office-toast-title">تنبيه أحمدكو</strong><small id="ahmedko-office-toast-body"></small></div>
 <section id="login-panel">
  <h2>دخول إدارة المكتب</h2>
  <p class="muted">سجل الدخول بحساب المدير المعتمد.</p>
@@ -541,6 +544,55 @@ let currentUser = null;
 let adminHistoryReady = false;
 let diagnostics = {};
 let tableData = {};
+let adminLiveChannel = null;
+let officeNotificationPermission = ("Notification" in window) ? Notification.permission : "unsupported";
+let officeToastTimer = null;
+
+function officeToast(title, body, url) {
+ const toast=$("ahmedko-office-toast");
+ if(toast){$("ahmedko-office-toast-title").textContent=title;$("ahmedko-office-toast-body").textContent=body;toast.classList.add("show");clearTimeout(officeToastTimer);officeToastTimer=setTimeout(()=>toast.classList.remove("show"),9000);}
+ if(officeNotificationPermission==="granted"){
+  const options={body,icon:"./icon.svg",badge:"./icon.svg",tag:"ahmedko-office-"+Date.now(),data:{url:url||"./admin.html#orders"},renotify:true,vibrate:[180,80,180]};
+  if("serviceWorker" in navigator){navigator.serviceWorker.getRegistration().then(reg=>reg?reg.showNotification(title,options):new Notification(title,options)).catch(()=>{});}
+  else {try{new Notification(title,options);}catch(_){}}
+ }
+}
+function handleOfficeRealtime(table,payload){
+ const row=payload.new||{};const old=payload.old||{};
+ if(table==="orders"){
+  if(payload.eventType==="INSERT") officeToast("📦 طلب جديد وصل إلى أحمدكو","طلب جديد من "+(row.customer_name||"زبون")+" — رقم الطلب "+String(row.id||"").slice(0,8),"./admin.html#orders");
+  else if(payload.eventType==="UPDATE"){
+   if(row.status!==old.status)officeToast("🔄 تحديث حالة طلب","الطلب "+String(row.id||"").slice(0,8)+" أصبح: "+(row.status||"—"),"./admin.html#orders");
+   else if(row.driver_id!==old.driver_id)officeToast("🛵 تم تغيير السائق","تم تحديث إسناد الطلب "+String(row.id||"").slice(0,8),"./admin.html#orders");
+   else if(row.delivery_price!==old.delivery_price)officeToast("💰 تحديث أجرة طلب","تم تحديث أجرة الطلب "+String(row.id||"").slice(0,8),"./admin.html#orders");
+  }
+ }else if(table==="drivers"&&payload.eventType==="INSERT"){
+  officeToast("🛵 طلب انضمام سائق جديد","وصل طلب انضمام من "+(row.full_name||"سائق جديد"),"./admin.html#drivers");
+ }else if(table==="store_orders"&&payload.eventType==="INSERT"){
+  officeToast("🏪 طلب مطعم جديد","وصل طلب جديد إلى أحد شركاء أحمدكو","./admin.html#stores");
+ }
+ refreshAdminData(true);
+}
+function startAdminRealtime(){
+ if(adminLiveChannel||!currentUser)return;
+ adminLiveChannel=db.channel("ahmedko-office-live")
+  .on("postgres_changes",{event:"*",schema:"public",table:"orders"},payload=>handleOfficeRealtime("orders",payload))
+  .on("postgres_changes",{event:"INSERT",schema:"public",table:"drivers"},payload=>handleOfficeRealtime("drivers",payload))
+  .on("postgres_changes",{event:"INSERT",schema:"public",table:"store_orders"},payload=>handleOfficeRealtime("store_orders",payload))
+  .subscribe(status=>{
+   const state=$("office-alert-state");
+   if(state&&status==="SUBSCRIBED")state.textContent="الاتصال الفوري بالمكتب نشط";
+   else if(state&&status==="CHANNEL_ERROR")state.textContent="يلزم تفعيل Realtime في قاعدة البيانات";
+   else if(state&&status==="TIMED_OUT")state.textContent="إعادة الاتصال بالتنبيهات...";
+  });
+}
+$("enable-office-alerts")?.addEventListener("click",async()=>{
+ if(!("Notification" in window)){ $("office-alert-state").textContent="هذا المتصفح لا يدعم إشعارات النظام.";return; }
+ try{officeNotificationPermission=await Notification.requestPermission();
+  $("office-alert-state").textContent=officeNotificationPermission==="granted"?"تم السماح بإشعارات النظام":"لم يتم السماح بالإشعارات";
+  if(officeNotificationPermission==="granted")officeToast("أحمدكو ديلفري","تم تفعيل إشعارات المكتب على هذا الجهاز.","./admin.html");
+ }catch(_){$("office-alert-state").textContent="تعذر تفعيل الإشعارات.";}
+});
 
 const tableConfig = {
  orders:{
@@ -1482,13 +1534,14 @@ async function refreshAdminData(silent=true){
   if(!silent) $("dashboard-message").innerHTML='<div class="error">تعذر تحديث بعض البيانات: '+escapeHTML(error.message)+'</div>';
  }finally{adminRefreshRunning=false;}
 }
-window.setInterval(()=>refreshAdminData(true),30000);
+window.setInterval(()=>refreshAdminData(true),10000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAdminData(true);});
 window.addEventListener("focus",()=>refreshAdminData(true));
 
 async function loadDashboard(){
  await verifyAdmin();
  showApp();
+ startAdminRealtime();
  const allowed=["home","orders","drivers","stores","menus","regions","rates","finance","announcements","diagnostics"];
  const initial=location.hash.replace(/^#/,"");
  showPage(allowed.includes(initial)?initial:"home",true);
