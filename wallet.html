@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071A35">
+<title>محفظتي | أحمدكو ديلفري</title>
+<style>
+:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--line:#dce3ed;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#17243a;font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+header{background:var(--navy);color:#fff;padding:16px 5%;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:900}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
+main{width:min(760px,94%);margin:22px auto}.hero{background:linear-gradient(125deg,#071A35,#173c68);color:white;border-radius:18px;padding:22px;margin-bottom:16px}
+.hero h1{margin:0 0 8px}.hero p{color:#dce5f0;margin:0;font-size:13px}
+.balance{font-size:36px;font-weight:900;color:var(--yellow);margin-top:12px;direction:ltr;text-align:right}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0}
+h2{font-size:17px;color:var(--navy);margin:0 0 8px}.muted{font-size:12px;color:var(--muted);margin:0 0 12px}
+label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;background:white}
+button{border:0;border-radius:10px;padding:12px 16px;background:var(--navy);color:white;font:inherit;font-weight:bold;cursor:pointer}
+button.yellow{background:var(--yellow);color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.full{width:100%;margin-top:12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.message{padding:11px;border-radius:9px;background:#edf2f8;font-size:13px;margin-top:12px;white-space:pre-wrap}.error{background:#fff0ef;color:#a93226}.success{background:#eaf8f1;color:#137a4a}
+.item{padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.item:last-child{border:0}
+.amount{font-weight:bold;direction:ltr;display:inline-block}.positive{color:#137a4a}.negative{color:#a93226}
+.pill{display:inline-block;border-radius:20px;background:#fff4cc;color:#725400;padding:2px 9px;font-size:11px}
+[hidden]{display:none!important}
+@media(max-width:520px){.row{grid-template-columns:1fr}.hero{padding:18px}.balance{font-size:30px}}
+</style>
+</head>
+<body>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span> · محفظتي</div><a href="./index.html">العودة للرئيسية ←</a></header>
+<main>
+<section class="hero"><h1>محفظة أحمدكو 💳</h1><p>رصيدك وحركاتك المالية في مكان واحد — العملة المعتمدة الشيكل ₪</p><div class="balance" id="balance">— ₪</div></section>
+<section class="panel" id="authPanel">
+<h2>الدخول إلى محفظتك</h2><p class="muted">تحتاج إلى التحقق من رقم هاتفك قبل عرض الرصيد أو تقديم طلب شحن.</p>
+<label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx">
+<button class="yellow full" id="sendOtp">إرسال رمز التحقق</button>
+<label for="otp">رمز التحقق</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="الرمز المرسل برسالة SMS">
+<button class="full" id="verifyOtp">تحقق وفتح المحفظة</button>
+<div class="message" id="authMessage" role="status">لن نعرض بيانات المحفظة إلا بعد نجاح التحقق.</div>
+</section>
+<section id="walletPanel" hidden>
+<section class="panel"><h2>طلب شحن الرصيد</h2><p class="muted">حوّل المبلغ إلى وسيلة الشحن التي تختارها، ثم أدخل مرجع التحويل. يبقى الطلب قيد المراجعة حتى تتحقق الإدارة من وصول المبلغ.</p>
+<form id="topupForm">
+<label for="method">وسيلة الشحن</label><select id="method" required><option value="">جارٍ تحميل وسائل الشحن...</option></select>
+<div id="methodInstructions" class="message">ستظهر تعليمات التحويل بعد اختيار الوسيلة.</div>
+<div class="row"><div><label for="amount">المبلغ بالشيكل</label><input id="amount" type="number" min="1" max="10000" step="0.01" required placeholder="مثلاً 50"></div><div><label for="reference">رقم/مرجع الحوالة</label><input id="reference" maxlength="120" required placeholder="رقم العملية"></div></div>
+<label for="note">ملاحظة (اختياري)</label><textarea id="note" maxlength="500" rows="2" placeholder="أي تفاصيل تساعد المكتب في المطابقة"></textarea>
+<button class="yellow full" id="submitTopup" type="submit">إرسال طلب الشحن للمراجعة</button>
+<div class="message" id="topupMessage" role="status">لا يتم إضافة أي مبلغ إلى الرصيد تلقائياً.</div>
+</form></section>
+<section class="panel"><h2>سجل الحركات</h2><div id="transactions" class="muted">جارٍ التحميل...</div></section>
+<section class="panel"><h2>طلبات الشحن</h2><div id="topups" class="muted">جارٍ التحميل...</div></section>
+<button id="signOut" class="full">تسجيل الخروج</button>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+const SUPABASE_URL="https://pqulzfhisidcatrakxsx.supabase.co";
+const SUPABASE_KEY="sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function message(id,text,type){$(id).textContent=text;$(id).className="message"+(type?" "+type:"");}
+function phoneE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("970")||d.startsWith("972"))return "+"+d;if(d.startsWith("0"))return "+970"+d.slice(1);if(d.startsWith("5"))return "+970"+d;return "+"+d;}
+function money(v){return Number(v||0).toLocaleString("ar-PS",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₪";}
+function statusName(s){return ({pending:"قيد مراجعة المكتب",approved:"تم اعتماد الشحن",rejected:"مرفوض"})[s]||s;}
+let methods=[];
+async function loadWallet(){
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError)throw authError;if(!user)throw new Error("انتهت الجلسة؛ سجّل الدخول مجدداً.");
+ const [account,tx,requests,methodRows]=await Promise.all([
+  db.from("wallet_accounts").select("balance,currency").eq("user_id",user.id).single(),
+  db.from("wallet_transactions").select("id,transaction_type,amount,balance_after,description,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(30),
+  db.from("wallet_topup_requests").select("id,amount,method_code,transfer_reference,status,review_note,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(20),
+  db.from("wallet_payment_methods").select("code,display_name,instructions,account_label").eq("is_active",true).order("sort_order")
+ ]);
+ for(const r of [account,tx,requests,methodRows])if(r.error)throw r.error;
+ $("balance").textContent=money(account.data.balance);
+ methods=methodRows.data||[];
+ $("method").innerHTML='<option value="">اختر وسيلة الشحن</option>'+methods.map(m=>'<option value="'+esc(m.code)+'">'+esc(m.display_name)+'</option>').join("");
+ $("method").onchange=()=>{const m=methods.find(x=>x.code===$("method").value);$("methodInstructions").textContent=m?(m.instructions||"يرجى التواصل مع مكتب أحمدكو للحصول على بيانات التحويل المعتمدة.")+(m.account_label?"\n"+m.account_label:""):"ستظهر تعليمات التحويل بعد اختيار الوسيلة.";};
+ $("transactions").innerHTML=tx.data.length?tx.data.map(x=>'<div class="item"><strong>'+esc(x.description||x.transaction_type)+'</strong><div><span class="amount '+(Number(x.amount)>=0?"positive":"negative")+'">'+(Number(x.amount)>0?"+":"")+money(x.amount)+'</span> · الرصيد بعد الحركة: '+money(x.balance_after)+'</div><small>'+new Date(x.created_at).toLocaleString("ar-PS")+'</small></div>').join():'لا توجد حركات مالية حتى الآن.';
+ $("topups").innerHTML=requests.data.length?requests.data.map(x=>'<div class="item"><strong>'+money(x.amount)+'</strong> · <span class="pill">'+statusName(x.status)+'</span><div>المرجع: '+esc(x.transfer_reference)+' · '+esc(x.method_code)+'</div><small>'+new Date(x.created_at).toLocaleString("ar-PS")+'</small>'+(x.review_note?'<div>'+esc(x.review_note)+'</div>':"")+'</div>').join():'لا توجد طلبات شحن حتى الآن.';
+ $("authPanel").hidden=true;$("walletPanel").hidden=false;
+}
+$("sendOtp").onclick=async()=>{const b=$("sendOtp");b.disabled=true;try{const {error}=await db.auth.signInWithOtp({phone:phoneE164($("phone").value)});if(error)throw error;message("authMessage","تم طلب إرسال الرمز. إذا ظهر خطأ إعداد مزود الهاتف في Supabase، يجب تفعيله قبل المتابعة.");}catch(e){message("authMessage","تعذر إرسال الرمز: "+e.message,"error");}finally{b.disabled=false;}};
+$("verifyOtp").onclick=async()=>{const b=$("verifyOtp");b.disabled=true;try{const {error}=await db.auth.verifyOtp({phone:phoneE164($("phone").value),token:$("otp").value.trim(),type:"sms"});if(error)throw error;await loadWallet();}catch(e){message("authMessage","تعذر التحقق أو تحميل المحفظة: "+e.message,"error");}finally{b.disabled=false;}};
+$("topupForm").onsubmit=async e=>{e.preventDefault();const b=$("submitTopup");b.disabled=true;try{const {data,error}=await db.rpc("wallet_create_topup_request",{p_amount:Number($("amount").value),p_method_code:$("method").value,p_transfer_reference:$("reference").value.trim(),p_customer_note:$("note").value.trim()});if(error)throw error;message("topupMessage","تم استلام طلب الشحن للمراجعة. رقم الطلب: "+data+". لن يتغير رصيدك قبل اعتماد الإدارة.","success");$("topupForm").reset();await loadWallet();}catch(err){message("topupMessage","تعذر إرسال طلب الشحن: "+err.message,"error");}finally{b.disabled=false;}};
+$("signOut").onclick=async()=>{await db.auth.signOut();$("walletPanel").hidden=true;$("authPanel").hidden=false;$("balance").textContent="— ₪";};
+db.auth.getSession().then(({data})=>{if(data.session)loadWallet().catch(e=>message("authMessage","تعذر تحميل المحفظة: "+e.message,"error"));});
+</script>
+</body></html>
