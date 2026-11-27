@@ -210,7 +210,7 @@ private fun MainTabs(onLogout: () -> Unit) {
         bottomBar = {
             NavigationBar(containerColor = Blue, contentColor = Color.White) {
                 NavigationBarItem(selected == 0, { selected = 0 }, icon = { Icon(Icons.Default.Home, null) }, label = { Text("الرئيسية") })
-                NavigationBarItem(selected == 1, { selected = 1 }, icon = { Icon(Icons.AutoMirrored.Filled.ReceiptLong, null) }, label = { Text("طلباتي") })
+                NavigationBarItem(selected == 1, { selected = 1 }, icon = { Icon(Icons.Filled.ReceiptLong, null) }, label = { Text("طلباتي") })
                 NavigationBarItem(selected == 2, { selected = 2 }, icon = { Icon(Icons.Default.Wallet, null) }, label = { Text("المحفظة") })
                 NavigationBarItem(selected == 3, { selected = 3 }, icon = { Icon(Icons.Default.AccountCircle, null) }, label = { Text("حسابي") })
             }
