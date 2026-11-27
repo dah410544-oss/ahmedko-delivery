@@ -64,6 +64,8 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <div class="otp-row"><input id="trackingPhone" maxlength="20" required inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx"><button id="sendOtp" type="submit" class="yellow">إرسال رمز التحقق</button></div>
 <label for="otpCode">رمز SMS</label><input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="أدخل الرمز الذي وصلك">
 <button id="verifyOtp" class="full" type="button">تحقق واعرض طلباتي</button>
+<button id="enable-order-notifications" class="full" type="button" style="background:#102849;margin-top:8px">🔔 تفعيل إشعارات حالة الطلب</button>
+<p id="order-notification-state" class="muted" aria-live="polite">يمكنك تفعيل تنبيهات وصول الطلب وتغيّر حالته على هذا الجهاز.</p>
 <div id="trackingMessage" class="message" role="status" aria-live="polite">لن تظهر الطلبات إلا بعد نجاح التحقق من ملكية رقم الهاتف.</div>
 </form>
 <div id="ordersList" class="orders" aria-live="polite"></div>
@@ -138,6 +140,20 @@ $("orderForm").addEventListener("submit",async event=>{
  }finally{button.disabled=false;}
 });
 let customerTrackingVerified=false,customerOrdersLoading=false;
+let previousCustomerOrderStates=null;
+let customerNotificationPermission=("Notification" in window)?Notification.permission:"unsupported";
+async function notifyCustomerOrder(title,body,orderId){
+ if(customerNotificationPermission!=="granted")return;
+ const options={body,icon:"./icon.svg",badge:"./icon.svg",tag:"ahmedko-order-"+orderId,renotify:true,vibrate:[150,70,150],data:{url:"./customer.html"}};
+ try{if("serviceWorker" in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg)await reg.showNotification(title,options);else new Notification(title,options);}else new Notification(title,options);}catch(_){ }
+}
+$("enable-order-notifications")?.addEventListener("click",async()=>{
+ if(!("Notification" in window)){ $("order-notification-state").textContent="هذا المتصفح لا يدعم إشعارات النظام.";return; }
+ try{customerNotificationPermission=await Notification.requestPermission();
+  $("order-notification-state").textContent=customerNotificationPermission==="granted"?"تم تفعيل إشعارات طلباتك على هذا الجهاز.":"لم يتم السماح بالإشعارات. يمكنك تفعيلها من إعدادات المتصفح.";
+  if(customerNotificationPermission==="granted")await notifyCustomerOrder("أحمدكو ديلفري","سننبهك عند تغيّر حالة طلبك.","welcome");
+ }catch(_){$("order-notification-state").textContent="تعذر تفعيل الإشعارات.";}
+});
 async function loadCustomerOrders(silent=true){
  if(!customerTrackingVerified||customerOrdersLoading||document.hidden)return;
  customerOrdersLoading=true;
@@ -145,6 +161,18 @@ async function loadCustomerOrders(silent=true){
   const result=await db.rpc("get_my_customer_orders");
   if(result.error)throw result.error;
   const orders=result.data||[];
+  const currentStates=new Map(orders.map(order=>[String(order.order_id),String(order.status||"")]));
+  if(previousCustomerOrderStates){
+   for(const order of orders){
+    const key=String(order.order_id),oldStatus=previousCustomerOrderStates.get(key),newStatus=String(order.status||"");
+    if(oldStatus&&oldStatus!==newStatus){
+     const label=statusNames[newStatus]||newStatus;
+     await notifyCustomerOrder("تحديث طلبك من أحمدكو 💙💛","طلبك رقم "+key.slice(0,8)+" — "+label,key);
+     setMessage("trackingMessage","تحديث جديد لطلبك: "+label,"success");
+    }
+   }
+  }
+  previousCustomerOrderStates=currentStates;
   $("ordersList").innerHTML="";
   if(!orders.length){
    $("ordersList").innerHTML='<div class="message">لا توجد طلبات مسجلة بهذا الرقم حالياً.</div>';
@@ -160,7 +188,7 @@ async function loadCustomerOrders(silent=true){
   if(!silent)setMessage("trackingMessage","تعذر تحديث الطلبات: "+(error.message||"خطأ غير معروف."),"error");
  }finally{customerOrdersLoading=false;}
 }
-window.setInterval(()=>loadCustomerOrders(true),20000);
+window.setInterval(()=>loadCustomerOrders(true),8000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadCustomerOrders(true);});
 
 $("otpForm").addEventListener("submit",async event=>{
