@@ -23,5 +23,8 @@ begin
       execute format('alter publication supabase_realtime add table %s', target);
       raise notice 'Added public.% to supabase_realtime', table_name;
     end if;
+    if target is not null then
+      execute format('alter table %s replica identity full', target);
+    end if;
   end loop;
 end $$;
