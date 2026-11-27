@@ -126,8 +126,29 @@ form.addEventListener("submit",async event=>{
   reference:document.getElementById("reference").value.trim()||"لم يُدخل",
   note:document.getElementById("note").value.trim()||"لا توجد"
  };
- const message="مرحباً أحمدكو، أطلب مراجعة تحويل يدوي للمحفظة.\nالاسم: "+values.name+"\nرقم هاتفي: "+values.phone+"\nوسيلة الدفع: "+values.method+"\nالمبلغ: "+values.amount+" ₪\nمرجع التحويل: "+values.reference+"\nملاحظة: "+values.note+"\nأرجو التحقق من وصول الحوالة وإفادتي قبل اعتماد الرصيد.";
+ const message="مرحباً أحمدكو، أطلب مراجعة تحويل يدوي للمحفظة.\nالاسم: "+values.name+"\nرقم هاتفي: "+values.phone+"\nوسيلة الدفع: "+values.method+"\nالمبلغ: "+values.amount+" ₪\nمرجع التحويل: "+values.reference+"\nمرفق إيصال التحويل إن أمكن.\nملاحظة: "+values.note+"\nأرجو التحقق من وصول الحوالة وإفادتي قبل اعتماد الرصيد.";
+ const record={id:"local-"+Date.now(),createdAt:new Date().toISOString(),...values,status:"بانتظار مراجعة المكتب",receipt:selectedReceipt||null};
+ try{
+  await saveLocalRequest(record);
+  savedReceiptNotice.hidden=false;
+  savedReceiptNotice.textContent="تم حفظ طلبك"+(selectedReceipt?" والإيصال":"")+" داخل هذا التطبيق على هذا الجهاز. احتفظ بنسخة من الإيصال حتى يؤكد المكتب الاستلام.";
+ }catch(error){
+  savedReceiptNotice.hidden=false;
+  savedReceiptNotice.textContent="تعذر الحفظ المحلي على هذا الجهاز. سنحاول فتح واتساب لإرسال بيانات الطلب.";
+ }
  const url="https://wa.me/972598407547?text="+encodeURIComponent(message);
+ if(selectedReceipt && navigator.canShare && navigator.share && navigator.canShare({files:[selectedReceipt]})){
+  try{
+   await navigator.share({title:"إيصال تحويل أحمدكو",text:message,files:[selectedReceipt]});
+   return;
+  }catch(error){if(error&&error.name==="AbortError")return;}
+ }
+ if(selectedReceipt){
+  const downloadUrl=URL.createObjectURL(selectedReceipt);
+  const a=document.createElement("a");a.href=downloadUrl;a.download=selectedReceipt.name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(downloadUrl),60000);
+  alert("تم حفظ الإيصال على هذا الجهاز. أرفق الملف الذي تم تنزيله داخل محادثة واتساب بعد فتحها.");
+ }
  window.location.href=url;
 });
 </script>
