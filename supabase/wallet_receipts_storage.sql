@@ -26,6 +26,15 @@ to authenticated
 with check (
   bucket_id = 'wallet-receipts'
   and (storage.foldername(name))[1] = (select auth.uid())::text
+  and coalesce((storage.foldername(name))[2], '') <> ''
+  and coalesce((storage.foldername(name))[3], '') = ''
+  and exists (
+    select 1
+    from public.wallet_topup_requests r
+    where r.id::text = (storage.foldername(name))[2]
+      and r.user_id = (select auth.uid())
+      and r.status = 'pending'
+  )
 );
 
 drop policy if exists "wallet_receipts_read_own" on storage.objects;
@@ -64,6 +73,8 @@ begin
      or length(p_object_path) > 500
      or split_part(p_object_path, '/', 1) <> v_user_id::text
      or split_part(p_object_path, '/', 2) <> p_request_id::text
+     or split_part(p_object_path, '/', 3) = ''
+     or split_part(p_object_path, '/', 4) <> ''
      or position('..' in p_object_path) > 0 then
     raise exception 'مسار ملف الإيصال غير صالح';
   end if;
