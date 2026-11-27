@@ -194,6 +194,7 @@ private fun PhoneLoginScreen(onVerified: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainTabs(onLogout: () -> Unit) {
     var selected by remember { mutableIntStateOf(0) }
