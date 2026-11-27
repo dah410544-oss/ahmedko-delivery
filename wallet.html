@@ -5,32 +5,40 @@
 <meta name="theme-color" content="#071A35">
 <title>محفظتي | أحمدكو ديلفري</title>
 <style>
-:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--line:#dce3ed;--muted:#64748b}
-*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#17243a;font-family:Tahoma,Arial,sans-serif;line-height:1.7}
-header{background:var(--navy);color:#fff;padding:16px 5%;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-weight:900}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
-main{width:min(760px,94%);margin:22px auto}.hero{background:linear-gradient(125deg,#071A35,#173c68);color:white;border-radius:18px;padding:22px;margin-bottom:16px}
-.hero h1{margin:0 0 8px}.hero p{color:#dce5f0;margin:0;font-size:13px}
-.balance{font-size:36px;font-weight:900;color:var(--yellow);margin-top:12px;direction:ltr;text-align:right}
-.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0}
+:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--line:#e1e8f0;--muted:#64748b;--green:#16845b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef3f9 0,#f7f9fc 360px);color:#17243a;font-family:Tahoma,Arial,sans-serif;line-height:1.75}
+header{background:linear-gradient(110deg,#071A35,#15375f);color:#fff;padding:16px 5%;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 8px 26px #071a3520}
+.brand{font-weight:900;letter-spacing:.3px}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
+main{width:min(760px,94%);margin:24px auto 40px}.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 88% 8%,#ffffff22,transparent 34%),linear-gradient(125deg,#071A35,#173c68);color:white;border-radius:23px;padding:25px;margin-bottom:17px;box-shadow:0 16px 35px #071a3528}
+.hero:after{content:"✦";position:absolute;left:22px;top:5px;color:#f5c32b55;font-size:90px;line-height:1;pointer-events:none}
+.hero h1{position:relative;margin:0 0 8px;font-size:25px}.hero p{position:relative;color:#dce5f0;margin:0;font-size:13px;max-width:560px}
+.balance{position:relative;font-size:36px;font-weight:900;color:var(--yellow);margin-top:12px;direction:ltr;text-align:right}
+.trustline{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.trustline span{font-size:11px;color:#fff;background:#ffffff16;border:1px solid #ffffff30;border-radius:30px;padding:5px 10px}
+.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:19px;margin:14px 0;box-shadow:0 7px 22px #1028490b}
 h2{font-size:17px;color:var(--navy);margin:0 0 8px}.muted{font-size:12px;color:var(--muted);margin:0 0 12px}
 label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;background:white}
-button{border:0;border-radius:10px;padding:12px 16px;background:var(--navy);color:white;font:inherit;font-weight:bold;cursor:pointer}
-button.yellow{background:var(--yellow);color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.full{width:100%;margin-top:12px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:11px;font:inherit;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#d4a500;box-shadow:0 0 0 3px #f5c32b25}
+button{border:0;border-radius:11px;padding:12px 16px;background:var(--navy);color:white;font:inherit;font-weight:bold;cursor:pointer;transition:transform .15s,box-shadow .15s}
+button:hover{transform:translateY(-1px);box-shadow:0 7px 16px #071a3520}
+button.yellow{background:linear-gradient(120deg,#ffd95c,#f5c32b);color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.full{width:100%;margin-top:12px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.message{padding:11px;border-radius:9px;background:#edf2f8;font-size:13px;margin-top:12px;white-space:pre-wrap}.error{background:#fff0ef;color:#a93226}.success{background:#eaf8f1;color:#137a4a}
+.message{padding:13px;border:1px solid #dfe7f0;border-radius:12px;background:#f4f7fb;font-size:13px;margin-top:12px;white-space:pre-wrap;line-height:1.9}.error{background:#fff0ef;color:#a93226;border-color:#f3d1cc}.success{background:#eaf8f1;color:#137a4a;border-color:#c8ead8}
 .item{padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.item:last-child{border:0}
 .amount{font-weight:bold;direction:ltr;display:inline-block}.positive{color:#137a4a}.negative{color:#a93226}
 .pill{display:inline-block;border-radius:20px;background:#fff4cc;color:#725400;padding:2px 9px;font-size:11px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.step{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center;font-size:11px;color:#40516a}.step b{display:block;color:var(--navy);font-size:12px;margin-bottom:3px}.step i{font-style:normal;color:#b68a00;font-size:17px}
+.security-note{display:flex;gap:10px;align-items:flex-start;background:#f0f8f4;border:1px solid #d2eadc;border-radius:12px;padding:12px;color:#245b43;font-size:12px;margin-top:12px}
+footer{text-align:center;color:#718096;font-size:11px;padding:10px 0 22px}
 [hidden]{display:none!important}
-@media(max-width:520px){.row{grid-template-columns:1fr}.hero{padding:18px}.balance{font-size:30px}}
+@media(max-width:520px){.row{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}.balance{font-size:30px}.steps{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header><div class="brand">AHMEDKO <span>DELIVERY</span> · محفظتي</div><a href="./index.html">العودة للرئيسية ←</a></header>
 <main>
-<section class="hero"><h1>محفظة أحمدكو 💳</h1><p>رصيدك وحركاتك المالية في مكان واحد — العملة المعتمدة الشيكل ₪</p><div class="balance" id="balance">— ₪</div></section>
+<section class="hero"><h1>محفظتك مع أحمدكو 💳</h1><p>ادفع بسهولة، تابع رصيدك، واطلب التوصيل بثقة. كل معاملات المحفظة مسجلة ويمكنك مراجعتها من حسابك.</p><div class="balance" id="balance">— ₪</div><div class="trustline"><span>🔒 دخول برمز تحقق الهاتف</span><span>✓ مراجعة مالية قبل اعتماد الشحن</span><span>₪ الشيكل الإسرائيلي</span></div></section>
+<section class="panel"><h2>شحن رصيدك بخطوات بسيطة</h2><div class="steps"><div class="step"><i>①</i><b>اختر وسيلة الدفع</b>جوال باي أو بال باي أو البنك</div><div class="step"><i>②</i><b>حوّل وأرسل المرجع</b>احتفظ برقم العملية</div><div class="step"><i>③</i><b>تأكيد وإضافة الرصيد</b>بعد مراجعة المكتب</div></div><div class="security-note"><span>🛡️</span><span>حماية رصيدك أولوية: لا نطلب منك كلمة مرور محفظتك أو رمز OTP الخاص بخدمة الدفع. لا يُضاف الرصيد إلا بعد مطابقة الحوالة واعتمادها من الإدارة.</span></div></section>
 <section class="panel" id="authPanel">
 <h2>الدخول إلى محفظتك</h2><p class="muted">تحتاج إلى التحقق من رقم هاتفك قبل عرض الرصيد أو تقديم طلب شحن.</p>
 <label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx">
@@ -40,7 +48,7 @@ button.yellow{background:var(--yellow);color:var(--navy)}button:disabled{opacity
 <div class="message" id="authMessage" role="status">لن نعرض بيانات المحفظة إلا بعد نجاح التحقق.</div>
 </section>
 <section id="walletPanel" hidden>
-<section class="panel"><h2>طلب شحن الرصيد</h2><p class="muted">حوّل المبلغ إلى وسيلة الشحن التي تختارها، ثم أدخل مرجع التحويل. يبقى الطلب قيد المراجعة حتى تتحقق الإدارة من وصول المبلغ.</p>
+<section class="panel"><h2>اشحن محفظتك وابدأ الطلب</h2><p class="muted">اختر وسيلة الدفع المناسبة، وحوّل المبلغ إلى البيانات المعروضة، ثم سجّل مرجع الحوالة. سيظهر طلبك في سجل الشحن حتى يراجعه فريق أحمدكو.</p>
 <form id="topupForm">
 <label for="method">وسيلة الشحن</label><select id="method" required><option value="">جارٍ تحميل وسائل الشحن...</option></select>
 <div id="methodInstructions" class="message">ستظهر تعليمات التحويل بعد اختيار الوسيلة.</div>
@@ -53,6 +61,7 @@ button.yellow{background:var(--yellow);color:var(--navy)}button:disabled{opacity
 <section class="panel"><h2>طلبات الشحن</h2><div id="topups" class="muted">جارٍ التحميل...</div></section>
 <button id="signOut" class="full">تسجيل الخروج</button>
 </section>
+<footer>AHMEDKO DELIVERY · دفع واضح ومراجعة موثوقة · جميع المبالغ بالشيكل ₪</footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
