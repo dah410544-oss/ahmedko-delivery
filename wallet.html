@@ -19,7 +19,7 @@ main{width:min(900px,94%);margin:22px auto 42px}
 .section-title{margin:25px 0 10px;color:var(--navy);font-size:19px}
 .methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .method,.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 7px 22px #1028490b}
-.method .symbol{font-size:28px}.method h3{margin:6px 0;color:var(--navy);font-size:17px}.method p{font-size:12px;color:var(--muted);min-height:48px;margin:0 0 10px}
+.method .symbol{font-size:28px}.pay-detail{display:block;margin:8px 0;color:#102849;font-size:14px;overflow-wrap:anywhere}.copy-payment{margin-top:7px;width:100%;font-size:12px}.method h3{margin:6px 0;color:var(--navy);font-size:17px}.method p{font-size:12px;color:var(--muted);min-height:48px;margin:0 0 10px}
 button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:11px;padding:11px 14px;background:var(--navy);color:#fff;font:inherit;font-weight:bold;text-decoration:none;cursor:pointer}
 button.gold,.btn.gold{background:var(--gold);color:var(--navy)}button:disabled{opacity:.6}
 .panel{margin-top:15px}.panel h2{font-size:18px;color:var(--navy);margin:0 0 5px}.muted{color:var(--muted);font-size:12px;margin:0 0 12px}
@@ -43,10 +43,11 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 </section>
 <h2 class="section-title">اختر وسيلة الدفع</h2>
 <div class="methods">
- <article class="method"><div class="symbol">📱</div><h3>جوال باي</h3><p>اطلب بيانات التحويل المعتمدة من مكتب أحمدكو قبل إرسال المبلغ.</p><button class="gold" type="button" data-method="جوال باي">طلب بيانات التحويل</button></article>
- <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>تحويل يدوي، ثم إرسال مرجع العملية للمراجعة والتأكيد.</p><button class="gold" type="button" data-method="PalPay">طلب بيانات التحويل</button></article>
- <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>تحويل بنكي بعد استلام بيانات المستفيد المؤكدة من المكتب.</p><button class="gold" type="button" data-method="تحويل بنكي – بنك فلسطين">طلب بيانات التحويل</button></article>
+ <article class="method"><div class="symbol">📱</div><h3>جوال باي</h3><p>رقم المحفظة المعتمد لاستقبال التحويلات.</p><strong class="pay-detail" dir="ltr">0598407547</strong><button class="gold copy-payment" type="button" data-copy="0598407547">نسخ الرقم</button></article>
+ <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>رقم الحساب/المحفظة لاستقبال التحويلات.</p><strong class="pay-detail" dir="ltr">0598407547</strong><button class="gold copy-payment" type="button" data-copy="0598407547">نسخ الرقم</button></article>
+ <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>تحويل بنكي إلى الحساب التالي.</p><strong class="pay-detail">رقم الحساب: 570183</strong><strong class="pay-detail" dir="ltr">PS06PALS045105701830993000000</strong><button class="gold copy-payment" type="button" data-copy="PS06PALS045105701830993000000">نسخ IBAN</button></article>
 </div>
+<div class="notice">اسم المستفيد المعتمد للعرض: <strong>أحمد سمير الدحبور</strong>. يرجى مطابقة اسم المستفيد وبيانات الحساب مع مستند البنك قبل التحويل. رقم التواصل للمحافظ: 0598407547.</div>
 <section class="panel" id="review">
  <h2>إرسال طلب مراجعة تحويل</h2>
  <p class="muted">املأ التفاصيل بعد تنفيذ التحويل. ستفتح رسالة واتساب جاهزة للمكتب؛ يجب إرسالها بنفسك، ثم ينتظر الطلب التحقق اليدوي.</p>
@@ -69,6 +70,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 <script>
 "use strict";
 const form=document.getElementById("paymentForm");
+document.querySelectorAll("[data-copy]").forEach(button=>button.addEventListener("click",async()=>{const value=button.dataset.copy;try{await navigator.clipboard.writeText(value);button.textContent="تم النسخ ✓";}catch(_){button.textContent=value;} }));
 const method=document.getElementById("paymentMethod");
 document.querySelectorAll("[data-method]").forEach(button=>button.addEventListener("click",()=>{
  method.value=button.dataset.method;
