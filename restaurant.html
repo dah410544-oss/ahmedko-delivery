@@ -33,7 +33,7 @@ button{border:0;border-radius:9px;padding:11px 14px;background:var(--navy);color
 <section id="dashboard" hidden>
 <div class="panel">
 <div class="toolbar"><div><h2 id="storeTitle">طلبات المطعم</h2><p class="muted" id="accountInfo"></p></div><div class="row"><select id="storeSelect" aria-label="اختيار المطعم"></select><button id="refresh" type="button">تحديث</button><button id="logout" class="danger" type="button">خروج</button></div></div>
-<div id="dashboardMessage" class="message">جارٍ تحميل الطلبات...</div>
+<div class="row" style="margin:10px 0"><button id="enable-store-notifications" type="button" class="primary">🔔 تفعيل إشعارات المطعم</button><span id="store-notification-state" class="muted" aria-live="polite">تنبيهات الطلبات الجديدة وتغيّر حالتها</span></div><div id="dashboardMessage" class="message">جارٍ تحميل الطلبات...</div>
 </div>
 <div class="panel"><div class="toolbar"><h2>الطلبات الواردة</h2><span class="muted" id="orderCount"></span></div><div id="orders"></div></div>
 </section>
@@ -48,7 +48,26 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
 const labels={pending:"بانتظار رد المطعم",accepted:"تم قبول الطلب",rejected:"مرفوض",preparing:"قيد التحضير",ready:"جاهز للتسليم",completed:"مكتمل",cancelled:"ملغي"};
 const next={pending:[["accepted","قبول الطلب"],["rejected","رفض الطلب"]],accepted:[["preparing","بدء التحضير"],["cancelled","إلغاء الطلب"]],preparing:[["ready","الطلب جاهز"]],ready:[["completed","تم التسليم للمندوب"]]};
-let stores=[],activeStore="",session=null,ordersLoading=false;
+let stores=[],activeStore="",session=null,ordersLoading=false,storeLiveChannel=null;
+let storeNotificationPermission=("Notification" in window)?Notification.permission:"unsupported";
+async function notifyStore(title,body,id){
+ if(storeNotificationPermission!=="granted")return;
+ const options={body,icon:"./icon.svg",badge:"./icon.svg",tag:"ahmedko-store-"+id,renotify:true,vibrate:[160,80,160],data:{url:"./restaurant.html"}};
+ try{const reg="serviceWorker" in navigator?await navigator.serviceWorker.getRegistration():null;if(reg)await reg.showNotification(title,options);else new Notification(title,options);}catch(_){ }
+}
+$("enable-store-notifications")?.addEventListener("click",async()=>{
+ if(!("Notification" in window)){ $("store-notification-state").textContent="هذا المتصفح لا يدعم إشعارات النظام.";return; }
+ try{storeNotificationPermission=await Notification.requestPermission();$("store-notification-state").textContent=storeNotificationPermission==="granted"?"تم تفعيل إشعارات المطعم.":"لم يتم السماح بالإشعارات.";if(storeNotificationPermission==="granted")await notifyStore("أحمدكو ديلفري","سننبهك عند وصول طلب جديد لمطعمك.","welcome");}catch(_){$("store-notification-state").textContent="تعذر تفعيل الإشعارات.";}
+});
+function startStoreRealtime(){
+ if(!activeStore||!session)return;
+ if(storeLiveChannel)db.removeChannel(storeLiveChannel);
+ storeLiveChannel=db.channel("ahmedko-store-"+activeStore).on("postgres_changes",{event:"*",schema:"public",table:"store_orders",filter:"store_id=eq."+activeStore},async payload=>{
+  const row=payload.new||{};
+  await notifyStore(payload.eventType==="INSERT"?"طلب جديد لمطعمك":"تحديث طلب المطعم",payload.eventType==="INSERT"?"وصل طلب جديد من خلال أحمدكو.":"تم تحديث حالة الطلب: "+(labels[row.status]||row.status||"تحديث"),row.id||"order");
+  loadOrders(true);
+ }).subscribe(status=>{if(status==="CHANNEL_ERROR")$("store-notification-state").textContent="التحديث الفوري غير متاح حالياً؛ يستمر التحديث الدوري.";});
+}
 function msg(id,text,type){$(id).textContent=text;$(id).className="message"+(type?" "+type:"");}
 function showLogin(){ $("login").hidden=false;$("dashboard").hidden=true;}
 async function loadStores(){
@@ -61,7 +80,7 @@ async function loadStores(){
  stores=data||[];
  if(!stores.length)throw new Error("لا يوجد متجر نشط مرتبط بحسابك.");
  $("storeSelect").innerHTML=stores.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.store_name)+'</option>').join("");
- activeStore=stores[0].id;$("storeTitle").textContent=stores[0].store_name;
+ activeStore=stores[0].id;$("storeTitle").textContent=stores[0].store_name;startStoreRealtime();
 }
 async function loadOrders(silent=false){
  if(!activeStore||ordersLoading)return;
@@ -109,9 +128,9 @@ $("loginForm").addEventListener("submit",async e=>{
  }catch(err){await db.auth.signOut();session=null;msg("loginMessage",err.message||"تعذر تسجيل الدخول.","error");}
  finally{$("loginButton").disabled=false;}
 });
-$("storeSelect").addEventListener("change",async()=>{activeStore=$("storeSelect").value;const s=stores.find(x=>x.id===activeStore);$("storeTitle").textContent=s?.store_name||"طلبات المطعم";await refreshAll();});
+$("storeSelect").addEventListener("change",async()=>{activeStore=$("storeSelect").value;startStoreRealtime();const s=stores.find(x=>x.id===activeStore);$("storeTitle").textContent=s?.store_name||"طلبات المطعم";await refreshAll();});
 $("refresh").addEventListener("click",refreshAll);
-$("logout").addEventListener("click",async()=>{await db.auth.signOut();session=null;showLogin();});
+$("logout").addEventListener("click",async()=>{await db.auth.signOut();session=null;if(storeLiveChannel){db.removeChannel(storeLiveChannel);storeLiveChannel=null;}showLogin();});
 window.setInterval(()=>refreshAll(true),20000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAll(true);});
 $("orders").addEventListener("click",async e=>{
