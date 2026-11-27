@@ -330,9 +330,8 @@ body.store-modal-open{overflow:hidden}
 </section>
 <section id="market">
  <div class="heading"><h2>المطاعم والمتاجر والمنيو</h2><p>بيانات من قاعدة أحمدكو وأماكن تم التحقق من معلوماتها قبل عرضها.</p></div>
- <form id="storeSearchForm" class="toolbar restaurant-search-toolbar" role="search"><input id="storeSearch" class="search" type="search" list="restaurantSuggestions" placeholder="🔎 اكتب اسم المطعم… مثل الرمال أو مهند أو شاورما" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><datalist id="restaurantSuggestions"></datalist><button id="submitStoreSearch" class="small yellow" type="submit" aria-label="تنفيذ البحث">بحث</button></form>
- <p class="search-hint">اكتب جزءاً من اسم المطعم أو اسم وجبتك، وستظهر النتائج مباشرة.</p>
- <div id="storeLiveSuggestions" class="live-suggestions" role="listbox" aria-label="اقتراحات البحث" aria-live="polite" hidden></div>
+ <form id="storeSearchForm" class="toolbar restaurant-search-toolbar" role="search"><input id="storeSearch" class="search" type="search" placeholder="🔎 اكتب اسم المطعم أو المتجر…" aria-label="ابحث باسم المطعم أو المتجر أو الوجبة" autocomplete="off" enterkeyhint="search"><button id="submitStoreSearch" class="small yellow" type="submit" aria-label="تنفيذ البحث">بحث</button></form>
+ <p class="search-hint">اكتب الاسم ثم اضغط «بحث». اضغط على بطاقة المطعم لفتح تفاصيله والمنيو.</p>
  <div id="storeStatus" class="notice" role="status">جارٍ تحميل بيانات المطاعم والمتاجر…</div>
  <div id="storeGrid" class="store-grid"></div>
 </section>
@@ -452,10 +451,8 @@ function runAhmedkoRestaurantSearch(){
    if(grid){
     grid.replaceChildren();
     matches.forEach(item=>{
-     const card=document.createElement("article");card.className="store";
-     const title=document.createElement("h3");title.textContent=item.store_name||"مطعم أو متجر";
-     const detail=document.createElement("p");detail.className="meta";detail.textContent=item.address||"";
-     card.append(title,detail);grid.appendChild(card);
+     try{grid.appendChild(storeCard(item));}
+     catch(_){const card=document.createElement("article");card.className="store";const title=document.createElement("h3");title.textContent=item.store_name||"مطعم أو متجر";const open=document.createElement("button");open.type="button";open.className="small dark";open.textContent="عرض التفاصيل والمنيو";open.addEventListener("click",()=>openStoreDetails(item));card.append(title,open);grid.appendChild(card);}
     });
    }
    if(statusBox){
@@ -468,8 +465,6 @@ function runAhmedkoRestaurantSearch(){
   }
  }
 }
-searchBox.addEventListener("input",runAhmedkoRestaurantSearch);
-searchBox.addEventListener("change",runAhmedkoRestaurantSearch);
 document.getElementById("storeSearchForm")?.addEventListener("submit",event=>{
  event.preventDefault();
  runAhmedkoRestaurantSearch();
@@ -771,7 +766,7 @@ function renderMenu(store,holder){
  const cats=categories.filter(c=>String(c.store_id)===String(store.id));
  const list=products.filter(p=>String(p.store_id)===String(store.id));
  holder.className="menu";
- if(!list.length){holder.innerHTML="<p>لا توجد منتجات أو أصناف منشورة لهذا المكان حالياً. تواصل معنا لطلب المساعدة.</p>";return;}
+ if(!list.length){holder.innerHTML="<div class=\"menu-empty\"><strong>المنيو غير منشور بعد</strong><p>لم يرفع هذا المطعم أصنافاً إلى كتالوج أحمدكو حتى الآن. يمكنك طلب المنيو من المكتب وسنساعدك.</p><a class=\"store-modal-action help\" target=\"_blank\" rel=\"noopener\" href=\"https://wa.me/972598407547?text="+encodeURIComponent("مرحباً أحمدكو، أريد منيو "+(store.store_name||"هذا المطعم"))+"\">اطلب المنيو عبر واتساب</a></div>";return;}
  let html="<h4>المنيو والمنتجات</h4>";const grouped=new Set();
  const isMuhannad=normalize(store.store_name).includes(normalize("مهند"));
  cats.forEach(c=>{
@@ -1002,7 +997,11 @@ function storeCard(store){
  const menuTag=storeHasMenu(store)?'<span class="menu-tag">📋 منيو متوفر</span>':'<span class="menu-tag no-menu">المنيو غير منشور</span>';
  card.innerHTML='<div class="ico">'+icon(store.store_type)+'</div><button type="button" class="store-title-button">'+esc(displayName)+'</button>'+menuTag+'<div class="meta">'+(store.address?"📍 "+esc(store.address)+"<br>":"📍 العنوان غير مضاف بعد<br>")+(store.phone?"📞 "+esc(store.phone)+"<br>":"📞 رقم التواصل غير منشور حالياً<br>")+'</div><div class="actions"><button type="button" class="small dark menuButton">فتح واجهة المطعم</button><a class="small yellow" href="'+waLink(store)+'" target="_blank" rel="noopener">اطلب عبر أحمدكو</a></div>';
  const open=()=>openStoreDetails(store);
+ card.setAttribute("role","button");card.setAttribute("tabindex","0");card.setAttribute("aria-label","فتح "+displayName+" وعرض المنيو والتفاصيل");
+ card.addEventListener("click",event=>{if(event.target.closest("a,button"))return;open();});
+ card.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&event.target===card){event.preventDefault();open();}});
  card.querySelector(".store-title-button").addEventListener("click",open);
+ card.querySelector(".menuButton").textContent="عرض المنيو والتفاصيل";
  card.querySelector(".menuButton").addEventListener("click",open);
  return card;
 }
@@ -1042,63 +1041,14 @@ function searchTextMatches(value,q,key){
  if(!tokens.length)return true;
  return tokens.every(token=>full.includes(token)||short.includes(token));
 }
-function updateRestaurantSuggestions(){
- const list=document.getElementById("restaurantSuggestions");
- if(!list)return;
- list.innerHTML=[...new Set(stores.map(s=>s.store_name).filter(Boolean))]
-  .sort((a,b)=>a.localeCompare(b,"ar"))
-  .map(name=>'<option value="'+esc(name)+'"></option>').join("");
-}
-function renderLiveSuggestions(raw){
- const panel=document.getElementById("storeLiveSuggestions");
- if(!panel)return;
- const value=String(raw||"").trim();
- if(!value){panel.hidden=true;panel.innerHTML="";return;}
- const q=normalize(value),key=restaurantSearchKey(value);
- const storeMatches=stores.filter(s=>searchTextMatches(
-  [s.store_name,s.store_type,s.address,s.contact_name,s.phone].filter(Boolean).join(" "),q,key
- )).slice(0,6);
- const productMatches=products.filter(p=>{
-  const category=categories.find(c=>String(c.id)===String(p.category_id));
-  const store=stores.find(x=>String(x.id)===String(p.store_id));
-  return searchTextMatches([p.name,p.description,category?.name,store?.store_name].filter(Boolean).join(" "),q,key);
- }).slice(0,5);
- const items=[
-  ...storeMatches.map(s=>({label:s.store_name,type:"مطعم / متجر"})),
-  ...productMatches.map(p=>({label:p.name,type:"وجبة / منتج"}))
- ].slice(0,8);
- panel.innerHTML="";
- if(!items.length){
-  panel.innerHTML='<div class="suggestion-empty">لا توجد اقتراحات مطابقة حتى الآن… أكمل الكتابة.</div>';
-  panel.hidden=false;return;
- }
- items.forEach(item=>{
-  const button=document.createElement("button");
-  button.type="button";button.setAttribute("role","option");
-  const label=document.createElement("span");label.textContent=item.label;
-  const type=document.createElement("small");type.textContent=item.type;
-  button.append(label,type);
-  button.addEventListener("click",()=>{
-   searchBox.value=item.label;
-   panel.hidden=true;
-   filterRestaurants();
-   grid.scrollIntoView({behavior:"smooth",block:"start"});
-  });
-  panel.appendChild(button);
- });
- panel.hidden=false;
-}
-
 function filterRestaurants(){
  const raw=String(searchBox?.value||"").trim();
- const panel=document.getElementById("storeLiveSuggestions");
  if(!Array.isArray(stores))stores=[];
  if(!Array.isArray(products))products=[];
  if(!Array.isArray(categories))categories=[];
  if(!grid||!statusBox)return;
- if(!raw){if(panel)panel.hidden=true;render(stores);return;}
+ if(!raw){render(stores);return;}
  const q=normalize(raw),key=restaurantSearchKey(raw);
- try{renderLiveSuggestions(raw);}catch(error){console.warn("Ahmedko suggestions skipped:",error);if(panel)panel.hidden=true;}
  const matchingStores=stores.filter(store=>{
   const searchable=[store?.store_name,store?.store_type,store?.address,store?.contact_name,store?.phone].filter(Boolean).join(" ");
   return searchTextMatches(searchable,q,key);
@@ -1115,13 +1065,11 @@ function filterRestaurants(){
  });
  grid.replaceChildren();
  if(!resultStores.length&&!matchingProducts.length){
-  if(panel)panel.hidden=true;
   setStatus("لم نعثر على مطعم أو وجبة بهذا الاسم. جرّب كلمة أقصر أو اكتب جزءاً من الاسم.");
   return;
  }
- if(panel)panel.hidden=true;
  statusBox.hidden=false;statusBox.className="notice";
- statusBox.textContent="نتائج البحث: "+resultStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة أو منتج.";
+ statusBox.textContent="تم العثور على "+resultStores.length+" مطعم/متجر و"+matchingProducts.length+" وجبة/منتج. اضغط على اسم المطعم أو بطاقته لفتح المنيو والتفاصيل.";
  menuFirst(resultStores).forEach(store=>{
   try{grid.appendChild(storeCard(store));}
   catch(error){
