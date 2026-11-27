@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071A35">
+<meta name="description" content="طرق الدفع وطلب مراجعة التحويلات ومحفظة أحمدكو ديلفري.">
+<title>المحفظة وطرق الدفع | أحمدكو ديلفري</title>
+<style>
+:root{--navy:#071A35;--blue:#102849;--blue2:#173c68;--gold:#F5C32B;--ink:#17243a;--muted:#64748b;--line:#dce4ef;--bg:#f2f5fa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+header{background:linear-gradient(115deg,var(--navy),var(--blue2));color:#fff;border-bottom:4px solid var(--gold);padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}header a{color:var(--gold);text-decoration:none;font-size:13px}
+main{width:min(900px,94%);margin:22px auto 42px}
+.hero{background:radial-gradient(circle at 8% 100%,#f5c32b24,transparent 35%),linear-gradient(130deg,var(--navy),var(--blue2));color:white;border-radius:22px;padding:24px;box-shadow:0 15px 34px #071a3522}
+.hero h1{margin:0 0 7px;font-size:25px}.hero p{margin:0;color:#dce7f5;font-size:13px}
+.balance{margin-top:18px;padding:15px;border:1px solid #ffffff2b;border-radius:15px;background:#ffffff12}
+.balance strong{display:block;color:var(--gold);font-size:22px}.balance small{color:#dce7f5}
+.section-title{margin:25px 0 10px;color:var(--navy);font-size:19px}
+.methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.method,.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 7px 22px #1028490b}
+.method .symbol{font-size:28px}.method h3{margin:6px 0;color:var(--navy);font-size:17px}.method p{font-size:12px;color:var(--muted);min-height:48px;margin:0 0 10px}
+button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:11px;padding:11px 14px;background:var(--navy);color:#fff;font:inherit;font-weight:bold;text-decoration:none;cursor:pointer}
+button.gold,.btn.gold{background:var(--gold);color:var(--navy)}button:disabled{opacity:.6}
+.panel{margin-top:15px}.panel h2{font-size:18px;color:var(--navy);margin:0 0 5px}.muted{color:var(--muted);font-size:12px;margin:0 0 12px}
+label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:11px;background:#fff;padding:12px;font:inherit;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid #f5c32b55;border-color:#c49a12}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.notice{margin-top:13px;padding:12px;border-radius:12px;background:#fff7da;border:1px solid #f1dda0;color:#654f12;font-size:12px}
+.security{background:#eef8f2;border:1px solid #cfe8d8;color:#245b43}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
+@media(max-width:650px){.methods{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="index.html">العودة إلى أحمدكو ←</a></header>
+<main>
+<section class="hero">
+ <h1>المحفظة وطرق الدفع 💳</h1>
+ <p>مركز موحد للاستفسار عن الدفع، وإرسال طلب مراجعة التحويل إلى مكتب أحمدكو.</p>
+ <div class="balance"><strong>محفظة أحمدكو</strong><small>تفعيل عرض الرصيد والحركات المالية ينتظر استكمال ربط قاعدة المحفظة والتحقق الآمن من رقم الهاتف. لا يظهر هنا رصيد تقديري أو غير مؤكد.</small></div>
+</section>
+<h2 class="section-title">اختر وسيلة الدفع</h2>
+<div class="methods">
+ <article class="method"><div class="symbol">📱</div><h3>جوال باي</h3><p>اطلب بيانات التحويل المعتمدة من مكتب أحمدكو قبل إرسال المبلغ.</p><button class="gold" type="button" data-method="جوال باي">طلب بيانات التحويل</button></article>
+ <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>تحويل يدوي، ثم إرسال مرجع العملية للمراجعة والتأكيد.</p><button class="gold" type="button" data-method="PalPay">طلب بيانات التحويل</button></article>
+ <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>تحويل بنكي بعد استلام بيانات المستفيد المؤكدة من المكتب.</p><button class="gold" type="button" data-method="تحويل بنكي – بنك فلسطين">طلب بيانات التحويل</button></article>
+</div>
+<section class="panel" id="review">
+ <h2>إرسال طلب مراجعة تحويل</h2>
+ <p class="muted">املأ التفاصيل بعد تنفيذ التحويل. ستفتح رسالة واتساب جاهزة للمكتب؛ يجب إرسالها بنفسك، ثم ينتظر الطلب التحقق اليدوي.</p>
+ <form id="paymentForm">
+  <div class="grid">
+   <div><label for="customerName">الاسم</label><input id="customerName" required maxlength="90" placeholder="اسمك"></div>
+   <div><label for="customerPhone">رقم هاتفك</label><input id="customerPhone" required inputmode="tel" maxlength="20" placeholder="05xxxxxxxx"></div>
+   <div><label for="paymentMethod">وسيلة الدفع</label><select id="paymentMethod" required><option value="">اختر الوسيلة</option><option>جوال باي</option><option>PalPay</option><option>تحويل بنكي – بنك فلسطين</option></select></div>
+   <div><label for="amount">المبلغ (₪)</label><input id="amount" required type="number" min="1" max="50000" step="0.01" placeholder="مثال: 50"></div>
+  </div>
+  <label for="reference">رقم مرجع التحويل</label><input id="reference" maxlength="100" placeholder="أدخل رقم العملية كما يظهر في إيصال التحويل">
+  <label for="note">ملاحظة (اختياري)</label><textarea id="note" rows="3" maxlength="400" placeholder="أي تفاصيل تساعد المكتب في مطابقة الحوالة"></textarea>
+  <button class="gold" type="submit" style="width:100%;margin-top:15px">إرسال طلب المراجعة عبر واتساب</button>
+ </form>
+ <div class="notice security">تنبيه أمان: لا ترسل كلمة المرور أو رمز التحقق لأي شخص. لا تعتبر المحفظة مشحونة بمجرد إرسال الرسالة؛ يضاف الرصيد فقط بعد التحقق الفعلي واعتماد المكتب.</div>
+ <div class="notice">حالياً هذه الصفحة تستقبل طلبات المراجعة اليدوية عبر واتساب فقط. لا تنشئ رصيداً داخل التطبيق ولا تنفذ خصماً أو تحويلاً تلقائياً حتى يكتمل تفعيل قاعدة المحفظة ومزود التحقق الهاتفي.</div>
+</section>
+</main>
+<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
+<script>
+"use strict";
+const form=document.getElementById("paymentForm");
+const method=document.getElementById("paymentMethod");
+document.querySelectorAll("[data-method]").forEach(button=>button.addEventListener("click",()=>{
+ method.value=button.dataset.method;
+ document.getElementById("review").scrollIntoView({behavior:"smooth",block:"start"});
+}));
+form.addEventListener("submit",event=>{
+ event.preventDefault();
+ if(!form.reportValidity())return;
+ const values={
+  name:document.getElementById("customerName").value.trim(),
+  phone:document.getElementById("customerPhone").value.trim(),
+  method:method.value,
+  amount:document.getElementById("amount").value,
+  reference:document.getElementById("reference").value.trim()||"لم يُدخل",
+  note:document.getElementById("note").value.trim()||"لا توجد"
+ };
+ const message="مرحباً أحمدكو، أطلب مراجعة تحويل يدوي للمحفظة.\nالاسم: "+values.name+"\nرقم هاتفي: "+values.phone+"\nوسيلة الدفع: "+values.method+"\nالمبلغ: "+values.amount+" ₪\nمرجع التحويل: "+values.reference+"\nملاحظة: "+values.note+"\nأرجو التحقق من وصول الحوالة وإفادتي قبل اعتماد الرصيد.";
+ const url="https://wa.me/972598407547?text="+encodeURIComponent(message);
+ window.location.href=url;
+});
+</script>
+</body>
+</html>
