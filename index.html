@@ -824,6 +824,7 @@ function drawCart(){
  const allPriced=shoppingCart.every(x=>x.price!==null);
  document.getElementById("cartTotal").textContent=(allPriced?"الإجمالي: ":"الإجمالي المبدئي: ")+money(total)+" ₪"+(allPriced?"":" — توجد أصناف تحتاج تأكيد السعر");
 }
+drawCart();
 document.addEventListener("click",e=>{
  const add=e.target.closest(".add-cart");
  if(add){
