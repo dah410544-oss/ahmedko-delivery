@@ -254,7 +254,7 @@ section{background:#f4f7fb}
 <header class="top">
  <div class="brand">AHMEDKO <span>DELIVERY</span></div>
  <button id="ahmedkoInstallBtn" class="small" type="button" aria-label="تثبيت تطبيق أحمدكو" style="cursor:pointer;white-space:nowrap;background:#F5C32B;color:#071A35;border:1px solid #ffdc65;box-shadow:0 5px 16px #f5c32b35">⬇ ثبّت تطبيق أحمدكو</button>
- <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
+ <nav class="nav" aria-label="التنقل"><a href="customer.html">طلب توصيل وتتبع</a><a href="wallet.html">محفظتي</a><a href="#services">خدماتنا</a><a href="#transport">النقل</a><a href="#market">المطاعم والمنيو</a><a href="driver.html">بوابة السائقين</a><a href="restaurant.html">بوابة المطاعم</a><a href="#contact">تواصل معنا</a></nav>
 </header>
 <div class="date-strip"><span class="today">اليوم في أحمدكو</span><span class="date-label" id="publicDate">جارٍ تحميل التاريخ…</span></div>
 <section id="publicAnnouncement" class="public-announcement" aria-live="polite"><h2 id="publicAnnouncementTitle"></h2><p id="publicAnnouncementText"></p></section>
@@ -322,6 +322,7 @@ section{background:#f4f7fb}
  <a href="#home"><span>⌂</span><small>الرئيسية</small></a>
  <a href="#market"><span>🍽️</span><small>المطاعم</small></a>
  <a href="customer.html"><span>📦</span><small>طلباتي</small></a>
+ <a href="wallet.html"><span>💳</span><small>محفظتي</small></a>
  <a href="#contact"><span>☎</span><small>تواصل</small></a>
 </nav>
 <div id="ahmedkoAssistantPanel" class="assistant-panel" aria-label="مساعد أحمدكو" hidden>
@@ -395,8 +396,8 @@ const statusBox = document.getElementById("storeStatus");
 const searchBox = document.getElementById("storeSearch");
 function runAhmedkoRestaurantSearch(){
  try{
-  if(typeof search!=="function")throw new Error("Search function unavailable");
-  search();
+  if(typeof filterRestaurants!=="function")throw new Error("Search function unavailable");
+  filterRestaurants();
  }catch(error){
   console.error("Ahmedko search error:",error);
   if(statusBox){statusBox.hidden=false;statusBox.className="notice error";statusBox.textContent="تعذر تنفيذ البحث. أعد تحميل الصفحة وحاول مرة أخرى.";}
@@ -950,7 +951,7 @@ function renderLiveSuggestions(raw){
   button.addEventListener("click",()=>{
    searchBox.value=item.label;
    panel.hidden=true;
-   search();
+   filterRestaurants();
    grid.scrollIntoView({behavior:"smooth",block:"start"});
   });
   panel.appendChild(button);
@@ -958,7 +959,7 @@ function renderLiveSuggestions(raw){
  panel.hidden=false;
 }
 
-function search(){
+function filterRestaurants(){
  const raw=String(searchBox?.value||"").trim();
  const panel=document.getElementById("storeLiveSuggestions");
  const q=normalize(raw),key=restaurantSearchKey(raw);
@@ -1083,7 +1084,7 @@ async function init(){
  const autoMenuStore=stores.find(s=>normalize(s.store_name).includes(normalize("أوتو"))||normalize(s.store_name).includes("o2"));
  if(autoMenuStore&&Array.isArray(window.AUTO_O2_MENU))mergeLocalMenu(autoMenuStore.id,window.AUTO_O2_MENU);
  updateRestaurantSuggestions();
- if(searchBox.value.trim())search();else render(stores);
+ if(searchBox.value.trim())filterRestaurants();else render(stores);
  if(results.some(r=>r.status==="rejected")&&stores.length)setStatus("تظهر المطاعم المتاحة. تعذر تحديث بعض البيانات من الخادم الآن؛ يمكنك البحث واستخدام البيانات المحفوظة.",true);
  else{setStatus("تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.");setTimeout(()=>{if(statusBox.textContent==="تم تحديث المطاعم والمنيو من قاعدة بيانات أحمدكو.")statusBox.hidden=true;},3500);}
  }finally{
@@ -1093,8 +1094,8 @@ async function init(){
 }
 
 
-searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();search();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
-searchBox.addEventListener("keydown",event=>{if(event.key==="Escape"){searchBox.value="";search();}});
+searchBox.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();filterRestaurants();grid.scrollIntoView({behavior:"smooth",block:"start"});}});
+searchBox.addEventListener("keydown",event=>{if(event.key==="Escape"){searchBox.value="";filterRestaurants();}});
 window.addEventListener("focus",()=>{if(Date.now()-lastCatalogRefresh>45000)init();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastCatalogRefresh>45000)init();});
 setInterval(()=>{if(!document.hidden)init();},45000);
@@ -1170,14 +1171,14 @@ function assistantReply(raw){
  if(q==="مطاعم"||q==="منيو"||q==="مطعم"||q==="وجبات"||q==="اكل"){
   const list=stores.filter(s=>s&&s.store_name).slice(0,7);
   const bubble=assistantBubble(list.length?"هذه بعض المطاعم والمتاجر المتاحة في كتالوج أحمدكو:":"جارٍ تحميل قائمة المطاعم. جرّب بعد لحظات.");
-  list.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  list.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
   return;
  }
  const {storeMatches,productMatches}=assistantSearch(raw);
  if(storeMatches.length||productMatches.length){
   const bubble=assistantBubble("وجدت لك هذه النتائج. اختر مطعماً أو وجبة لعرضها في صفحة المطاعم:");
-  storeMatches.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
-  productMatches.forEach(p=>assistantAction(bubble,p.name,()=>{searchBox.value=p.name;search();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  storeMatches.forEach(s=>assistantAction(bubble,s.store_name,()=>{searchBox.value=s.store_name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
+  productMatches.forEach(p=>assistantAction(bubble,p.name,()=>{searchBox.value=p.name;filterRestaurants();document.getElementById("market").scrollIntoView({behavior:"smooth"});assistantPanel.hidden=true;assistantToggle.setAttribute("aria-expanded","false");}));
   return;
  }
  const bubble=assistantBubble("لم أجد نتيجة مطابقة في الكتالوج الحالي. جرّب كتابة اسم المطعم أو الوجبة بشكل أقصر، أو تواصل مع أحمدكو مباشرة.");

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071A35">
+<title>محفظتي | أحمدكو ديلفري</title>
+<style>
+:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--line:#e1e8f0;--muted:#64748b;--green:#16845b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef3f9 0,#f7f9fc 360px);color:#17243a;font-family:Tahoma,Arial,sans-serif;line-height:1.75}
+header{background:linear-gradient(110deg,#071A35,#15375f);color:#fff;padding:16px 5%;border-bottom:4px solid var(--yellow);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 8px 26px #071a3520}
+.brand{font-weight:900;letter-spacing:.3px}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
+main{width:min(760px,94%);margin:24px auto 40px}.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 88% 8%,#ffffff22,transparent 34%),linear-gradient(125deg,#071A35,#173c68);color:white;border-radius:23px;padding:25px;margin-bottom:17px;box-shadow:0 16px 35px #071a3528}
+.hero:after{content:"✦";position:absolute;left:22px;top:5px;color:#f5c32b55;font-size:90px;line-height:1;pointer-events:none}
+.hero h1{position:relative;margin:0 0 8px;font-size:25px}.hero p{position:relative;color:#dce5f0;margin:0;font-size:13px;max-width:560px}
+.balance{position:relative;font-size:36px;font-weight:900;color:var(--yellow);margin-top:12px;direction:ltr;text-align:right}
+.trustline{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.trustline span{font-size:11px;color:#fff;background:#ffffff16;border:1px solid #ffffff30;border-radius:30px;padding:5px 10px}
+.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:19px;margin:14px 0;box-shadow:0 7px 22px #1028490b}
+h2{font-size:17px;color:var(--navy);margin:0 0 8px}.muted{font-size:12px;color:var(--muted);margin:0 0 12px}
+label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:11px;font:inherit;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#d4a500;box-shadow:0 0 0 3px #f5c32b25}
+button{border:0;border-radius:11px;padding:12px 16px;background:var(--navy);color:white;font:inherit;font-weight:bold;cursor:pointer;transition:transform .15s,box-shadow .15s}
+button:hover{transform:translateY(-1px);box-shadow:0 7px 16px #071a3520}
+button.yellow{background:linear-gradient(120deg,#ffd95c,#f5c32b);color:var(--navy)}button:disabled{opacity:.55;cursor:wait}.full{width:100%;margin-top:12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.message{padding:13px;border:1px solid #dfe7f0;border-radius:12px;background:#f4f7fb;font-size:13px;margin-top:12px;white-space:pre-wrap;line-height:1.9}.error{background:#fff0ef;color:#a93226;border-color:#f3d1cc}.success{background:#eaf8f1;color:#137a4a;border-color:#c8ead8}
+.item{padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.item:last-child{border:0}
+.amount{font-weight:bold;direction:ltr;display:inline-block}.positive{color:#137a4a}.negative{color:#a93226}
+.pill{display:inline-block;border-radius:20px;background:#fff4cc;color:#725400;padding:2px 9px;font-size:11px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.step{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center;font-size:11px;color:#40516a}.step b{display:block;color:var(--navy);font-size:12px;margin-bottom:3px}.step i{font-style:normal;color:#b68a00;font-size:17px}
+.security-note{display:flex;gap:10px;align-items:flex-start;background:#f0f8f4;border:1px solid #d2eadc;border-radius:12px;padding:12px;color:#245b43;font-size:12px;margin-top:12px}
+footer{text-align:center;color:#718096;font-size:11px;padding:10px 0 22px}
+[hidden]{display:none!important}
+@media(max-width:520px){.row{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}.balance{font-size:30px}.steps{grid-template-columns:1fr}}
+
+/* AHMEDKO premium payment experience */
+body{background:radial-gradient(ellipse at 90% 0%,#dce8f5 0,transparent 38%),linear-gradient(180deg,#f3f6fb 0,#fbfcfe 420px)}
+header{position:relative;padding:17px 5%;background:linear-gradient(115deg,#06152d 0%,#102849 58%,#1b416b 100%);border-bottom:3px solid var(--yellow)}
+.brand{font-size:15px;letter-spacing:.6px}
+main{width:min(790px,94%);margin:22px auto 42px}
+.hero{border:1px solid #ffffff24;border-radius:27px;padding:28px 26px 24px;background:radial-gradient(circle at 8% 100%,#f5c32b20,transparent 32%),radial-gradient(circle at 92% 0%,#6da2dc35,transparent 36%),linear-gradient(135deg,#06152d 0%,#102849 62%,#1a3b63 100%);box-shadow:0 22px 48px #071a3530}
+.hero h1{font-size:27px;letter-spacing:-.4px}
+.hero p{font-size:13px;line-height:2;color:#e1eaf5}
+.hero .balance{font-size:39px;text-shadow:0 4px 18px #f5c32b24;margin-top:16px}
+.trustline{gap:7px}
+.trustline span{background:#ffffff12;border-color:#ffffff26;padding:6px 11px}
+.panel{border:1px solid #e4eaf2;border-radius:19px;padding:20px;box-shadow:0 10px 28px #1028490a}
+h2{font-size:18px;letter-spacing:-.2px}
+.muted{line-height:1.9}
+.steps{gap:10px}
+.step{background:linear-gradient(180deg,#fff,#f7f9fc);padding:13px 10px;border-radius:14px}
+.step i{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#fff2c3;color:#765900;font-weight:900;margin-bottom:5px}
+button{border-radius:13px;min-height:46px}
+button.yellow{background:linear-gradient(115deg,#ffdf72,#f5c32b);box-shadow:0 8px 18px #d7a8002b}
+button.yellow:hover{box-shadow:0 11px 22px #d7a80040}
+input,select,textarea{border-color:#d8e1ec;border-radius:13px;min-height:47px}
+input:focus,select:focus,textarea:focus{border-color:#e0b51e;box-shadow:0 0 0 4px #f5c32b20}
+.message{border-radius:13px;line-height:1.95}
+.security-note{border-radius:14px;background:linear-gradient(110deg,#eff9f3,#f7fbf8);border-color:#d8eee0}
+.payment-readiness{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
+.payment-readiness .provider{border:1px solid #e3e9f1;border-radius:15px;padding:12px 9px;background:#fff;text-align:center;box-shadow:0 5px 16px #10284908}
+.payment-readiness .provider strong{display:block;color:var(--navy);font-size:12px;margin-bottom:4px}
+.payment-readiness .provider small{display:block;color:#7a8798;font-size:10px;line-height:1.6}
+.payment-readiness .provider em{display:inline-block;margin-top:6px;padding:3px 8px;border-radius:20px;background:#fff5d6;color:#806000;font-size:10px;font-style:normal}
+.section-kicker{font-size:11px;font-weight:800;letter-spacing:.5px;color:#a27a00;margin-bottom:5px}
+@media(max-width:520px){.payment-readiness{grid-template-columns:1fr}.hero{padding:22px 19px}.hero h1{font-size:23px}.hero .balance{font-size:33px}.steps{grid-template-columns:1fr}.panel{padding:17px}}
+
+
+/* Premium manual-transfer center */
+.transfer-hub{margin:16px 0 20px}.transfer-head{background:linear-gradient(125deg,#071a35,#153b66);color:#fff;border-radius:24px;padding:23px;box-shadow:0 18px 38px #071a3526;border:1px solid #ffffff20}.transfer-head .eyebrow{font-size:11px;letter-spacing:1px;color:#f5c32b;font-weight:900}.transfer-head h2{color:#fff;font-size:23px;margin:5px 0}.transfer-head p{color:#dce7f5;font-size:13px;margin:0;line-height:2}.transfer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:13px 0}.transfer-card{background:#fff;border:1px solid #e2e9f2;border-radius:19px;padding:16px 13px;box-shadow:0 9px 25px #1028490c;min-width:0}.transfer-card .symbol{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:#fff4cd;color:#775900;font-size:19px;margin-bottom:9px}.transfer-card h3{font-size:14px;color:#071a35;margin:0}.transfer-card p{font-size:11px;color:#738197;line-height:1.7;margin:3px 0 9px}.transfer-card .number{font-size:15px;font-weight:900;direction:ltr;text-align:right;color:#102849;overflow-wrap:anywhere}.transfer-card .subnumber{font-size:10px;color:#718096;direction:ltr;text-align:right;overflow-wrap:anywhere}.copy-mini{background:#f5c32b;color:#071a35;padding:8px 10px;min-height:37px;width:100%;font-size:11px;margin-top:10px}.transfer-contact{background:#fff;border:1px solid #e2e9f2;border-radius:19px;padding:17px;box-shadow:0 9px 25px #1028490c}.transfer-contact strong{color:#071a35}.contact-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.contact-actions a{display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;text-align:center;padding:12px;border-radius:12px;font-size:12px;font-weight:800}.contact-actions .wa{background:#e8f7ee;color:#176a43}.contact-actions .call{background:#071a35;color:#fff}.transfer-warning{margin-top:11px;background:#fff8e5;border:1px solid #f2df9d;border-radius:13px;padding:12px;color:#715b17;font-size:11px;line-height:1.9}#methodInstructions{white-space:pre-line}@media(max-width:600px){.transfer-grid{grid-template-columns:1fr}.transfer-card{display:grid;grid-template-columns:42px 1fr;column-gap:10px;align-items:center}.transfer-card .symbol{grid-row:1/4;margin:0}.transfer-card .copy-mini{grid-column:1/-1}.contact-actions{grid-template-columns:1fr}.transfer-head h2{font-size:21px}}
+
+
+.track-card{border:1px solid #e2e9f2;border-radius:16px;padding:14px;margin:10px 0;background:linear-gradient(145deg,#fff,#f8fafd);box-shadow:0 7px 20px #1028490a}
+.track-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.track-amount{font-size:20px;font-weight:900;color:#071a35}
+.track-meta{font-size:11px;color:#718096;margin-top:7px;line-height:1.9;overflow-wrap:anywhere}
+.track-state{display:inline-block;border-radius:30px;padding:5px 11px;font-size:11px;font-weight:800;background:#fff4cf;color:#775900}
+.track-state.approved{background:#e7f7ee;color:#176a43}.track-state.rejected{background:#fff0ef;color:#a93226}
+.track-progress{display:flex;align-items:center;gap:5px;margin-top:12px}
+.track-progress span{height:5px;flex:1;border-radius:9px;background:#e5eaf1}
+.track-progress.pending span:first-child{background:#f5c32b}
+.track-progress.approved span{background:#169b67}
+.track-progress.rejected span:first-child{background:#d65b50}
+.track-caption{font-size:10px;color:#77869a;margin-top:5px}
+</style>
+</head>
+<body>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span> · محفظتي</div><a href="./index.html">العودة للرئيسية ←</a></header>
+<main>
+<section class="hero"><div class="section-kicker" style="color:#f5c32b">AHMEDKO WALLET · PAY WITH CONFIDENCE</div><h1>محفظتك… راحتك في كل مشوار 💛</h1><p>اشحن رصيدك، تابع مصروفاتك، وادفع لخدمات أحمدكو من مكان واحد. نعرض لك كل خطوة بوضوح، ونحافظ على سجل معاملات يمكنك الرجوع إليه.</p><div class="balance" id="balance">— ₪</div><div class="trustline"><span>🔐 حماية الحساب برمز الهاتف</span><span>✓ سجل مالي واضح</span><span>₪ جميع الأرصدة بالشيكل</span></div></section>
+<section class="payment-readiness" aria-label="وسائل الدفع الجاري اعتمادها">
+<div class="provider"><strong>جوال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
+<div class="provider"><strong>بال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
+<div class="provider"><strong>بنك فلسطين</strong><small>طلب خدمات الدفع التلقائي قيد المتابعة</small><em>بانتظار الرد</em></div>
+</section>
+<section class="panel"><h2>شحن رصيدك بخطوات بسيطة</h2><div class="steps"><div class="step"><i>①</i><b>اختر وسيلة الدفع</b>جوال باي أو بال باي أو البنك</div><div class="step"><i>②</i><b>حوّل وأرسل المرجع</b>احتفظ برقم العملية</div><div class="step"><i>③</i><b>تأكيد وإضافة الرصيد</b>بعد مراجعة المكتب</div></div><div class="security-note"><span>🛡️</span><span>حماية رصيدك أولوية: لا نطلب منك كلمة مرور محفظتك أو رمز OTP الخاص بخدمة الدفع. لا يُضاف الرصيد إلا بعد مطابقة الحوالة واعتمادها من الإدارة.</span></div></section>
+
+<section class="transfer-hub" aria-label="مركز التحويل والمتابعة">
+ <div class="transfer-head"><div class="eyebrow">AHMEDKO · SECURE TRANSFER DESK</div><h2>حوّل بسهولة… وتابع أموالك بثقة 💛</h2><p>اختر وسيلة التحويل المناسبة، وتواصل مع مكتب أحمدكو لأي استفسار. نؤكد وصول المبلغ بعد التحقق الفعلي، ثم نحدّث حالة طلبك.</p></div>
+ <div class="transfer-grid">
+  <article class="transfer-card"><div class="symbol">◉</div><h3>جوال بي</h3><p>بيانات الاستلام تظهر بأمان بعد تسجيل الدخول إلى محفظتك.</p><div class="subnumber">تحويل يدوي ومراجعة فعلية من المكتب</div></article>
+  <article class="transfer-card"><div class="symbol">◆</div><h3>بال بي</h3><p>بيانات الاستلام تظهر بأمان بعد تسجيل الدخول إلى محفظتك.</p><div class="subnumber">تحويل يدوي ومراجعة فعلية من المكتب</div></article>
+  <article class="transfer-card"><div class="symbol">▤</div><h3>بنك فلسطين</h3><p>بيانات الحساب والآيبان تظهر للمستخدم المسجل فقط.</p><div class="subnumber">لا يُعتمد التحويل إلا بعد التحقق الفعلي</div></article>
+ </div>
+ <div class="transfer-contact"><strong>هل أتممت التحويل؟ فريق أحمدكو يساعدك في التأكد من وصوله.</strong><div class="muted">اتصل أو أرسل رسالة تتضمن اسمك ورقم الطلب ومرجع الحوالة. لا ترسل كلمة مرور أو رمز تحقق.</div><div class="contact-actions"><a class="wa" href="https://wa.me/970598407547?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A3%D8%AD%D9%85%D8%AF%D9%83%D9%88%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D9%85%D8%AA%D8%A7%D8%A8%D8%B9%D8%A9%20%D8%AD%D9%88%D8%A7%D9%84%D8%A9%20%D9%88%D8%A7%D9%84%D8%AA%D8%A3%D9%83%D8%AF%20%D9%85%D9%86%20%D9%88%D8%B5%D9%88%D9%84%D9%87%D8%A7." target="_blank" rel="noopener">◉ واتساب أحمدكو</a><a class="call" href="tel:0598407547">☎ اتصال مباشر 0598407547</a></div><div class="transfer-warning">مهم: عرض بيانات التحويل لا يعني أن المبلغ وصل. لا نؤكد الدفع ولا نضيف رصيداً إلا بعد التحقق من وصول المال فعلياً. التحويلات مؤقتة يدوية إلى حين استكمال اعتماد الربط الإلكتروني مع الجهات المختصة.</div></div>
+</section>
+<section class="panel" id="authPanel">
+<h2>الدخول إلى محفظتك</h2><p class="muted">تحتاج إلى التحقق من رقم هاتفك قبل عرض الرصيد أو تقديم طلب شحن.</p>
+<label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx">
+<button class="yellow full" id="sendOtp">إرسال رمز التحقق</button>
+<label for="otp">رمز التحقق</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="الرمز المرسل برسالة SMS">
+<button class="full" id="verifyOtp">تحقق وفتح المحفظة</button>
+<div class="message" id="authMessage" role="status">لن نعرض بيانات المحفظة إلا بعد نجاح التحقق.</div>
+</section>
+<section id="walletPanel" hidden>
+<section class="panel"><h2>اشحن محفظتك وابدأ الطلب</h2><p class="muted">اختر وسيلة الدفع المناسبة، وحوّل المبلغ إلى البيانات المعروضة، ثم سجّل مرجع الحوالة. سيظهر طلبك في سجل الشحن حتى يراجعه فريق أحمدكو.</p>
+<form id="topupForm">
+<label for="method">وسيلة الشحن</label><select id="method" required><option value="">جارٍ تحميل وسائل الشحن...</option></select>
+<div id="methodInstructions" class="message">ستظهر تعليمات التحويل بعد اختيار الوسيلة.</div>
+<div class="row"><div><label for="amount">المبلغ بالشيكل</label><input id="amount" type="number" min="1" max="10000" step="0.01" required placeholder="مثلاً 50"></div><div><label for="reference">رقم/مرجع الحوالة</label><input id="reference" maxlength="120" required placeholder="رقم العملية"></div></div>
+<label for="note">ملاحظة (اختياري)</label><textarea id="note" maxlength="500" rows="2" placeholder="أي تفاصيل تساعد المكتب في المطابقة"></textarea>
+<button class="yellow full" id="submitTopup" type="submit">إرسال طلب الشحن للمراجعة</button>
+<div class="message" id="topupMessage" role="status">لا يتم إضافة أي مبلغ إلى الرصيد تلقائياً.</div>
+</form></section>
+<section class="panel"><h2>سجل الحركات</h2><div id="transactions" class="muted">جارٍ التحميل...</div></section>
+<section class="panel"><h2>طلبات الشحن</h2><div id="topups" class="muted">جارٍ التحميل...</div></section>
+<button id="signOut" class="full">تسجيل الخروج</button>
+</section>
+<footer>AHMEDKO DELIVERY · دفع واضح ومراجعة موثوقة · جميع المبالغ بالشيكل ₪</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+const SUPABASE_URL="https://pqulzfhisidcatrakxsx.supabase.co";
+const SUPABASE_KEY="sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function message(id,text,type){$(id).textContent=text;$(id).className="message"+(type?" "+type:"");}
+function phoneE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("970")||d.startsWith("972"))return "+"+d;if(d.startsWith("0"))return "+970"+d.slice(1);if(d.startsWith("5"))return "+970"+d;return "+"+d;}
+function money(v){return Number(v||0).toLocaleString("ar-PS",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₪";}
+function statusName(s){return ({pending:"قيد مراجعة المكتب",approved:"تم اعتماد الشحن",rejected:"مرفوض"})[s]||s;}
+let methods=[];
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const value=b.getAttribute('data-copy');try{await navigator.clipboard.writeText(value);const old=b.textContent;b.textContent='تم النسخ ✓';setTimeout(()=>b.textContent=old,1600);}catch(_){b.textContent='اضغط مطولاً لنسخ الرقم';}});
+async function loadWallet(){
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError)throw authError;if(!user)throw new Error("انتهت الجلسة؛ سجّل الدخول مجدداً.");
+ const [account,tx,requests,methodRows]=await Promise.all([
+  db.from("wallet_accounts").select("balance,currency").eq("user_id",user.id).single(),
+  db.from("wallet_transactions").select("id,transaction_type,amount,balance_after,description,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(30),
+  db.from("wallet_topup_requests").select("id,amount,method_code,transfer_reference,status,review_note,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(20),
+  db.from("wallet_payment_methods").select("code,display_name,instructions,account_label").eq("is_active",true).order("sort_order")
+ ]);
+ for(const r of [account,tx,requests,methodRows])if(r.error)throw r.error;
+ $("balance").textContent=money(account.data.balance);
+ methods=methodRows.data||[];
+ $("method").innerHTML='<option value="">اختر وسيلة الشحن</option>'+methods.map(m=>'<option value="'+esc(m.code)+'">'+esc(m.display_name)+'</option>').join("");
+ $("method").onchange=()=>{const m=methods.find(x=>x.code===$("method").value);if(!m){$("methodInstructions").textContent="ستظهر تعليمات التحويل بعد اختيار الوسيلة.";return;}const details=[m.account_label,m.instructions].filter(Boolean).join("\n");$("methodInstructions").innerHTML='<div style="white-space:pre-line">'+esc(details||"يرجى التواصل مع مكتب أحمدكو.")+'</div><button class="copy-mini" type="button" data-copy="'+esc(m.account_label||m.instructions||"")+'">نسخ بيانات التحويل</button><div style="margin-top:8px">بعد التحويل، أدخل مرجع العملية وأرسل الطلب للمراجعة. لا يُضاف الرصيد إلا بعد التحقق الفعلي.</div>';};
+ $("transactions").innerHTML=tx.data.length?tx.data.map(x=>'<div class="item"><strong>'+esc(x.description||x.transaction_type)+'</strong><div><span class="amount '+(Number(x.amount)>=0?"positive":"negative")+'">'+(Number(x.amount)>0?"+":"")+money(x.amount)+'</span> · الرصيد بعد الحركة: '+money(x.balance_after)+'</div><small>'+new Date(x.created_at).toLocaleString("ar-PS")+'</small></div>').join(""):'لا توجد حركات مالية حتى الآن.';
+ $("topups").innerHTML=requests.data.length?requests.data.map(x=>{const st=x.status==="approved"?"approved":x.status==="rejected"?"rejected":"pending";return '<div class="track-card"><div class="track-top"><div class="track-amount">'+money(x.amount)+'</div><span class="track-state '+st+'">'+statusName(x.status)+'</span></div><div class="track-meta">الوسيلة: '+esc(x.method_code)+'<br>مرجع التحويل: '+esc(x.transfer_reference)+'<br>تاريخ الطلب: '+new Date(x.created_at).toLocaleString("ar-PS")+'</div><div class="track-progress '+st+'"><span></span><span></span><span></span></div><div class="track-caption">'+(st==="approved"?"تمت مراجعة الطلب واعتماد الشحن":st==="rejected"?"لم تتم الموافقة؛ راجع ملاحظة المكتب":"استلم المكتب طلبك؛ بانتظار التحقق من وصول الحوالة")+'</div>'+(x.review_note?'<div class="message">'+esc(x.review_note)+'</div>':"")+'</div>';}).join(""):'لا توجد طلبات شحن حتى الآن.';
+ $("authPanel").hidden=true;$("walletPanel").hidden=false;
+}
+$("sendOtp").onclick=async()=>{const b=$("sendOtp");b.disabled=true;try{const {error}=await db.auth.signInWithOtp({phone:phoneE164($("phone").value)});if(error)throw error;message("authMessage","تم طلب إرسال الرمز. إذا ظهر خطأ إعداد مزود الهاتف في Supabase، يجب تفعيله قبل المتابعة.");}catch(e){message("authMessage","تعذر إرسال الرمز: "+e.message,"error");}finally{b.disabled=false;}};
+$("verifyOtp").onclick=async()=>{const b=$("verifyOtp");b.disabled=true;try{const {error}=await db.auth.verifyOtp({phone:phoneE164($("phone").value),token:$("otp").value.trim(),type:"sms"});if(error)throw error;await loadWallet();}catch(e){message("authMessage","تعذر التحقق أو تحميل المحفظة: "+e.message,"error");}finally{b.disabled=false;}};
+$("topupForm").onsubmit=async e=>{e.preventDefault();const b=$("submitTopup");b.disabled=true;try{const {data,error}=await db.rpc("wallet_create_topup_request",{p_amount:Number($("amount").value),p_method_code:$("method").value,p_transfer_reference:$("reference").value.trim(),p_customer_note:$("note").value.trim()});if(error)throw error;message("topupMessage","تم استلام طلب الشحن للمراجعة. رقم الطلب: "+data+". لن يتغير رصيدك قبل اعتماد الإدارة.","success");$("topupForm").reset();await loadWallet();}catch(err){message("topupMessage","تعذر إرسال طلب الشحن: "+err.message,"error");}finally{b.disabled=false;}};
+$("signOut").onclick=async()=>{await db.auth.signOut();$("walletPanel").hidden=true;$("authPanel").hidden=false;$("balance").textContent="— ₪";};
+db.auth.getSession().then(({data})=>{if(data.session)loadWallet().catch(e=>message("authMessage","تعذر تحميل المحفظة: "+e.message,"error"));});
+</script>
+</body></html>
