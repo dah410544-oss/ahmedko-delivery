@@ -32,12 +32,50 @@ button.yellow{background:linear-gradient(120deg,#ffd95c,#f5c32b);color:var(--nav
 footer{text-align:center;color:#718096;font-size:11px;padding:10px 0 22px}
 [hidden]{display:none!important}
 @media(max-width:520px){.row{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}.balance{font-size:30px}.steps{grid-template-columns:1fr}}
+
+/* AHMEDKO premium payment experience */
+body{background:radial-gradient(ellipse at 90% 0%,#dce8f5 0,transparent 38%),linear-gradient(180deg,#f3f6fb 0,#fbfcfe 420px)}
+header{position:relative;padding:17px 5%;background:linear-gradient(115deg,#06152d 0%,#102849 58%,#1b416b 100%);border-bottom:3px solid var(--yellow)}
+.brand{font-size:15px;letter-spacing:.6px}
+main{width:min(790px,94%);margin:22px auto 42px}
+.hero{border:1px solid #ffffff24;border-radius:27px;padding:28px 26px 24px;background:radial-gradient(circle at 8% 100%,#f5c32b20,transparent 32%),radial-gradient(circle at 92% 0%,#6da2dc35,transparent 36%),linear-gradient(135deg,#06152d 0%,#102849 62%,#1a3b63 100%);box-shadow:0 22px 48px #071a3530}
+.hero h1{font-size:27px;letter-spacing:-.4px}
+.hero p{font-size:13px;line-height:2;color:#e1eaf5}
+.hero .balance{font-size:39px;text-shadow:0 4px 18px #f5c32b24;margin-top:16px}
+.trustline{gap:7px}
+.trustline span{background:#ffffff12;border-color:#ffffff26;padding:6px 11px}
+.panel{border:1px solid #e4eaf2;border-radius:19px;padding:20px;box-shadow:0 10px 28px #1028490a}
+h2{font-size:18px;letter-spacing:-.2px}
+.muted{line-height:1.9}
+.steps{gap:10px}
+.step{background:linear-gradient(180deg,#fff,#f7f9fc);padding:13px 10px;border-radius:14px}
+.step i{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#fff2c3;color:#765900;font-weight:900;margin-bottom:5px}
+button{border-radius:13px;min-height:46px}
+button.yellow{background:linear-gradient(115deg,#ffdf72,#f5c32b);box-shadow:0 8px 18px #d7a8002b}
+button.yellow:hover{box-shadow:0 11px 22px #d7a80040}
+input,select,textarea{border-color:#d8e1ec;border-radius:13px;min-height:47px}
+input:focus,select:focus,textarea:focus{border-color:#e0b51e;box-shadow:0 0 0 4px #f5c32b20}
+.message{border-radius:13px;line-height:1.95}
+.security-note{border-radius:14px;background:linear-gradient(110deg,#eff9f3,#f7fbf8);border-color:#d8eee0}
+.payment-readiness{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 18px}
+.payment-readiness .provider{border:1px solid #e3e9f1;border-radius:15px;padding:12px 9px;background:#fff;text-align:center;box-shadow:0 5px 16px #10284908}
+.payment-readiness .provider strong{display:block;color:var(--navy);font-size:12px;margin-bottom:4px}
+.payment-readiness .provider small{display:block;color:#7a8798;font-size:10px;line-height:1.6}
+.payment-readiness .provider em{display:inline-block;margin-top:6px;padding:3px 8px;border-radius:20px;background:#fff5d6;color:#806000;font-size:10px;font-style:normal}
+.section-kicker{font-size:11px;font-weight:800;letter-spacing:.5px;color:#a27a00;margin-bottom:5px}
+@media(max-width:520px){.payment-readiness{grid-template-columns:1fr}.hero{padding:22px 19px}.hero h1{font-size:23px}.hero .balance{font-size:33px}.steps{grid-template-columns:1fr}.panel{padding:17px}}
+
 </style>
 </head>
 <body>
 <header><div class="brand">AHMEDKO <span>DELIVERY</span> · محفظتي</div><a href="./index.html">العودة للرئيسية ←</a></header>
 <main>
-<section class="hero"><h1>محفظتك مع أحمدكو 💳</h1><p>ادفع بسهولة، تابع رصيدك، واطلب التوصيل بثقة. كل معاملات المحفظة مسجلة ويمكنك مراجعتها من حسابك.</p><div class="balance" id="balance">— ₪</div><div class="trustline"><span>🔒 دخول برمز تحقق الهاتف</span><span>✓ مراجعة مالية قبل اعتماد الشحن</span><span>₪ الشيكل الإسرائيلي</span></div></section>
+<section class="hero"><div class="section-kicker" style="color:#f5c32b">AHMEDKO WALLET · PAY WITH CONFIDENCE</div><h1>محفظتك… راحتك في كل مشوار 💛</h1><p>اشحن رصيدك، تابع مصروفاتك، وادفع لخدمات أحمدكو من مكان واحد. نعرض لك كل خطوة بوضوح، ونحافظ على سجل معاملات يمكنك الرجوع إليه.</p><div class="balance" id="balance">— ₪</div><div class="trustline"><span>🔐 حماية الحساب برمز الهاتف</span><span>✓ سجل مالي واضح</span><span>₪ جميع الأرصدة بالشيكل</span></div></section>
+<section class="payment-readiness" aria-label="وسائل الدفع الجاري اعتمادها">
+<div class="provider"><strong>جوال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
+<div class="provider"><strong>بال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
+<div class="provider"><strong>بنك فلسطين</strong><small>طلب خدمات الدفع التلقائي قيد المتابعة</small><em>بانتظار الرد</em></div>
+</section>
 <section class="panel"><h2>شحن رصيدك بخطوات بسيطة</h2><div class="steps"><div class="step"><i>①</i><b>اختر وسيلة الدفع</b>جوال باي أو بال باي أو البنك</div><div class="step"><i>②</i><b>حوّل وأرسل المرجع</b>احتفظ برقم العملية</div><div class="step"><i>③</i><b>تأكيد وإضافة الرصيد</b>بعد مراجعة المكتب</div></div><div class="security-note"><span>🛡️</span><span>حماية رصيدك أولوية: لا نطلب منك كلمة مرور محفظتك أو رمز OTP الخاص بخدمة الدفع. لا يُضاف الرصيد إلا بعد مطابقة الحوالة واعتمادها من الإدارة.</span></div></section>
 <section class="panel" id="authPanel">
 <h2>الدخول إلى محفظتك</h2><p class="muted">تحتاج إلى التحقق من رقم هاتفك قبل عرض الرصيد أو تقديم طلب شحن.</p>
