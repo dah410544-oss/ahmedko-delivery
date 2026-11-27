@@ -33,6 +33,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11.1"
+      # Java and Kotlin targets are both pinned to 17 in app/build.gradle.kts.
       - name: Assemble native Android debug APK
         run: gradle -p native-android :app:assembleDebug
       - name: Upload native preview APK
