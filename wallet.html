@@ -28,6 +28,14 @@ input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:11px;bac
 input:focus,select:focus,textarea:focus{outline:2px solid #f5c32b55;border-color:#c49a12}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .notice{margin-top:13px;padding:12px;border-radius:12px;background:#fff7da;border:1px solid #f1dda0;color:#654f12;font-size:12px}
+.ussd-panel{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 7px 22px #1028490b}
+.ussd-panel h2{margin:0 0 6px;color:var(--navy);font-size:19px}
+.ussd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ussd-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcff}
+.ussd-code{direction:ltr;text-align:center;background:#071a35;color:#f5c32b;border-radius:11px;padding:12px;font-size:19px;font-weight:bold;overflow-wrap:anywhere;letter-spacing:.3px}
+.ussd-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ussd-actions>*{flex:1}
+@media(max-width:650px){.ussd-grid{grid-template-columns:1fr}}
 .security{background:#eef8f2;border:1px solid #cfe8d8;color:#245b43}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
 @media(max-width:650px){.methods{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}}
@@ -56,6 +64,33 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
  <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>رقم الحساب/المحفظة لاستقبال التحويلات.</p><strong class="pay-detail" dir="ltr">0598407547</strong><button class="gold copy-payment" type="button" data-copy="0598407547">نسخ الرقم</button></article>
  <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>التحويل البنكي سيُفعّل بعد مطابقة اسم المستفيد وبيانات الحساب رسمياً لضمان وصول أموالك إلى الحساب الصحيح.</p><strong class="pay-detail">التفعيل قيد التحقق</strong><button class="copy-payment" type="button" disabled aria-disabled="true">غير متاح مؤقتاً</button></article>
 </div>
+<section class="ussd-panel" aria-labelledby="ussdTitle">
+ <h2 id="ussdTitle">الدفع السريع من هاتفك 📲</h2>
+ <p class="muted">جهّز التحويل إلى محفظة أحمدكو، ثم راجع البيانات وأكمل بنفسك من شاشة شركة الدفع. لا نقرأ الرقم السري ولا ننفذ التحويل نيابة عنك.</p>
+ <div class="ussd-grid">
+  <article class="ussd-card">
+   <h3 style="margin:0 0 6px;color:#102849">💙 PalPay — تحويل USSD</h3>
+   <p class="muted">جهّز كود التحويل إلى رقم استقبال أحمدكو، ثم افتح شاشة الاتصال لتأكيده.</p>
+   <label for="palpayAmount">المبلغ المراد تحويله (₪)</label>
+   <input id="palpayAmount" type="number" min="1" max="10000" step="0.01" inputmode="decimal" placeholder="مثال: 25">
+   <label for="palpayNumber">رقم محفظة الاستلام</label>
+   <input id="palpayNumber" type="tel" value="0598407547" readonly dir="ltr">
+   <div class="ussd-code" id="palpayCode" aria-live="polite">أدخل المبلغ لتجهيز الكود</div>
+   <div class="ussd-actions">
+    <button class="gold" id="palpayDial" type="button" disabled>فتح شاشة الاتصال</button>
+    <button id="palpayCopy" type="button" disabled>نسخ الكود</button>
+   </div>
+   <p class="muted">سيطلب منك نظام PalPay إكمال الخطوات وإدخال الرقم السري بنفسك. لا تشارك الرقم السري مع أحمدكو أو أي شخص.</p>
+  </article>
+  <article class="ussd-card">
+   <h3 style="margin:0 0 6px;color:#102849">📱 Jawwal Pay — التطبيق الرسمي</h3>
+   <p class="muted">لتحويل المحفظة أو الدفع للتاجر، استخدم تطبيق Jawwal Pay الرسمي؛ يدعم التحويل لمحفظة أخرى والدفع للتجار والسوبرماركت والمطاعم عبر QR.</p>
+   <a class="btn gold" style="width:100%;margin:8px 0" href="https://play.google.com/store/apps/details?id=ps.Jawwal.JawwalPayNewPlus" target="_blank" rel="noopener">فتح صفحة تطبيق Jawwal Pay</a>
+   <p class="muted">لم نضع كود USSD مباشر لجوال باي لأن تسلسل التحويل الكامل لم نتحقق منه من مصدر رسمي. لن نخمن كوداً قد يرسل أموالك إلى جهة خاطئة.</p>
+  </article>
+ </div>
+ <div class="notice security">قبل الضغط على اتصال: تأكد من اسم المستفيد ورقم المحفظة والمبلغ داخل شاشة PalPay. فتح شاشة الاتصال لا يعني أن التحويل تم. احتفظ برسالة نجاح العملية أو رقمها، ثم أرسل طلب المراجعة أدناه. سيُضاف الرصيد فقط بعد مطابقة وصول المبلغ.</div>
+</section>
 <div class="notice">وسائل الدفع المعروضة لا تعني أن الرصيد أُضيف. احتفظ بإيصال التحويل ورقم العملية، ولا تشارك رمز التحقق أو كلمة المرور مع أي شخص. تم إيقاف عرض بيانات التحويل البنكي مؤقتاً حتى مطابقة اسم المستفيد والحساب رسمياً.</div>
 <section class="panel" id="review">
  <h2>إرسال طلب مراجعة تحويل</h2>
@@ -95,6 +130,33 @@ const form=document.getElementById("paymentForm");
 const receiptInput=document.getElementById("receiptFile");
 const receiptStatus=document.getElementById("receiptStatus");
 const savedReceiptNotice=document.getElementById("savedReceiptNotice");
+const palpayAmount=document.getElementById("palpayAmount");
+const palpayCode=document.getElementById("palpayCode");
+const palpayDial=document.getElementById("palpayDial");
+const palpayCopy=document.getElementById("palpayCopy");
+let currentPalpayCode="";
+function updatePalpayCode(){
+ const amount=Number(palpayAmount.value);
+ if(!Number.isFinite(amount)||amount<=0||amount>10000||!/^\\d+(\\.\\d{1,2})?$/.test(palpayAmount.value.trim())){
+  currentPalpayCode="";
+  palpayCode.textContent="أدخل مبلغاً صحيحاً";
+  palpayDial.disabled=true;palpayCopy.disabled=true;return;
+ }
+ const normalized=amount.toFixed(2).replace(/\\.00$/,"").replace(/(\\.\\d)0$/,"$1");
+ currentPalpayCode="*370*1*1*0598407547*"+normalized+"#";
+ palpayCode.textContent=currentPalpayCode;
+ palpayDial.disabled=false;palpayCopy.disabled=false;
+}
+palpayAmount.addEventListener("input",updatePalpayCode);
+palpayDial.addEventListener("click",()=>{
+ if(!currentPalpayCode)return;
+ window.location.href="tel:"+encodeURIComponent(currentPalpayCode);
+});
+palpayCopy.addEventListener("click",async()=>{
+ if(!currentPalpayCode)return;
+ try{await navigator.clipboard.writeText(currentPalpayCode);palpayCopy.textContent="تم النسخ ✓";}
+ catch(_){palpayCopy.textContent="تعذر النسخ";}
+});
 const MAX_RECEIPT=5*1024*1024;
 let selectedReceipt=null;
 receiptInput.addEventListener("change",()=>{
