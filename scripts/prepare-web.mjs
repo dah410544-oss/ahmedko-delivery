@@ -2,6 +2,8 @@ import { mkdir, copyFile } from "node:fs/promises";
 
 const files = [
   "index.html",
+  "account.html",
+  "wallet.html",
   "admin.html",
   "driver.html",
   "restaurant.html",
