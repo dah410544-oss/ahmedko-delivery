@@ -4,197 +4,123 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071A35">
-<meta name="description" content="طرق الدفع وطلب مراجعة التحويلات ومحفظة أحمدكو ديلفري.">
-<title>المحفظة وطرق الدفع | أحمدكو ديلفري</title>
+<meta name="description" content="شحن رصيد أحمدكو بطرق دفع واضحة وآمنة.">
+<title>محفظة أحمدكو</title>
 <style>
-:root{--navy:#071A35;--blue:#102849;--blue2:#173c68;--gold:#F5C32B;--ink:#17243a;--muted:#64748b;--line:#dce4ef;--bg:#f2f5fa}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.8}
-header{background:linear-gradient(115deg,var(--navy),var(--blue2));color:#fff;border-bottom:4px solid var(--gold);padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}header a{color:var(--gold);text-decoration:none;font-size:13px}
-main{width:min(900px,94%);margin:22px auto 42px}
-.hero{background:radial-gradient(circle at 8% 100%,#f5c32b24,transparent 35%),linear-gradient(130deg,var(--navy),var(--blue2));color:white;border-radius:22px;padding:24px;box-shadow:0 15px 34px #071a3522}
-.hero h1{margin:0 0 7px;font-size:25px}.hero p{margin:0;color:#dce7f5;font-size:13px}
-.balance{margin-top:18px;padding:15px;border:1px solid #ffffff2b;border-radius:15px;background:#ffffff12}
-.balance strong{display:block;color:var(--gold);font-size:22px}.balance small{color:#dce7f5}
-.section-title{margin:25px 0 10px;color:var(--navy);font-size:19px}
-.methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-.method,.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 7px 22px #1028490b}
-.method .symbol{font-size:28px}.pay-detail{display:block;margin:8px 0;color:#102849;font-size:14px;overflow-wrap:anywhere}.copy-payment{margin-top:7px;width:100%;font-size:12px}.method h3{margin:6px 0;color:var(--navy);font-size:17px}.method p{font-size:12px;color:var(--muted);min-height:48px;margin:0 0 10px}
-button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:11px;padding:11px 14px;background:var(--navy);color:#fff;font:inherit;font-weight:bold;text-decoration:none;cursor:pointer}
-button.gold,.btn.gold{background:var(--gold);color:var(--navy)}button:disabled{opacity:.6}
-.panel{margin-top:15px}.panel h2{font-size:18px;color:var(--navy);margin:0 0 5px}.muted{color:var(--muted);font-size:12px;margin:0 0 12px}
-label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
-input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:11px;background:#fff;padding:12px;font:inherit;color:var(--ink)}
-input:focus,select:focus,textarea:focus{outline:2px solid #f5c32b55;border-color:#c49a12}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.notice{margin-top:13px;padding:12px;border-radius:12px;background:#fff7da;border:1px solid #f1dda0;color:#654f12;font-size:12px}
-.ussd-panel{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 7px 22px #1028490b}
-.ussd-panel h2{margin:0 0 6px;color:var(--navy);font-size:19px}
-.ussd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ussd-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcff}
-.ussd-code{direction:ltr;text-align:center;background:#071a35;color:#f5c32b;border-radius:11px;padding:12px;font-size:19px;font-weight:bold;overflow-wrap:anywhere;letter-spacing:.3px}
-.ussd-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.ussd-actions>*{flex:1}
-@media(max-width:650px){.ussd-grid{grid-template-columns:1fr}}
-.security{background:#eef8f2;border:1px solid #cfe8d8;color:#245b43}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:20px}
-@media(max-width:650px){.methods{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.hero{padding:20px}.hero h1{font-size:22px}}
+:root{--n:#071A35;--b:#102849;--y:#F5C32B;--ink:#17243a;--muted:#64748b;--line:#e1e7f0;--bg:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+header{background:linear-gradient(120deg,var(--n),#173c68);color:#fff;padding:15px 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--y)}
+.brand{font-weight:900;letter-spacing:.4px}.brand span{color:var(--y)}header a{color:var(--y);text-decoration:none;font-size:13px}
+main{width:min(680px,94%);margin:22px auto 40px}
+.hero{background:linear-gradient(135deg,var(--n),#173c68);color:#fff;border-radius:22px;padding:22px;box-shadow:0 14px 32px #071a3524}
+.hero h1{margin:0;font-size:24px}.hero p{margin:5px 0 0;color:#d9e5f4;font-size:13px}
+.balance{margin-top:17px;padding:13px 15px;border:1px solid #ffffff35;background:#ffffff12;border-radius:14px}
+.balance small{display:block;color:#d9e5f4}.balance strong{display:block;color:var(--y);font-size:21px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;margin-top:15px;box-shadow:0 7px 22px #1028490b}
+h2{font-size:18px;color:var(--n);margin:0 0 5px}.hint{font-size:12px;color:var(--muted);margin:0 0 13px}
+.methods{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.method{border:1.5px solid var(--line);border-radius:13px;background:#fff;padding:12px 7px;text-align:center;cursor:pointer;color:var(--ink);font:inherit}
+.method[aria-pressed=true]{border-color:var(--y);background:#fff9e4;box-shadow:inset 0 0 0 1px var(--y)}
+.method b{display:block;color:var(--n);font-size:14px}.method small{font-size:10px;color:var(--muted)}
+label{display:block;font-size:13px;font-weight:bold;margin:13px 0 5px}
+input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;font:inherit;font-size:16px}
+.recipient{margin-top:12px;padding:12px;border-radius:13px;background:#f7f9fc;border:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.recipient small{display:block;color:var(--muted);font-size:11px}.recipient strong{direction:ltr;display:block;font-size:19px;color:var(--n);letter-spacing:.5px}
+button,.btn{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}
+.copy{background:#eaf0f8;color:var(--n);white-space:nowrap;font-size:12px}
+.primary{background:var(--y);color:var(--n);width:100%;margin-top:14px;font-size:16px;min-height:49px}
+.secondary{background:var(--n);color:#fff;width:100%;margin-top:9px;min-height:46px}
+.note{font-size:12px;padding:12px;border-radius:12px;background:#fff8df;border:1px solid #f0dfa6;color:#665319;margin-top:13px}
+.safe{background:#edf7f0;border-color:#cfe7d6;color:#285a3e}
+#status{font-size:12px;margin-top:10px;color:var(--n);min-height:20px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:18px}
+@media(max-width:480px){.methods{gap:6px}.method{padding:10px 4px}.method b{font-size:12px}.hero h1{font-size:21px}.recipient strong{font-size:17px}}
 </style>
 </head>
 <body>
-<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="index.html">العودة إلى أحمدكو ←</a></header>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="index.html">الرئيسية ←</a></header>
 <main>
 <section class="hero">
- <h1>المحفظة وطرق الدفع 💳</h1>
- <p>مركز موحد للاستفسار عن الدفع، وإرسال طلب مراجعة التحويل إلى مكتب أحمدكو.</p>
- <div class="balance" aria-live="polite">
-  <small>رصيدك المتاح حالياً</small>
-  <strong style="font-size:24px">غير مفعّل بعد</strong>
-  <small>لن نعرض رقماً تقديرياً. سيظهر رصيدك الحقيقي بعد تسجيل الدخول والتحقق من الحساب وربط قاعدة المحفظة.</small>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">
-   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">🔒 لا خصم دون تأكيد</span>
-   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">🧾 سجل عمليات موثق</span>
-   <span style="background:#ffffff18;border:1px solid #ffffff35;border-radius:20px;padding:5px 10px;font-size:11px">₪ العملة: شيكل</span>
-  </div>
- </div>
+ <h1>محفظة أحمدكو 💙💛</h1>
+ <p>اشحن رصيدك بخطوات واضحة — اختر وسيلة الدفع، أدخل المبلغ، ثم أكمل التحويل بنفسك.</p>
+ <div class="balance"><small>رصيد أحمدكو المتاح</small><strong>سيظهر بعد تفعيل المحفظة</strong><small>لا نعرض رصيداً غير مؤكد، ولا نخصم أي مبلغ من هذه الصفحة.</small></div>
 </section>
-<h2 class="section-title">اختر وسيلة الدفع</h2>
-<div class="methods">
- <article class="method"><div class="symbol">📱</div><h3>جوال باي</h3><p>استقبال التحويلات التجارية قيد الاعتماد. لن نعرض رقم استلام قبل تأكيده رسمياً باسم أحمدكو.</p><strong class="pay-detail">بانتظار اعتماد بيانات الاستلام</strong><button class="copy-payment" type="button" disabled aria-disabled="true">سيُفعّل بعد التحقق</button></article>
- <article class="method"><div class="symbol">💙</div><h3>PalPay</h3><p>نستكمل اعتماد استقبال المدفوعات التجارية. استخدم تطبيق PalPay الرسمي فقط، ولا تحوّل إلى رقم غير مؤكد.</p><strong class="pay-detail">بانتظار اعتماد حساب أحمدكو</strong><button class="copy-payment" type="button" disabled aria-disabled="true">سيُفعّل بعد التحقق</button></article>
- <article class="method"><div class="symbol">🏦</div><h3>بنك فلسطين</h3><p>التحويل البنكي سيُفعّل بعد مطابقة اسم المستفيد وبيانات الحساب رسمياً لضمان وصول أموالك.</p><strong class="pay-detail">التفعيل قيد التحقق</strong><button class="copy-payment" type="button" disabled aria-disabled="true">غير متاح مؤقتاً</button></article>
-</div>
-<section class="ussd-panel" aria-labelledby="ussdTitle">
- <h2 id="ussdTitle">الدفع عبر PalPay بأمان</h2>
- <p class="muted">يمكنك فتح قائمة PalPay العامة من هاتفك، ثم اختيار التحويل وإدخال بيانات المستفيد والمبلغ بنفسك. لا نضع رقم استقبال أحمدكو داخل الكود قبل تأكيده رسمياً.</p>
- <a class="btn gold" href="tel:*370%23" style="width:100%;margin:8px 0;text-align:center">فتح قائمة PalPay (*370#)</a>
- <div class="notice security">
-  <strong>كيف تكمل بأمان؟</strong>
-  <ol style="margin:7px 0;padding-right:20px">
-   <li>افتح تطبيق PalPay الرسمي بنفسك.</li>
-   <li>لا تُكمل التحويل إلا بعد ظهور اسم المستفيد ورقم الاستلام اللذين أكدتهما PalPay لأحمدكو.</li>
-   <li>أدخل الرقم السري داخل تطبيق PalPay فقط، ولا تشاركه مع أحمدكو أو أي شخص.</li>
-   <li>بعد نجاح العملية، احتفظ بمرجعها وأرسله للمكتب لمطابقة وصول المبلغ.</li>
-  </ol>
-  <strong>مهم:</strong> لا يوجد حالياً ربط آلي يؤكد الدفع لحظياً؛ فتح تطبيق PalPay أو إرسال صورة إيصال لا يعني إضافة الرصيد.
-  <div style="display:grid;grid-template-columns:1fr;gap:9px;margin-top:14px">
-   <a class="btn gold" href="https://play.google.com/store/apps/details?id=com.pcnc.wallet" target="_blank" rel="noopener" style="text-align:center">فتح تطبيق PalPay الرسمي على Google Play</a>
-   <a class="btn" href="https://www.palpay.ps/ar/merchants/merchant-wallet" target="_blank" rel="noopener" style="text-align:center;background:#071A35;color:#fff">طلب اعتماد محفظة التاجر لأحمدكو</a>
-  </div>
+<section class="panel">
+ <h2>1. اختر وسيلة الدفع</h2>
+ <p class="hint">ثلاث وسائل فقط، دون خطوات زائدة.</p>
+ <div class="methods" role="group" aria-label="وسيلة الدفع">
+  <button class="method" type="button" data-method="palpay" aria-pressed="true"><b>💙 PalPay</b><small>تحويل USSD</small></button>
+  <button class="method" type="button" data-method="jawwal" aria-pressed="false"><b>📱 جوال Pay</b><small>قائمة الخدمة</small></button>
+  <button class="method" type="button" data-method="bank" aria-pressed="false"><b>🏦 بنك فلسطين</b><small>تحويل بنكي</small></button>
  </div>
+ <label for="amount">2. مبلغ التحويل (شيكل)</label>
+ <input id="amount" type="number" inputmode="decimal" min="1" max="50000" step="0.01" placeholder="مثال: 50">
+ <div class="recipient">
+  <div><small id="recipientLabel">رقم الاستلام الذي زوّدتنا به</small><strong>0598407547</strong></div>
+  <button class="copy" id="copyNumber" type="button">نسخ الرقم</button>
+ </div>
+ <div class="note" id="methodNote">بعد فتح التحويل، تأكد من ظهور اسم المستفيد الصحيح قبل التأكيد.</div>
+ <button class="primary" id="startTransfer" type="button">فتح تحويل PalPay</button>
+ <div id="status" aria-live="polite"></div>
 </section>
-<div class="notice">وسائل الدفع المعروضة لا تعني أن الرصيد أُضيف. احتفظ بإيصال التحويل ورقم العملية، ولا تشارك رمز التحقق أو كلمة المرور مع أي شخص. تم إيقاف عرض بيانات التحويل البنكي مؤقتاً حتى مطابقة اسم المستفيد والحساب رسمياً.</div>
-<section class="panel" id="review">
- <h2>إرسال طلب مراجعة تحويل</h2>
- <p class="muted">املأ التفاصيل بعد تنفيذ التحويل. ستفتح رسالة واتساب جاهزة للمكتب؛ يجب إرسالها بنفسك، ثم ينتظر الطلب التحقق اليدوي.</p>
- <form id="paymentForm">
-  <div class="grid">
-   <div><label for="customerName">الاسم</label><input id="customerName" required maxlength="90" placeholder="اسمك"></div>
-   <div><label for="customerPhone">رقم هاتفك</label><input id="customerPhone" required inputmode="tel" maxlength="20" placeholder="05xxxxxxxx"></div>
-   <div><label for="paymentMethod">وسيلة الدفع</label><select id="paymentMethod" required><option value="">اختر الوسيلة</option><option>جوال باي</option><option>PalPay</option><option>تحويل بنكي – بنك فلسطين</option></select></div>
-   <div><label for="amount">المبلغ (₪)</label><input id="amount" required type="number" min="1" max="50000" step="0.01" placeholder="مثال: 50"></div>
-  </div>
-  <label for="reference">رقم مرجع التحويل</label><input id="reference" maxlength="100" placeholder="أدخل رقم العملية كما يظهر في إيصال التحويل">
-  <label for="receiptFile">إرفاق صورة أو PDF للإيصال (اختياري)</label>
-  <input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
-  <p class="muted" id="receiptStatus" aria-live="polite">يمكنك إرفاق صورة أو ملف PDF حتى 5 ميغابايت. الحفظ الحالي محلي على هذا الجهاز فقط، وليس في حسابك السحابي أو لدى المكتب.</p>
-  <label for="note">ملاحظة (اختياري)</label><textarea id="note" rows="3" maxlength="400" placeholder="أي تفاصيل تساعد المكتب في مطابقة الحوالة"></textarea>
-  <button class="gold" type="submit" style="width:100%;margin-top:15px">حفظ الطلب وإرساله إلى واتساب</button>
-  <div class="notice" id="savedReceiptNotice" hidden aria-live="polite"></div>
- </form>
- <div class="notice security">تنبيه أمان: لا ترسل كلمة المرور أو رمز التحقق لأي شخص. لا تعتبر المحفظة مشحونة بمجرد إرسال الرسالة؛ يضاف الرصيد فقط بعد التحقق الفعلي واعتماد المكتب.</div>
- <div class="notice security">
- <strong>كيف نحافظ على أموالك؟</strong>
- <ul style="margin:7px 0;padding-right:20px">
-  <li>إرسال الإيصال لا يعني شحن الرصيد؛ تتم المطابقة قبل الاعتماد.</li>
-  <li>لا يُخصم أي مبلغ عند تقديم الطلب أو تصفح المتاجر.</li>
-  <li>بعد تفعيل المحفظة سيظهر لكل شحن أو شراء رقم مرجعي وحالة واضحة وسجل عمليات.</li>
-  <li>لن يتم تفعيل الدفع من الرصيد قبل تشغيل التحقق الهاتفي وقاعدة البيانات واختبار منع تكرار الخصم.</li>
- </ul>
- <strong>الحالة الحالية:</strong> طلبات المراجعة يدوية عبر واتساب. لا يوجد حتى الآن رصيد قابل للاستخدام أو خصم تلقائي.
- </div>
+<section class="panel">
+ <h2>3. بعد إتمام التحويل</h2>
+ <p class="hint">أدخل رقم العملية إن ظهر لك، ثم أرسل إشعاراً للمكتب لمطابقة الحوالة.</p>
+ <label for="reference">رقم مرجع العملية (اختياري)</label>
+ <input id="reference" maxlength="100" placeholder="رقم العملية من إيصال التحويل">
+ <button class="secondary" id="notifyOffice" type="button">إبلاغ أحمدكو بالتحويل عبر واتساب</button>
+ <div class="note safe">لن يُضاف الرصيد بمجرد فتح التحويل أو إرسال رسالة. يعتمد المكتب المبلغ بعد التحقق من وصوله فعلياً.</div>
+</section>
+<section class="note safe">
+ <b>حماية بياناتك:</b> لا تكتب الرقم السري أو رمز التحقق في أحمدكو أو واتساب. أدخله بنفسك داخل خدمة المحفظة الرسمية فقط، وراجع اسم المستفيد والمبلغ قبل الضغط على تأكيد.
 </section>
 </main>
-<footer>© 2026 AHMEDKO DELIVERY — جميع الحقوق محفوظة</footer>
+<footer>© 2026 AHMEDKO DELIVERY</footer>
 <script>
 "use strict";
-const form=document.getElementById("paymentForm");
-const receiptInput=document.getElementById("receiptFile");
-const receiptStatus=document.getElementById("receiptStatus");
-const savedReceiptNotice=document.getElementById("savedReceiptNotice");
-const MAX_RECEIPT=5*1024*1024;
-let selectedReceipt=null;
-receiptInput.addEventListener("change",()=>{
- const file=receiptInput.files&&receiptInput.files[0];
- selectedReceipt=null;
- if(!file){receiptStatus.textContent="لم يتم اختيار ملف.";return;}
- const allowed=["image/jpeg","image/png","image/webp","application/pdf"];
- if(!allowed.includes(file.type)||file.size>MAX_RECEIPT){
-  receiptInput.value="";
-  receiptStatus.textContent="الملف غير مناسب. اختر JPG أو PNG أو WEBP أو PDF بحجم لا يتجاوز 5 ميغابايت.";
-  return;
- }
- selectedReceipt=file;
- receiptStatus.textContent="تم اختيار: "+file.name+" — "+(file.size/1024/1024).toFixed(2)+" MB";
-});
-function openReceiptDB(){
- return new Promise((resolve,reject)=>{
-  const request=indexedDB.open("ahmedko-wallet-local",1);
-  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains("topups"))db.createObjectStore("topups",{keyPath:"id"});};
-  request.onsuccess=()=>resolve(request.result);
-  request.onerror=()=>reject(request.error);
- });
-}
-async function saveLocalRequest(record){
- const db=await openReceiptDB();
- return new Promise((resolve,reject)=>{
-  const tx=db.transaction("topups","readwrite");
-  tx.objectStore("topups").put(record);
-  tx.oncomplete=()=>{db.close();resolve();};
-  tx.onerror=()=>{db.close();reject(tx.error);};
- });
-}
-document.querySelectorAll("[data-copy]").forEach(button=>button.addEventListener("click",async()=>{const value=button.dataset.copy;try{await navigator.clipboard.writeText(value);button.textContent="تم النسخ ✓";}catch(_){button.textContent=value;} }));
-const method=document.getElementById("paymentMethod");
-document.querySelectorAll("[data-method]").forEach(button=>button.addEventListener("click",()=>{
- method.value=button.dataset.method;
- document.getElementById("review").scrollIntoView({behavior:"smooth",block:"start"});
+const receiver="0598407547";
+const amountEl=document.getElementById("amount");
+const statusEl=document.getElementById("status");
+const noteEl=document.getElementById("methodNote");
+const startBtn=document.getElementById("startTransfer");
+let selected="palpay";
+const config={
+ palpay:{title:"PalPay",button:"فتح تحويل PalPay",note:"سيُفتح طلب تحويل PalPay بالمبلغ ورقم الاستلام. راجع اسم المستفيد والمبلغ داخل الخدمة قبل التأكيد."},
+ jawwal:{title:"جوال Pay",button:"فتح قائمة جوال Pay",note:"سنفتح قائمة جوال Pay العامة. أكمل خطوات التحويل داخل الخدمة الرسمية، وأدخل الرقم السري هناك فقط."},
+ bank:{title:"بنك فلسطين",button:"نسخ بيانات التحويل",note:"استخدم الرقم الذي زوّدتنا به كبيانات استلام، وتأكد من اسم المستفيد وبيانات الحساب التي يعرضها البنك قبل تنفيذ الحوالة."}
+};
+document.querySelectorAll("[data-method]").forEach(btn=>btn.addEventListener("click",()=>{
+ selected=btn.dataset.method;
+ document.querySelectorAll("[data-method]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
+ startBtn.textContent=config[selected].button;
+ noteEl.textContent=config[selected].note;
+ statusEl.textContent="";
 }));
-form.addEventListener("submit",async event=>{
- event.preventDefault();
- if(!form.reportValidity())return;
- const values={
-  name:document.getElementById("customerName").value.trim(),
-  phone:document.getElementById("customerPhone").value.trim(),
-  method:method.value,
-  amount:document.getElementById("amount").value,
-  reference:document.getElementById("reference").value.trim()||"لم يُدخل",
-  note:document.getElementById("note").value.trim()||"لا توجد"
- };
- const message="مرحباً أحمدكو، أطلب مراجعة تحويل يدوي للمحفظة.\nالاسم: "+values.name+"\nرقم هاتفي: "+values.phone+"\nوسيلة الدفع: "+values.method+"\nالمبلغ: "+values.amount+" ₪\nمرجع التحويل: "+values.reference+"\nمرفق إيصال التحويل إن أمكن.\nملاحظة: "+values.note+"\nأرجو التحقق من وصول الحوالة وإفادتي قبل اعتماد الرصيد.";
- const record={id:"local-"+Date.now(),createdAt:new Date().toISOString(),...values,status:"بانتظار مراجعة المكتب",receipt:selectedReceipt||null};
- try{
-  await saveLocalRequest(record);
-  savedReceiptNotice.hidden=false;
-  savedReceiptNotice.textContent="تم حفظ طلبك"+(selectedReceipt?" والإيصال":"")+" محلياً على هذا الجهاز فقط. لم يصل الطلب إلى قاعدة بيانات المكتب بعد؛ أرسل رسالة واتساب واحتفظ بالإيصال حتى يؤكد المكتب الاستلام.";
- }catch(error){
-  savedReceiptNotice.hidden=false;
-  savedReceiptNotice.textContent="تعذر الحفظ المحلي على هذا الجهاز. سنحاول فتح واتساب لإرسال بيانات الطلب.";
+document.getElementById("copyNumber").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(receiver);statusEl.textContent="تم نسخ الرقم.";}
+ catch(_){statusEl.textContent="الرقم هو "+receiver+" — يمكنك نسخه يدوياً.";}
+});
+function validAmount(){const n=Number(amountEl.value);if(!Number.isFinite(n)||n<1||n>50000){statusEl.textContent="أدخل مبلغاً صحيحاً من 1 إلى 50000 شيكل.";amountEl.focus();return null;}return String(n);}
+startBtn.addEventListener("click",()=>{
+ const amount=validAmount();if(!amount)return;
+ if(selected==="palpay"){
+  const code="*370*1*1*"+receiver+"*"+amount+"#";
+  statusEl.textContent="تحقق من اسم المستفيد والمبلغ في شاشة PalPay قبل التأكيد.";
+  window.location.href="tel:"+code.replace("#","%23");
+ }else if(selected==="jawwal"){
+  statusEl.textContent="أدخل خطوات التحويل داخل قائمة جوال Pay الرسمية. لا تدخل الرقم السري في أحمدكو.";
+  window.location.href="tel:*110%23";
+ }else{
+  try{navigator.clipboard.writeText(receiver);statusEl.textContent="تم نسخ رقم الاستلام. راجع بيانات الحساب واسم المستفيد في تطبيق البنك قبل التحويل.";}
+  catch(_){statusEl.textContent="رقم الاستلام: "+receiver+". راجع بيانات الحساب واسم المستفيد في تطبيق البنك قبل التحويل.";}
  }
- const url="https://wa.me/972598407547?text="+encodeURIComponent(message);
- if(selectedReceipt && navigator.canShare && navigator.share && navigator.canShare({files:[selectedReceipt]})){
-  try{
-   await navigator.share({title:"إيصال تحويل أحمدكو",text:message,files:[selectedReceipt]});
-   return;
-  }catch(error){if(error&&error.name==="AbortError")return;}
- }
- if(selectedReceipt){
-  const downloadUrl=URL.createObjectURL(selectedReceipt);
-  const a=document.createElement("a");a.href=downloadUrl;a.download=selectedReceipt.name;a.click();
-  setTimeout(()=>URL.revokeObjectURL(downloadUrl),60000);
-  alert("تم حفظ الإيصال على هذا الجهاز. أرفق الملف الذي تم تنزيله داخل محادثة واتساب بعد فتحها.");
- }
- window.location.href=url;
+});
+document.getElementById("notifyOffice").addEventListener("click",()=>{
+ const amount=validAmount();if(!amount)return;
+ const method=config[selected].title;
+ const ref=document.getElementById("reference").value.trim()||"لم يُدخل";
+ const msg="مرحباً أحمدكو، أرجو مراجعة تحويل شحن المحفظة.\nوسيلة الدفع: "+method+"\nرقم الاستلام: "+receiver+"\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+ref+"\nيرجى التحقق من وصول المبلغ قبل اعتماد الرصيد.";
+ window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
 });
 </script>
 </body>
