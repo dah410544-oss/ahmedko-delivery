@@ -1508,6 +1508,7 @@ async function refreshAdminData(silent=true){
    loadOrderWorkflow(),
    loadDriverApplications(),
    loadFinanceEarnings(),
+   loadWalletTopups(),
    loadTable("orders"),
    loadTable("drivers")
   ]);
@@ -1540,6 +1541,7 @@ async function loadDashboard(){
   loadOrderWorkflow(),
   loadDriverApplications(),
   loadFinanceEarnings(),
+  loadWalletTopups(),
   loadMenuManager(),
   loadRateFormOptions(),
   ...Object.keys(tableConfig).map(loadTable)
