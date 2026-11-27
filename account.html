@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071A35">
+<meta name="description" content="الدخول الموحد إلى حسابك في أحمدكو ديلفري.">
+<title>حسابي | أحمدكو ديلفري</title>
+<style>
+:root{--navy:#071A35;--blue:#102849;--yellow:#F5C32B;--ink:#17243a;--muted:#64748b;--line:#dce3ed}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(145deg,#071A35,#102849 65%,#173c68);font-family:Tahoma,Arial,sans-serif;color:#fff;line-height:1.7;display:flex;flex-direction:column}
+header{padding:15px 5%;border-bottom:1px solid #ffffff22;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900;font-size:20px}.brand span{color:var(--yellow)}header a{color:var(--yellow);text-decoration:none;font-size:13px}
+main{width:min(520px,92%);margin:clamp(24px,7vh,65px) auto;flex:1}.intro{text-align:center;margin-bottom:20px}.mark{width:66px;height:66px;border-radius:20px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-size:30px;font-weight:900;margin:0 auto 12px}.intro h1{font-size:26px;margin:0}.intro p{color:#d5dfeb;font-size:13px;margin:6px 0}
+.panel{background:#fff;color:var(--ink);border-radius:20px;padding:22px;box-shadow:0 18px 48px #0003}.panel h2{font-size:18px;color:var(--navy);margin:0 0 4px}.hint{font-size:12px;color:var(--muted);margin:0 0 14px}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 5px}input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;font:inherit;font-size:15px;color:var(--ink);background:#fff}input:focus{outline:3px solid #f5c32b55;border-color:#d4a400}
+button,.button{font:inherit;font-weight:bold;border:0;border-radius:11px;padding:12px 15px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:46px}
+.primary{width:100%;background:var(--yellow);color:var(--navy);margin-top:13px}.secondary{width:100%;background:#edf2f8;color:var(--navy);margin-top:10px}.dark{background:var(--navy);color:#fff;width:100%;margin-top:13px}.switch{background:transparent;color:#234a79;text-decoration:underline;padding:8px 0;min-height:38px}
+button:disabled{opacity:.55;cursor:wait}.message{padding:11px 12px;background:#edf2f8;border-radius:10px;color:#334155;font-size:13px;margin-top:12px;white-space:pre-wrap}.message.error{background:#fff0ef;color:#a93232}.message.success{background:#eaf8f1;color:#137a4a}
+#codeArea,#teamArea,#accountArea{display:none}.order{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}.order strong{color:var(--navy)}.order small{display:block;color:var(--muted)}
+footer{text-align:center;color:#c5d2e2;font-size:11px;padding:20px}
+@media(max-width:420px){.panel{padding:18px}.intro h1{font-size:23px}}
+</style>
+</head>
+<body>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html">الرئيسية ←</a></header>
+<main>
+<div class="intro"><div class="mark">A</div><h1>حسابك في أحمدكو</h1><p>دخول واحد بسيط وآمن، وكل شخص يصل إلى حسابه وصلاحياته.</p></div>
+<section class="panel" aria-live="polite">
+<div id="customerArea">
+<h2>دخول العملاء</h2><p class="hint">أدخل رقم هاتفك لتصلك رسالة تحقق. لن نطلب منك كلمة مرور.</p>
+<form id="phoneForm">
+<label for="phone">رقم الهاتف</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx" maxlength="20" required>
+<button id="sendCode" class="primary" type="submit">إرسال رمز التحقق</button>
+</form>
+<div id="codeArea">
+<label for="code">رمز التحقق</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="أدخل الرمز الذي وصلك">
+<button id="verifyCode" class="primary" type="button">تأكيد الدخول</button>
+</div>
+<div id="customerMessage" class="message" role="status">استخدم رقم الهاتف المسجل في طلباتك.</div>
+<div id="accountArea"><h2 style="margin-top:18px">طلباتك</h2><div id="orders"></div><button id="refreshOrders" class="secondary" type="button">تحديث الطلبات</button><button id="logoutCustomer" class="switch" type="button">تسجيل الخروج</button></div>
+</div>
+<div style="border-top:1px solid #e5eaf1;margin:18px 0 8px;padding-top:12px;text-align:center">
+<button id="teamToggle" class="switch" type="button">دخول فريق أحمدكو</button>
+</div>
+<div id="teamArea">
+<h2>دخول فريق أحمدكو</h2><p class="hint">للسائقين والمطاعم والإدارة بحساباتهم المعتمدة.</p>
+<form id="teamForm">
+<label for="email">البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" required placeholder="البريد المسجل">
+<label for="password">كلمة المرور</label><input id="password" type="password" autocomplete="current-password" required placeholder="كلمة المرور">
+<button id="teamLogin" class="dark" type="submit">دخول آمن</button>
+</form>
+</div>
+<div id="teamMessage" class="message" hidden role="status"></div>
+</section>
+</main>
+<footer>AHMEDKO DELIVERY © 2026 · معسكر الشاطئ – شارع حميد</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+const db=window.supabase.createClient("https://pqulzfhisidcatrakxsx.supabase.co","sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x");
+const $=id=>document.getElementById(id);
+const setMsg=(id,text,type)=>{$(id).textContent=text;$(id).className="message"+(type?" "+type:"");};
+const normalizePhone=value=>{let d=String(value||"").replace(/\D/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("970")||d.startsWith("972"))return "+"+d;if(d.startsWith("0"))return "+970"+d.slice(1);if(d.length===9&&d.startsWith("5"))return "+970"+d;return "+"+d;};
+const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+let verifiedPhone="";
+function showCode(on){$("codeArea").style.display=on?"block":"none";}
+async function sendCode(event){event.preventDefault();const phone=normalizePhone($("phone").value);if(phone.length<10){setMsg("customerMessage","تحقق من رقم الهاتف وحاول مرة أخرى.","error");return;}const b=$("sendCode");b.disabled=true;setMsg("customerMessage","جارٍ إرسال رمز التحقق...");try{const {error}=await db.auth.signInWithOtp({phone,options:{shouldCreateUser:true}});if(error)throw error;verifiedPhone=phone;showCode(true);setMsg("customerMessage","تم طلب الرمز. أدخل رمز الرسالة النصية لإكمال الدخول.","success");$("code").focus();}catch(e){setMsg("customerMessage","لم نتمكن من إرسال الرمز: "+(e.message||"تحقق من إعداد خدمة SMS في Supabase."),"error");}finally{b.disabled=false;}}
+async function loadOrders(){const b=$("refreshOrders");b.disabled=true;try{const {data,error}=await db.rpc("get_my_customer_orders");if(error)throw error;const rows=data||[];$("orders").innerHTML=rows.length?rows.map(o=>'<article class="order"><strong>طلب #'+esc(String(o.order_id).slice(0,8))+'</strong><small>الحالة: '+esc(o.status)+'</small><small>من: '+esc(o.pickup_address)+'</small><small>إلى: '+esc(o.delivery_address)+'</small><small>الأجرة: '+(o.delivery_price==null?"قيد الاتفاق":esc(o.delivery_price)+" ₪")+'</small></article>').join(""):'<div class="message">لا توجد طلبات مرتبطة بهذا الرقم حالياً.</div>';}catch(e){setMsg("customerMessage","تم التحقق من الهاتف، لكن تعذر تحميل الطلبات: "+e.message,"error");}finally{b.disabled=false;}}
+async function verifyCode(){const token=$("code").value.trim();if(!verifiedPhone||!token){setMsg("customerMessage","أدخل رمز التحقق أولاً.","error");return;}const b=$("verifyCode");b.disabled=true;setMsg("customerMessage","جارٍ تأكيد الرمز...");try{const {error}=await db.auth.verifyOtp({phone:verifiedPhone,token,type:"sms"});if(error)throw error;$("accountArea").style.display="block";$("phoneForm").style.display="none";showCode(false);setMsg("customerMessage","تم التحقق من رقمك بنجاح. أهلاً بك في أحمدكو.","success");await loadOrders();}catch(e){setMsg("customerMessage","لم ينجح التحقق: "+(e.message||"الرمز غير صحيح أو انتهت صلاحيته."),"error");}finally{b.disabled=false;}}
+async function routeStaff(user){setMsg("teamMessage","تم التحقق من بيانات الدخول. جارٍ تحديد صلاحيات حسابك...");$("teamMessage").hidden=false;const admin=await db.from("user_roles").select("role").eq("user_id",user.id).maybeSingle();if(admin.error)throw admin.error;if(admin.data?.role==="admin"){location.replace("./admin.html");return;}const driver=await db.from("drivers").select("id").eq("user_id",user.id).limit(1);if(driver.error)throw driver.error;if(driver.data?.length){location.replace("./driver.html");return;}const store=await db.from("store_users").select("store_id").eq("user_id",user.id).limit(1);if(store.error)throw store.error;if(store.data?.length){location.replace("./restaurant.html");return;}await db.auth.signOut();throw new Error("بيانات الدخول صحيحة، لكن لا توجد صلاحية سائق أو مطعم أو مدير مرتبطة بهذا الحساب. تواصل مع مكتب أحمدكو لتفعيلها.");}
+$("phoneForm").addEventListener("submit",sendCode);$("verifyCode").addEventListener("click",verifyCode);$("refreshOrders").addEventListener("click",loadOrders);
+$("teamToggle").addEventListener("click",()=>{const on=$("teamArea").style.display!=="block";$("teamArea").style.display=on?"block":"none";$("teamToggle").textContent=on?"إخفاء دخول الفريق":"دخول فريق أحمدكو";});
+$("teamForm").addEventListener("submit",async e=>{e.preventDefault();const b=$("teamLogin");b.disabled=true;$("teamMessage").hidden=false;setMsg("teamMessage","جارٍ التحقق من الحساب...");try{const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;if(!data.user)throw new Error("لم يتم العثور على حساب صالح.");await routeStaff(data.user);}catch(err){setMsg("teamMessage",err.message||"تعذر تسجيل الدخول.","error");}finally{b.disabled=false;}});
+$("logoutCustomer").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
+(async()=>{try{const {data,error}=await db.auth.getSession();if(error)throw error;if(data.session?.user?.phone){verifiedPhone=data.session.user.phone;$("phone").value=verifiedPhone;$("phoneForm").style.display="none";$("accountArea").style.display="block";setMsg("customerMessage","أنت مسجل الدخول بالفعل.","success");await loadOrders();}}catch(e){console.warn("Ahmedko session check:",e);}})();
+</script>
+</body>
+</html>
