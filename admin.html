@@ -1605,9 +1605,6 @@ async function loadDashboard(){
  showPage(allowed.includes(initial)?initial:"home",true);
  history.replaceState({ahmedkoAdminPage:allowed.includes(initial)?initial:"home"},"",location.pathname+location.search+"#"+(allowed.includes(initial)?initial:"home"));
  adminHistoryReady=true;
- if(initial==="menus")loadMenuManager();
- if(initial==="wallet")loadWalletTopups();
-
  diagnostics = {};
  renderDiagnostics();
 
