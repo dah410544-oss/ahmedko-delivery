@@ -229,6 +229,9 @@ document.getElementById("notifyOffice").addEventListener("click",async()=>{
 });
 document.getElementById("refreshWallet").addEventListener("click",async()=>{const b=document.getElementById("refreshWallet");b.disabled=true;b.textContent="جارٍ التحديث...";try{await loadWallet();}catch(e){walletAccountState.textContent="تعذر تحديث المحفظة: "+(e.message||"حاول مجدداً.");}finally{b.disabled=false;b.textContent="تحديث الرصيد";}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadWallet().catch(e=>console.warn("Wallet refresh:",e));});
+window.addEventListener("focus",()=>loadWallet().catch(e=>console.warn("Wallet refresh:",e)));
+window.setInterval(()=>{if(!document.hidden)loadWallet().catch(e=>console.warn("Wallet refresh:",e));},20000);
+db.auth.onAuthStateChange((event)=>{if(event==="SIGNED_IN"||event==="SIGNED_OUT"||event==="TOKEN_REFRESHED")loadWallet().catch(e=>console.warn("Wallet auth refresh:",e));});
 loadWallet().catch(e=>{walletAccountState.textContent="تعذر تحميل المحفظة: "+(e.message||"تحقق من إعداد قاعدة البيانات.");walletHistoryEl.textContent="قد تحتاج إلى تشغيل customer_wallet.sql في Supabase أولاً.";});
 </script>
 <script src="live-app.js?v=48" defer></script>
