@@ -47,42 +47,47 @@ begin
     raise exception 'نوع الطلب غير معتمد.';
   end if;
 
-  if p_pickup_region_id is null or p_delivery_region_id is null then
-    raise exception 'يرجى اختيار منطقة الاستلام ومنطقة التسليم.';
-  end if;
-
-  select count(*) into v_regions_count
-  from public.regions r
-  where r.id in (p_pickup_region_id, p_delivery_region_id)
-    and r.is_active is true;
-
-  if p_pickup_region_id = p_delivery_region_id then
+  -- A customer may type a region that is not yet registered.
+  -- Such orders are accepted without automatic pricing for office review.
+  if p_pickup_region_id is not null then
+    select count(*) into v_regions_count
+    from public.regions r
+    where r.id = p_pickup_region_id and r.is_active is true;
     if v_regions_count <> 1 then
-      raise exception 'المنطقة المختارة غير مفعّلة أو غير موجودة.';
+      raise exception 'منطقة الاستلام المختارة غير مفعّلة أو غير موجودة.';
     end if;
-  elsif v_regions_count <> 2 then
-    raise exception 'إحدى المناطق المختارة غير مفعّلة أو غير موجودة.';
   end if;
 
-  select count(*), min(dr.price)
-    into v_price_count, v_delivery_price
-  from public.delivery_rates dr
-  where dr.pickup_region_id = p_pickup_region_id
-    and dr.delivery_region_id = p_delivery_region_id
-    and dr.vehicle_type = p_vehicle_type
-    and dr.is_active is true
-    and dr.currency = 'ILS';
-
-  if v_price_count > 1 then
-    raise exception 'يوجد أكثر من سعر نشط لهذا المسار. يجب على الإدارة مراجعة جدول الأسعار قبل استقبال الطلب.';
-  elsif v_price_count = 1 then
-    if v_delivery_price is null or v_delivery_price <= 0 then
-      raise exception 'سعر التوصيل المعتمد غير صحيح. يرجى التواصل مع الإدارة.';
+  if p_delivery_region_id is not null then
+    select count(*) into v_regions_count
+    from public.regions r
+    where r.id = p_delivery_region_id and r.is_active is true;
+    if v_regions_count <> 1 then
+      raise exception 'منطقة التسليم المختارة غير مفعّلة أو غير موجودة.';
     end if;
-  elsif v_price_count = 0 then
-    -- No configured rate: accept the request with a NULL price.
-    -- The office must set the price through its protected admin workflow.
-    v_delivery_price := null;
+  end if;
+
+  v_price_count := 0;
+  v_delivery_price := null;
+  if p_pickup_region_id is not null and p_delivery_region_id is not null then
+    select count(*), min(dr.price)
+      into v_price_count, v_delivery_price
+    from public.delivery_rates dr
+    where dr.pickup_region_id = p_pickup_region_id
+      and dr.delivery_region_id = p_delivery_region_id
+      and dr.vehicle_type = p_vehicle_type
+      and dr.is_active is true
+      and dr.currency = 'ILS';
+
+    if v_price_count > 1 then
+      raise exception 'يوجد أكثر من سعر نشط لهذا المسار. يجب على الإدارة مراجعة جدول الأسعار قبل استقبال الطلب.';
+    elsif v_price_count = 1 then
+      if v_delivery_price is null or v_delivery_price <= 0 then
+        raise exception 'سعر التوصيل المعتمد غير صحيح. يرجى التواصل مع الإدارة.';
+      end if;
+    else
+      v_delivery_price := null;
+    end if;
   end if;
 
   insert into public.orders (
