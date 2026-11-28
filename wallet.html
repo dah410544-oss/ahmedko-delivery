@@ -82,27 +82,17 @@ input:focus,select:focus,textarea:focus{border-color:#e0b51e;box-shadow:0 0 0 4p
 .track-progress.approved span{background:#169b67}
 .track-progress.rejected span:first-child{background:#d65b50}
 .track-caption{font-size:10px;color:#77869a;margin-top:5px}
+
+/* Customer-first wallet experience */
+.wallet-promo{display:flex;align-items:center;gap:14px;margin:16px 0;padding:18px 19px;border-radius:20px;background:linear-gradient(110deg,#fff7d9,#fff);border:1px solid #f3df9c;box-shadow:0 8px 22px #9b780c0d}.wallet-promo .promo-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:16px;background:#f5c32b;color:#071a35;font-size:25px;font-weight:900}.wallet-promo strong{display:block;color:#071a35;font-size:16px}.wallet-promo p{margin:3px 0 0;color:#64748b;font-size:12px;line-height:1.8}.topup-heading{display:flex;justify-content:space-between;align-items:center}.topup-heading h2{font-size:20px;margin:2px 0}.coin{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#fff2c3;color:#806000;font-weight:900;font-size:22px}.quick-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 16px}.amount-choice{padding:10px 4px;min-height:44px;background:#f7f9fc;color:#102849;border:1px solid #dce4ee;border-radius:12px;font-size:14px}.amount-choice.selected{background:#fff4c8;border:2px solid #e5b91f;color:#071a35;box-shadow:0 4px 12px #e7c34a25}.topup-panel{border:1px solid #e4eaf2;box-shadow:0 12px 30px #1028490b}.topup-panel .yellow{font-size:16px;min-height:52px}@media(max-width:420px){.quick-amounts{gap:6px}.amount-choice{font-size:12px}}
 </style>
 </head>
 <body>
 <header><div class="brand">AHMEDKO <span>DELIVERY</span> · محفظتي</div><a href="./index.html">العودة للرئيسية ←</a></header>
 <main>
 <section class="hero"><div class="section-kicker" style="color:#f5c32b">AHMEDKO WALLET · PAY WITH CONFIDENCE</div><h1>محفظتك… راحتك في كل مشوار 💛</h1><p>اشحن رصيدك، تابع مصروفاتك، وادفع لخدمات أحمدكو من مكان واحد. نعرض لك كل خطوة بوضوح، ونحافظ على سجل معاملات يمكنك الرجوع إليه.</p><div class="balance" id="balance">— ₪</div><div class="trustline"><span>🔐 حماية الحساب برمز الهاتف</span><span>✓ سجل مالي واضح</span><span>₪ جميع الأرصدة بالشيكل</span></div></section>
-<section class="payment-readiness" aria-label="وسائل الدفع الجاري اعتمادها">
-<div class="provider"><strong>جوال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
-<div class="provider"><strong>بال بي</strong><small>نعمل على اعتماد استقبال الدفع وربطه</small><em>بانتظار الموافقة</em></div>
-<div class="provider"><strong>بنك فلسطين</strong><small>طلب خدمات الدفع التلقائي قيد المتابعة</small><em>بانتظار الرد</em></div>
-</section>
-<section class="panel"><h2>شحن رصيدك بخطوات بسيطة</h2><div class="steps"><div class="step"><i>①</i><b>اختر وسيلة الدفع</b>جوال باي أو بال باي أو البنك</div><div class="step"><i>②</i><b>حوّل وأرسل المرجع</b>احتفظ برقم العملية</div><div class="step"><i>③</i><b>تأكيد وإضافة الرصيد</b>بعد مراجعة المكتب</div></div><div class="security-note"><span>🛡️</span><span>حماية رصيدك أولوية: لا نطلب منك كلمة مرور محفظتك أو رمز OTP الخاص بخدمة الدفع. لا يُضاف الرصيد إلا بعد مطابقة الحوالة واعتمادها من الإدارة.</span></div></section>
-
-<section class="transfer-hub" aria-label="مركز التحويل والمتابعة">
- <div class="transfer-head"><div class="eyebrow">AHMEDKO · SECURE TRANSFER DESK</div><h2>حوّل بسهولة… وتابع أموالك بثقة 💛</h2><p>اختر وسيلة التحويل المناسبة، وتواصل مع مكتب أحمدكو لأي استفسار. نؤكد وصول المبلغ بعد التحقق الفعلي، ثم نحدّث حالة طلبك.</p><a href="tel:*370%23" style="display:block;text-align:center;text-decoration:none;background:#f5c32b;color:#071a35;border-radius:12px;padding:12px;margin-top:13px;font-weight:900">فتح قائمة PalPay USSD (*370#)</a><small style="display:block;margin-top:8px;color:#e1eaf5">أكمل الخطوات بنفسك، وتحقق من اسم المستفيد قبل إدخال الرقم السري داخل PalPay فقط.</small></div>
- <div class="transfer-grid">
-  <article class="transfer-card"><div class="symbol">◉</div><h3>جوال بي</h3><p>بيانات الاستلام تظهر بأمان بعد تسجيل الدخول إلى محفظتك.</p><div class="subnumber">تحويل يدوي ومراجعة فعلية من المكتب</div></article>
-  <article class="transfer-card"><div class="symbol">◆</div><h3>بال بي</h3><p>بيانات الاستلام تظهر بأمان بعد تسجيل الدخول إلى محفظتك.</p><div class="subnumber">تحويل يدوي ومراجعة فعلية من المكتب</div></article>
-  <article class="transfer-card"><div class="symbol">▤</div><h3>بنك فلسطين</h3><p>بيانات الحساب والآيبان تظهر للمستخدم المسجل فقط.</p><div class="subnumber">لا يُعتمد التحويل إلا بعد التحقق الفعلي</div></article>
- </div>
- <div class="transfer-contact"><strong>هل أتممت التحويل؟ فريق أحمدكو يساعدك في التأكد من وصوله.</strong><div class="muted">اتصل أو أرسل رسالة تتضمن اسمك ورقم الطلب ومرجع الحوالة. لا ترسل كلمة مرور أو رمز تحقق.</div><div class="contact-actions"><a class="wa" href="https://wa.me/970598407547?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A3%D8%AD%D9%85%D8%AF%D9%83%D9%88%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D9%85%D8%AA%D8%A7%D8%A8%D8%B9%D8%A9%20%D8%AD%D9%88%D8%A7%D9%84%D8%A9%20%D9%88%D8%A7%D9%84%D8%AA%D8%A3%D9%83%D8%AF%20%D9%85%D9%86%20%D9%88%D8%B5%D9%88%D9%84%D9%87%D8%A7." target="_blank" rel="noopener">◉ واتساب أحمدكو</a><a class="call" href="tel:0598407547">☎ اتصال مباشر 0598407547</a></div><div class="transfer-warning">مهم: عرض بيانات التحويل لا يعني أن المبلغ وصل. لا نؤكد الدفع ولا نضيف رصيداً إلا بعد التحقق من وصول المال فعلياً. التحويلات مؤقتة يدوية إلى حين استكمال اعتماد الربط الإلكتروني مع الجهات المختصة.</div><div class="contact-actions" style="margin-top:12px"><a class="wa" href="https://play.google.com/store/apps/details?id=com.pcnc.wallet" target="_blank" rel="noopener">فتح تطبيق PalPay الرسمي</a><a class="call" href="https://www.palpay.ps/ar/merchants/merchant-wallet" target="_blank" rel="noopener">طلب اعتماد محفظة التاجر</a></div></div>
+<section class="wallet-promo">
+ <div class="promo-icon">✦</div><div><strong>اشحن رصيدك وخلي طلباتك أسهل!</strong><p>رصيدك جاهز للمطاعم والتوصيل وخدمات أحمدكو. اختر مبلغك وطريقة الشحن بكل سهولة.</p></div>
 </section>
 <section class="panel" id="authPanel">
 <h2>الدخول إلى محفظتك</h2><p class="muted">تحتاج إلى التحقق من رقم هاتفك قبل عرض الرصيد أو تقديم طلب شحن.</p>
@@ -113,14 +103,22 @@ input:focus,select:focus,textarea:focus{border-color:#e0b51e;box-shadow:0 0 0 4p
 <div class="message" id="authMessage" role="status">لن نعرض بيانات المحفظة إلا بعد نجاح التحقق.</div>
 </section>
 <section id="walletPanel" hidden>
-<section class="panel"><h2>اشحن محفظتك وابدأ الطلب</h2><p class="muted">اختر وسيلة الدفع المناسبة، وحوّل المبلغ إلى البيانات المعروضة، ثم سجّل مرجع الحوالة. سيظهر طلبك في سجل الشحن حتى يراجعه فريق أحمدكو.</p>
+<section class="panel topup-panel"><div class="topup-heading"><div><span class="section-kicker">اشحن محفظتك</span><h2>كم حابب تشحن اليوم؟</h2></div><span class="coin">₪</span></div>
+<p class="muted">اختَر مبلغاً سريعاً أو اكتب المبلغ الذي يناسبك.</p>
 <form id="topupForm">
-<label for="method">وسيلة الشحن</label><select id="method" required><option value="">جارٍ تحميل وسائل الشحن...</option></select>
-<div id="methodInstructions" class="message">ستظهر تعليمات التحويل بعد اختيار الوسيلة.</div>
-<div class="row"><div><label for="amount">المبلغ بالشيكل</label><input id="amount" type="number" min="1" max="10000" step="0.01" required placeholder="مثلاً 50"></div><div><label for="reference">رقم/مرجع الحوالة</label><input id="reference" maxlength="120" required placeholder="رقم العملية"></div></div>
-<label for="note">ملاحظة (اختياري)</label><textarea id="note" maxlength="500" rows="2" placeholder="أي تفاصيل تساعد المكتب في المطابقة"></textarea>
-<button class="yellow full" id="submitTopup" type="submit">إرسال طلب الشحن للمراجعة</button>
-<div class="message" id="topupMessage" role="status">لا يتم إضافة أي مبلغ إلى الرصيد تلقائياً.</div>
+<div class="quick-amounts" aria-label="مبالغ شحن مقترحة">
+<button type="button" class="amount-choice" data-amount="20">20 ₪</button>
+<button type="button" class="amount-choice" data-amount="50">50 ₪</button>
+<button type="button" class="amount-choice selected" data-amount="100">100 ₪</button>
+<button type="button" class="amount-choice" data-amount="200">200 ₪</button>
+</div>
+<label for="amount">مبلغ الشحن بالشيكل</label><input id="amount" type="number" min="1" max="10000" step="0.01" required value="100" placeholder="اكتب المبلغ">
+<label for="method">كيف تحب تشحن؟</label><select id="method" required><option value="">اختر وسيلة الشحن</option></select>
+<div id="methodInstructions" class="message">اختر وسيلة الشحن لعرض التعليمات المتاحة.</div>
+<label for="reference">رقم عملية التحويل</label><input id="reference" maxlength="120" required placeholder="أدخل رقم العملية بعد التحويل">
+<label for="note">ملاحظة (اختياري)</label><textarea id="note" maxlength="500" rows="2" placeholder="أي معلومة تساعدنا في مطابقة التحويل"></textarea>
+<button class="yellow full" id="submitTopup" type="submit">اشحن محفظتي الآن</button>
+<div class="message" id="topupMessage" role="status">يظهر رصيدك بعد تأكيد وصول التحويل.</div>
 </form></section>
 <section class="panel"><h2>سجل الحركات</h2><div id="transactions" class="muted">جارٍ التحميل...</div></section>
 <section class="panel"><h2>طلبات الشحن</h2><div id="topups" class="muted">جارٍ التحميل...</div></section>
@@ -141,6 +139,9 @@ function phoneE164(v){let d=String(v||"").replace(/\D/g,"");if(d.startsWith("00"
 function money(v){return Number(v||0).toLocaleString("ar-PS",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₪";}
 function statusName(s){return ({pending:"قيد مراجعة المكتب",approved:"تم اعتماد الشحن",rejected:"مرفوض"})[s]||s;}
 let methods=[];
+document.querySelectorAll(".amount-choice").forEach(button=>button.addEventListener("click",()=>{ $("amount").value=button.dataset.amount;document.querySelectorAll(".amount-choice").forEach(x=>x.classList.toggle("selected",x===button));}));
+$("amount").addEventListener("input",()=>document.querySelectorAll(".amount-choice").forEach(x=>x.classList.toggle("selected",Number(x.dataset.amount)===Number($("amount").value))));
+
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;const value=b.getAttribute('data-copy');try{await navigator.clipboard.writeText(value);const old=b.textContent;b.textContent='تم النسخ ✓';setTimeout(()=>b.textContent=old,1600);}catch(_){b.textContent='اضغط مطولاً لنسخ الرقم';}});
 async function loadWallet(){
  const {data:{user},error:authError}=await db.auth.getUser();
