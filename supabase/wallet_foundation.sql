@@ -52,10 +52,10 @@ values
  )
 on conflict (code) do update set
   display_name=excluded.display_name,
-  instructions=excluded.instructions,
-  account_label=excluded.account_label,
-  is_active=excluded.is_active,
   sort_order=excluded.sort_order;
+-- Important: re-running this foundation must never disable a payment method
+-- that an administrator has explicitly activated, or overwrite verified
+-- receiving instructions/account details. New methods remain inactive by default.
 
 create table if not exists public.wallet_topup_requests (
   id uuid primary key default gen_random_uuid(),
