@@ -188,7 +188,7 @@ async function loadWallet(){
  const [wallet,requests,ledger,orders]=await Promise.all([
   db.from("customer_wallets").select("balance,currency").eq("user_id",walletUser.id).maybeSingle(),
   db.from("wallet_topup_requests").select("id,amount,payment_method,status,created_at,payment_reference").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(8),
-  db.from("wallet_transactions").select("id,transaction_type,amount,balance_after,description,created_at").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(20),
+  db.from("wallet_transactions").select("id,order_id,transaction_type,amount,balance_after,description,created_at").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(20),
   db.rpc("get_my_customer_orders")
  ]);
  if(wallet.error)throw wallet.error;
@@ -196,7 +196,8 @@ async function loadWallet(){
  if(ledger.error)throw ledger.error;
  if(orders.error)throw orders.error;
  const payableOrdersEl=document.getElementById("walletPayOrders");
- const payable=(orders.data||[]).filter(o=>o.status==="confirmed"&&Number(o.delivery_price)>0);
+ const paidOrderIds=new Set((ledger.data||[]).filter(t=>t.transaction_type==="delivery_debit"&&t.order_id).map(t=>t.order_id));
+ const payable=(orders.data||[]).filter(o=>o.status==="confirmed"&&Number(o.delivery_price)>0&&!paidOrderIds.has(o.order_id));
  payableOrdersEl.innerHTML=payable.length?payable.map(o=>'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff20"><div><b>طلب #'+safeText(String(o.order_id).slice(0,8))+'</b><div style="font-size:11px;color:#b9c7d9">'+safeText(o.delivery_address||"طلب توصيل")+'</div><strong style="color:#f5c32b">'+safeText(Number(o.delivery_price).toFixed(2))+' ₪</strong></div><button type="button" class="copy" data-wallet-pay="'+safeText(o.order_id)+'">ادفع من المحفظة</button></div>').join(""):'لا توجد طلبات مؤكدة بانتظار الدفع حالياً.';
  walletBalanceEl.textContent=Number(wallet.data?.balance||0).toFixed(2)+" ₪";
  walletLoginHint.textContent="رصيدك وسجل عملياتك مرتبطان بحسابك الموثّق فقط.";
