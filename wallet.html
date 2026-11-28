@@ -79,7 +79,12 @@ button:active{transform:scale(.98)}
 <section class="hero">
  <h1>محفظة أحمدكو 💙💛</h1>
  <p>اشحن رصيدك بخطوات واضحة — اختر وسيلة الدفع، أدخل المبلغ، ثم أكمل التحويل بنفسك.</p>
- <div class="balance"><small>رصيد أحمدكو المتاح</small><strong>سيظهر بعد تفعيل المحفظة</strong><small>لا نعرض رصيداً غير مؤكد، ولا نخصم أي مبلغ من هذه الصفحة.</small></div>
+ <div class="balance"><small>رصيدك المتاح</small><strong id="walletBalance">— ₪</strong><small id="walletAccountState">سجّل الدخول لعرض رصيدك بأمان.</small></div>
+</section>
+<section class="panel" id="walletHistoryPanel">
+ <h2>حسابك وحركات المحفظة</h2>
+ <p class="hint" id="walletLoginHint">يظهر رصيدك وسجل عملياتك بعد تسجيل الدخول برقم الهاتف.</p>
+ <div id="walletHistory" class="hint" aria-live="polite">جارٍ التحقق من جلسة الحساب...</div>
 </section>
 <section class="panel">
  <h2>1. اختر وسيلة الدفع</h2>
@@ -104,7 +109,7 @@ button:active{transform:scale(.98)}
  <p class="hint">أدخل رقم العملية إن ظهر لك، ثم أرسل إشعاراً للمكتب لمطابقة الحوالة.</p>
  <label for="reference">رقم مرجع العملية (اختياري)</label>
  <input id="reference" maxlength="100" placeholder="رقم العملية من إيصال التحويل">
- <button class="secondary" id="notifyOffice" type="button">إبلاغ أحمدكو بالتحويل عبر واتساب</button>
+ <button class="secondary" id="notifyOffice" type="button">تسجيل طلب الشحن وإبلاغ المكتب</button>
  <div class="note safe">لن يُضاف الرصيد بمجرد فتح التحويل أو إرسال رسالة. يعتمد المكتب المبلغ بعد التحقق من وصوله فعلياً.</div>
 </section>
 <section class="note safe">
@@ -112,8 +117,16 @@ button:active{transform:scale(.98)}
 </section>
 </main>
 <footer>© 2026 AHMEDKO DELIVERY</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
+const db=window.supabase.createClient("https://pqulzfhisidcatrakxsx.supabase.co","sb_publishable_AvzTA7z_LiZNlWTYomSocg_sybVgx2x");
+let walletUser=null;
+const walletBalanceEl=document.getElementById("walletBalance");
+const walletAccountState=document.getElementById("walletAccountState");
+const walletHistoryEl=document.getElementById("walletHistory");
+const walletLoginHint=document.getElementById("walletLoginHint");
+const safeText=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll(String.fromCharCode(34),"&quot;");
 const receiver="0598407547";
 const amountEl=document.getElementById("amount");
 const statusEl=document.getElementById("status");
@@ -151,13 +164,49 @@ startBtn.addEventListener("click",()=>{
   catch(_){statusEl.textContent="رقم الاستلام: "+receiver+". راجع بيانات الحساب واسم المستفيد في تطبيق البنك قبل التحويل.";}
  }
 });
-document.getElementById("notifyOffice").addEventListener("click",()=>{
+async function loadWallet(){
+ const {data:{session},error:sessionError}=await db.auth.getSession();
+ if(sessionError)throw sessionError;
+ walletUser=session?.user||null;
+ if(!walletUser){
+  walletBalanceEl.textContent="— ₪";
+  walletAccountState.textContent="يلزم تسجيل الدخول أولاً لعرض الرصيد وتسجيل الشحن.";
+  walletLoginHint.innerHTML='<a href="account.html" style="color:#f5c32b">انتقل إلى تسجيل الدخول برقم الهاتف</a>';
+  walletHistoryEl.textContent="لا توجد جلسة دخول نشطة.";
+  return;
+ }
+ walletAccountState.textContent="حساب موثّق: "+(walletUser.phone||"عميل أحمدكو");
+ const [wallet,requests]=await Promise.all([
+  db.from("customer_wallets").select("balance,currency").eq("user_id",walletUser.id).maybeSingle(),
+  db.from("wallet_topup_requests").select("id,amount,payment_method,status,created_at,payment_reference").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(8)
+ ]);
+ if(wallet.error)throw wallet.error;
+ if(requests.error)throw requests.error;
+ walletBalanceEl.textContent=Number(wallet.data?.balance||0).toFixed(2)+" ₪";
+ walletLoginHint.textContent="رصيدك وسجل الشحن مرتبطان بحسابك الموثّق فقط.";
+ const labels={pending:"بانتظار مراجعة المكتب",approved:"تم اعتماد الشحن",rejected:"لم تتم الموافقة"};
+ walletHistoryEl.innerHTML=requests.data.length?requests.data.map(r=>'<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff20"><div><b>'+safeText(Number(r.amount).toFixed(2))+' ₪</b><div style="font-size:11px;color:#b9c7d9">'+safeText(new Date(r.created_at).toLocaleString("ar"))+'</div></div><span style="font-size:11px;color:'+(r.status==="approved"?"#9de5b7":r.status==="rejected"?"#ffb2b2":"#ffe49a")+'">'+(labels[r.status]||"قيد المراجعة")+'</span></div>').join(""):'لا توجد عمليات شحن مسجلة بعد.';
+}
+document.getElementById("notifyOffice").addEventListener("click",async()=>{
  const amount=validAmount();if(!amount)return;
- const method=config[selected].title;
- const ref=document.getElementById("reference").value.trim()||"لم يُدخل";
- const msg="مرحباً أحمدكو، أرجو مراجعة تحويل شحن المحفظة.\nوسيلة الدفع: "+method+"\nرقم الاستلام: "+receiver+"\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+ref+"\nيرجى التحقق من وصول المبلغ قبل اعتماد الرصيد.";
- window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
+ const button=document.getElementById("notifyOffice");
+ button.disabled=true;statusEl.textContent="جارٍ تسجيل طلب الشحن...";
+ try{
+  const {data:{session},error:sessionError}=await db.auth.getSession();
+  if(sessionError)throw sessionError;
+  if(!session?.user){statusEl.textContent="سجّل الدخول برقم الهاتف أولاً قبل تسجيل طلب الشحن.";return;}
+  const methods={palpay:"palpay",jawwal:"jawwal_pay",bank:"bank_transfer"};
+  const ref=document.getElementById("reference").value.trim();
+  const {data:requestId,error}=await db.rpc("wallet_request_topup",{p_amount:Number(amount),p_payment_method:methods[selected],p_payment_reference:ref||null});
+  if(error)throw error;
+  const msg="مرحباً أحمدكو، تم تسجيل طلب شحن محفظتي في التطبيق.\nرقم الطلب: "+requestId+"\nوسيلة الدفع: "+config[selected].title+"\nرقم الاستلام: "+receiver+"\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+(ref||"لم يُدخل")+"\nيرجى مطابقة الدفعة وإشعاري بعد المراجعة.";
+  statusEl.textContent="تم تسجيل طلب الشحن بانتظار مراجعة المكتب. لا يصبح الرصيد متاحاً إلا بعد اعتماد الدفعة.";
+  await loadWallet();
+  window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
+ }catch(e){statusEl.textContent="تعذر تسجيل طلب الشحن: "+(e.message||"تأكد من تفعيل جداول المحفظة في Supabase.");}
+ finally{button.disabled=false;}
 });
+loadWallet().catch(e=>{walletAccountState.textContent="تعذر تحميل المحفظة: "+(e.message||"تحقق من إعداد قاعدة البيانات.");walletHistoryEl.textContent="قد تحتاج إلى تشغيل customer_wallet.sql في Supabase أولاً.";});
 </script>
 <script src="live-app.js?v=48" defer></script>
 </body>
