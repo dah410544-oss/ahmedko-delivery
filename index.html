@@ -381,8 +381,10 @@ body.store-modal-open{overflow:hidden}
    <input id="buyerPhone" required inputmode="tel" maxlength="20" placeholder="رقم الهاتف">
    <input id="buyerAddress" required maxlength="250" placeholder="عنوان التسليم">
    <input id="buyerPickup" required maxlength="250" placeholder="عنوان الاستلام من المطعم أو المتجر">
-   <select id="buyerPickupRegion" required aria-label="منطقة الاستلام" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة الاستلام</option></select>
-   <select id="buyerDeliveryRegion" required aria-label="منطقة التسليم" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة التسليم</option></select>
+   <select id="buyerPickupRegion" aria-label="منطقة الاستلام" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة الاستلام إن وجدت</option></select>
+   <input id="buyerPickupRegionText" maxlength="120" placeholder="أو اكتب منطقة الاستلام إذا لم تجدها" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit">
+   <select id="buyerDeliveryRegion" aria-label="منطقة التسليم" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit"><option value="">اختر منطقة التسليم إن وجدت</option></select>
+   <input id="buyerDeliveryRegionText" maxlength="120" placeholder="أو اكتب منطقة التسليم إذا لم تجدها" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit">
    <select id="buyerVehicle" required aria-label="وسيلة النقل" style="grid-column:1/-1;width:100%;padding:12px;border:1px solid #d6deea;border-radius:10px;background:white;color:#17243a;font:inherit">
     <option value="">اختر وسيلة النقل</option><option value="motorcycle">دراجة نارية</option><option value="electric_bicycle">دراجة كهربائية</option><option value="bicycle">دراجة عادية</option><option value="tuk_tuk">توك توك</option><option value="car">سيارة / جيب</option><option value="bus">باص</option>
    </select>
@@ -883,16 +885,20 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
  const phone=document.getElementById("buyerPhone").value.trim();
  const address=document.getElementById("buyerAddress").value.trim();
  const pickup=document.getElementById("buyerPickup").value.trim();
- const pickupRegion=document.getElementById("buyerPickupRegion").value;
- const deliveryRegion=document.getElementById("buyerDeliveryRegion").value;
+ const pickupRegion=document.getElementById("buyerPickupRegion").value||null;
+ const deliveryRegion=document.getElementById("buyerDeliveryRegion").value||null;
+ const pickupRegionText=document.getElementById("buyerPickupRegionText").value.trim();
+ const deliveryRegionText=document.getElementById("buyerDeliveryRegionText").value.trim();
  const vehicle=document.getElementById("buyerVehicle").value;
  const customerNotes=document.getElementById("buyerNotes").value.trim();
- if(!name||!phone||!address||!pickup||!pickupRegion||!deliveryRegion||!vehicle){
-  status.textContent="أكمل الاسم والهاتف وعنواني الاستلام والتسليم والمنطقتين ووسيلة النقل.";
+ if(!name||!phone||!address||!pickup||(!pickupRegion&&!pickupRegionText)||(!deliveryRegion&&!deliveryRegionText)||!vehicle){
+  status.textContent="أكمل الاسم والهاتف والعناوين وحدد المنطقة من القائمة أو اكتبها ووسيلة النقل.";
   return;
  }
  const lines=shoppingCart.map((x,i)=>(i+1)+". "+x.name+" — "+(x.price===null?"السعر عند التواصل":money(x.price)+" ₪")+" × "+x.qty).join("\n");
- const itemsNote="المتجر: "+shoppingCart[0].store+"\nالأصناف:\n"+lines+"\nملاحظات الزبون: "+(customerNotes||"لا يوجد");
+ const pickupRegionLabel=pickupRegion?document.getElementById("buyerPickupRegion").selectedOptions[0].textContent:pickupRegionText;
+ const deliveryRegionLabel=deliveryRegion?document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent:deliveryRegionText;
+ const itemsNote="المتجر: "+shoppingCart[0].store+"\nمنطقة الاستلام: "+pickupRegionLabel+"\nمنطقة التسليم: "+deliveryRegionLabel+"\nالأصناف:\n"+lines+"\nملاحظات الزبون: "+(customerNotes||"لا يوجد");
  button.disabled=true;status.textContent="جارٍ حفظ طلبك لدى أحمدكو. سيتم الاتفاق على أجرة التوصيل مع المكتب قبل التأكيد...";
  try{
   const response=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_customer_order",{
@@ -937,7 +943,7 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
     :"تم حفظ طلب التوصيل، لكن يوجد صنف بسعر غير محدد (حسب المتوفر)، لذلك أرسل إشعار واتساب ليؤكد المطعم السعر قبل تسجيل طلبه.";
   }
   const message="طلب أحمدكو رقم: "+saved.order_id+"\n"+(restaurantOrderId?"رقم طلب المطعم: "+restaurantOrderId+"\n":"")+
-   "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+document.getElementById("buyerPickupRegion").selectedOptions[0].textContent+")\nالتسليم: "+address+" ("+document.getElementById("buyerDeliveryRegion").selectedOptions[0].textContent+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
+   "الاسم: "+name+"\nالهاتف: "+phone+"\nالمتجر: "+shoppingCart[0].store+"\nالاستلام: "+pickup+" ("+pickupRegionLabel+")\nالتسليم: "+address+" ("+deliveryRegionLabel+")\nوسيلة النقل: "+vehicle+"\nأجرة التوصيل: "+feeText+"\nالأصناف:\n"+lines+"\nقيمة الأصناف: "+total+"\nملاحظات: "+(customerNotes||"لا يوجد");
   whatsappLink.href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message);
   whatsappLink.hidden=false;
   status.textContent=restaurantOrderId?
