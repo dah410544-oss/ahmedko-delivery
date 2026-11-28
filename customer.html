@@ -24,7 +24,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 </style>
 </head>
 <body>
-<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html#home">العودة إلى الرئيسية ←</a></header>
+<header><div class="brand">AHMEDKO <span>DELIVERY</span></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><a href="./wallet.html">محفظتي 💳</a><a href="./index.html#home">العودة إلى الرئيسية ←</a></div></header>
 <main>
 <section class="intro"><h1>طلباتك مع أحمدكو 🚚</h1><p>أرسل طلب توصيل دون إنشاء حساب. ولمتابعة طلباتك، تحقق من رقم هاتفك برسالة تحقق عبر WhatsApp.</p></section>
 <div class="grid">
@@ -195,6 +195,7 @@ async function loadCustomerOrders(silent=true){
        const paid=await db.rpc("wallet_pay_delivery_order",{p_order_id:order.order_id});
        if(paid.error)throw paid.error;
        setMessage("trackingMessage","تم دفع أجرة الطلب من محفظتك بنجاح. الرصيد المتبقي: "+Number(paid.data.balance).toFixed(2)+" ₪","success");
+       pay.textContent="تم الدفع من المحفظة ✓";pay.disabled=true;
        await loadCustomerOrders(false);
       }catch(error){setMessage("trackingMessage","لم يتم الخصم: "+(error.message||"تعذر تنفيذ الدفع."),"error");pay.disabled=false;pay.textContent="ادفع أجرة التوصيل من محفظتي";}
      });
