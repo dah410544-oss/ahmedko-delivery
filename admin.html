@@ -285,6 +285,7 @@ footer{
  <button class="nav-button" data-page="regions">📍 المناطق</button>
  <button class="nav-button" data-page="rates">💰 الأسعار</button>
  <button class="nav-button" data-page="finance">💳 الحسابات</button>
+ <button class="nav-button" data-page="wallet">👛 محفظة العملاء</button>
  <button class="nav-button" data-page="announcements">📣 العروض والإعلانات</button>
  <button class="nav-button" data-page="diagnostics">🔧 فحص النظام</button>
  <button id="logout-button">تسجيل الخروج</button>
@@ -472,6 +473,17 @@ footer{
   <div class="toolbar"><h3>مستحقات السائقين والمدفوعات</h3><button class="primary" type="button" id="refresh-earnings">تحديث السجلات</button></div>
   <div id="earnings-workflow" class="muted">جارٍ تحميل المستحقات...</div>
  </div>
+</section>
+
+<section class="page" id="page-wallet">
+ <h2 class="section-title">محافظ العملاء وطلبات الشحن</h2>
+ <div class="panel">
+  <div class="toolbar"><h3>طلبات شحن بانتظار المراجعة</h3><button class="primary" type="button" id="refresh-wallet-topups">تحديث الطلبات</button></div>
+  <p class="muted">اعتمد الشحن فقط بعد التأكد من وصول المبلغ فعلياً إلى حساب أحمدكو. الموافقة تضيف الرصيد مرة واحدة وتسجل الحركة في دفتر المحفظة.</p>
+  <div id="wallet-topups-message" class="workflow-status" aria-live="polite">جارٍ تحميل طلبات الشحن...</div>
+  <div id="wallet-topups-list"></div>
+ </div>
+ <div class="panel"><h3>تنبيه محاسبي</h3><p class="muted">لا يوجد ربط دفع آلي حالياً. لا تعتمد صورة تحويل أو رسالة عميل وحدها دون مطابقة العملية في حساب الاستلام. لا يمكن إعادة اعتماد الطلب بعد مراجعته.</p></div>
 </section>
 
 <section class="page" id="page-announcements">
@@ -662,16 +674,18 @@ function showPage(name,fromHistory=false){
 }
 window.addEventListener("popstate",()=>{
  const requested=location.hash.replace(/^#/,"");
- const allowed=["home","orders","drivers","stores","menus","regions","rates","finance","announcements","diagnostics"];
+ const allowed=["home","orders","drivers","stores","menus","regions","rates","finance","wallet","announcements","diagnostics"];
  const page=allowed.includes(requested)?requested:"home";
  showPage(page,true);
  if(page==="menus")loadMenuManager();
+ if(page==="wallet")loadWalletTopups();
 });
 
 document.querySelectorAll(".nav-button").forEach(button=>{
  button.addEventListener("click",()=>{
   showPage(button.dataset.page);
   if(button.dataset.page==="menus")loadMenuManager();
+  if(button.dataset.page==="wallet")loadWalletTopups();
  });
 });
 
@@ -1489,6 +1503,50 @@ async function ensureOrderEarning(order){
  return true;
 }
 
+async function loadWalletTopups(){
+ const box=$("wallet-topups-list"),message=$("wallet-topups-message");
+ if(!box||!message)return;
+ message.textContent="جارٍ تحميل طلبات الشحن...";
+ try{
+  const result=await db.from("wallet_topup_requests")
+   .select("id,user_id,amount,payment_method,payment_reference,status,office_note,created_at")
+   .order("created_at",{ascending:false}).limit(100);
+  if(result.error)throw result.error;
+  const rows=result.data||[],pending=rows.filter(x=>x.status==="pending");
+  message.textContent="إجمالي الطلبات: "+rows.length+" — بانتظار المراجعة: "+pending.length;
+  if(!rows.length){box.innerHTML='<p class="muted">لا توجد طلبات شحن حتى الآن.</p>';setDiagnostic("طلبات شحن المحفظة",true,"لا توجد طلبات مسجلة.");return;}
+  const labels={palpay:"PalPay",jawwal_pay:"جوال باي",bank_transfer:"تحويل بنكي",cash:"نقداً"};
+  const states={pending:"بانتظار المراجعة",approved:"معتمد",rejected:"مرفوض"};
+  box.innerHTML=rows.map(row=>{
+   const date=row.created_at?new Date(row.created_at).toLocaleString("ar-PS"):"—";
+   const actions=row.status==="pending"
+    ?'<div class="workflow-controls"><button type="button" data-wallet-action="approve" data-id="'+escapeHTML(row.id)+'">تأكيد وصول المبلغ واعتماد الشحن</button><button type="button" class="secondary" data-wallet-action="reject" data-id="'+escapeHTML(row.id)+'">رفض الطلب</button></div>'
+    :'<p class="workflow-status">'+escapeHTML(row.office_note||"تمت مراجعة الطلب.")+'</p>';
+   return '<article class="workflow-card"><h4>طلب شحن — '+escapeHTML(row.amount)+' ₪ <span class="status">'+escapeHTML(states[row.status]||row.status)+'</span></h4><div class="workflow-meta">رقم الطلب: '+escapeHTML(row.id)+'<br>معرّف العميل: '+escapeHTML(row.user_id)+'<br>وسيلة الدفع: '+escapeHTML(labels[row.payment_method]||row.payment_method)+'<br>مرجع التحويل: '+escapeHTML(row.payment_reference||"لم يُدخل")+'<br>تاريخ الطلب: '+escapeHTML(date)+'</div>'+actions+'</article>';
+  }).join("");
+  box.querySelectorAll("[data-wallet-action]").forEach(button=>button.addEventListener("click",async()=>{
+   const approve=button.dataset.walletAction==="approve";
+   const row=rows.find(x=>x.id===button.dataset.id);
+   if(approve&&!confirm("هل تحققت من وصول مبلغ "+row.amount+" شيكل فعلياً إلى حساب أحمدكو؟\n\nسيضاف الرصيد مرة واحدة ولا يمكن تكرار الموافقة."))return;
+   if(!approve&&!confirm("تأكيد رفض طلب الشحن؟ لن يضاف أي رصيد."))return;
+   const note=prompt(approve?"ملاحظة المطابقة (اختياري):":"سبب الرفض (اختياري):")||null;
+   button.disabled=true;
+   try{
+    const response=await db.rpc("wallet_admin_review_topup",{p_request_id:button.dataset.id,p_approve:approve,p_office_note:note});
+    if(response.error)throw response.error;
+    message.textContent=approve?"تم اعتماد الطلب وإضافة الرصيد مرة واحدة.":"تم رفض الطلب دون إضافة رصيد.";
+    await loadWalletTopups();
+   }catch(error){alert("تعذرت مراجعة الطلب: "+error.message);button.disabled=false;}
+  }));
+  setDiagnostic("طلبات شحن المحفظة",true,"تم تحميل "+rows.length+" طلباً، منها "+pending.length+" قيد المراجعة.");
+ }catch(error){
+  box.innerHTML='<div class="error">تعذر تحميل طلبات الشحن: '+escapeHTML(error.message)+'</div>';
+  message.textContent="فشل فحص طلبات المحفظة.";
+  setDiagnostic("طلبات شحن المحفظة",false,error.message);
+ }
+}
+$("refresh-wallet-topups")?.addEventListener("click",loadWalletTopups);
+
 async function loadFinanceEarnings(){
  const box=$("earnings-workflow");if(!box)return;
  box.textContent="جارٍ تحميل المستحقات...";
@@ -1542,12 +1600,13 @@ async function loadDashboard(){
  await verifyAdmin();
  showApp();
  startAdminRealtime();
- const allowed=["home","orders","drivers","stores","menus","regions","rates","finance","announcements","diagnostics"];
+ const allowed=["home","orders","drivers","stores","menus","regions","rates","finance","wallet","announcements","diagnostics"];
  const initial=location.hash.replace(/^#/,"");
  showPage(allowed.includes(initial)?initial:"home",true);
  history.replaceState({ahmedkoAdminPage:allowed.includes(initial)?initial:"home"},"",location.pathname+location.search+"#"+(allowed.includes(initial)?initial:"home"));
  adminHistoryReady=true;
  if(initial==="menus")loadMenuManager();
+ if(initial==="wallet")loadWalletTopups();
 
  diagnostics = {};
  renderDiagnostics();
@@ -1559,6 +1618,7 @@ async function loadDashboard(){
   loadOrderWorkflow(),
   loadDriverApplications(),
   loadFinanceEarnings(),
+  loadWalletTopups(),
   loadMenuManager(),
   loadRateFormOptions(),
   ...Object.keys(tableConfig).map(loadTable)
