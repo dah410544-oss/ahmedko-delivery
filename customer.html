@@ -186,6 +186,21 @@ async function loadCustomerOrders(silent=true){
      ?'<div class="cancelled-note">تم إلغاء هذا الطلب. تواصل مع المكتب إذا كنت بحاجة إلى توضيح.</div>'
      :'<div class="order-progress" aria-label="مراحل الطلب">'+stages.map((stage,index)=>'<div class="progress-step '+(index<stageIndex?'done':index===stageIndex?'current':'')+'"><span>'+stage[1]+'</span></div>').join("")+'</div>';
     article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3>'+progress+'<p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع المكتب":esc(order.delivery_price)+" ₪")+'</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
+    if(order.status==="confirmed"&&Number(order.delivery_price)>0){
+     const pay=document.createElement("button");pay.type="button";pay.className="yellow full";pay.textContent="ادفع أجرة التوصيل من محفظتي";
+     pay.addEventListener("click",async()=>{
+      if(!confirm("تأكيد دفع أجرة التوصيل ("+Number(order.delivery_price).toFixed(2)+" شيكل) من محفظتك؟"))return;
+      pay.disabled=true;pay.textContent="جارٍ تنفيذ الدفع بأمان...";
+      try{
+       const paid=await db.rpc("wallet_pay_delivery_order",{p_order_id:order.order_id});
+       if(paid.error)throw paid.error;
+       setMessage("trackingMessage","تم دفع أجرة الطلب من محفظتك بنجاح. الرصيد المتبقي: "+Number(paid.data.balance).toFixed(2)+" ₪","success");
+       await loadCustomerOrders(false);
+      }catch(error){setMessage("trackingMessage","لم يتم الخصم: "+(error.message||"تعذر تنفيذ الدفع."),"error");pay.disabled=false;pay.textContent="ادفع أجرة التوصيل من محفظتي";}
+     });
+     article.appendChild(pay);
+    }
+    const walletLink=document.createElement("a");walletLink.href="./wallet.html";walletLink.className="button yellow";walletLink.textContent="فتح محفظة أحمدكو";article.appendChild(walletLink);
     $("ordersList").appendChild(article);
    });
   }
