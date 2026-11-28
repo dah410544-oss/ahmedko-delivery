@@ -118,7 +118,7 @@ begin
     if v_delivery_price is null or v_delivery_price <= 0 then
       raise exception 'سعر التوصيل المعتمد غير صحيح. يرجى التواصل مع الإدارة.';
     end if;
-  else
+  elsif v_price_count = 0 then
     -- No configured rate: accept the request with a NULL price.
     -- The office must set the price through its protected admin workflow.
     v_delivery_price := null;
