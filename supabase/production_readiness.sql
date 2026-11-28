@@ -52,24 +52,26 @@ declare
   v_order_id uuid;
   v_regions_count integer;
 begin
-  if length(trim(coalesce(p_customer_name, ''))) < 2
-     or length(trim(coalesce(p_customer_name, ''))) > 100 then
+  if length(trim(coalesce(p_customer_name, ''))) not between 2 and 100 then
     raise exception 'يرجى إدخال اسم صحيح.';
   end if;
 
-  if length(regexp_replace(coalesce(p_customer_phone, ''), '[^0-9]', '', 'g')) < 7
-     or length(regexp_replace(coalesce(p_customer_phone, ''), '[^0-9]', '', 'g')) > 15 then
+  if length(regexp_replace(coalesce(p_customer_phone, ''), '[^0-9]', '', 'g')) not between 7 and 15 then
     raise exception 'يرجى إدخال رقم هاتف صحيح.';
   end if;
 
-  if length(trim(coalesce(p_pickup_address, ''))) < 3
-     or length(trim(coalesce(p_delivery_address, ''))) < 3 then
+  if length(trim(coalesce(p_pickup_address, ''))) not between 3 and 300
+     or length(trim(coalesce(p_delivery_address, ''))) not between 3 and 300 then
     raise exception 'عنوان الاستلام والتسليم مطلوبان.';
   end if;
 
   if p_vehicle_type is null
      or p_vehicle_type not in ('car','tuk_tuk','bus','electric_bicycle','bicycle','motorcycle') then
     raise exception 'وسيلة النقل المختارة غير صحيحة.';
+  end if;
+
+  if coalesce(p_order_type, 'delivery') not in ('delivery','restaurant_order') then
+    raise exception 'نوع الطلب غير معتمد.';
   end if;
 
   if p_pickup_region_id is null or p_delivery_region_id is null then
@@ -98,14 +100,16 @@ begin
     and dr.is_active is true
     and dr.currency = 'ILS';
 
-  if v_price_count = 0 then
-    raise exception 'لا يوجد سعر توصيل معتمد لهذا المسار ووسيلة النقل. تواصل مع أحمدكو لتأكيد السعر.';
-  elsif v_price_count > 1 then
+  if v_price_count > 1 then
     raise exception 'يوجد أكثر من سعر نشط لهذا المسار. يجب على الإدارة مراجعة جدول الأسعار قبل استقبال الطلب.';
-  end if;
-
-  if v_delivery_price is null or v_delivery_price <= 0 then
-    raise exception 'سعر التوصيل المعتمد غير صحيح. يرجى التواصل مع الإدارة.';
+  elsif v_price_count = 1 then
+    if v_delivery_price is null or v_delivery_price <= 0 then
+      raise exception 'سعر التوصيل المعتمد غير صحيح. يرجى التواصل مع الإدارة.';
+    end if;
+  else
+    -- No configured rate: accept the request with a NULL price.
+    -- The office must set the price through its protected admin workflow.
+    v_delivery_price := null;
   end if;
 
   insert into public.orders (
