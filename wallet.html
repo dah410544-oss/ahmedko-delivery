@@ -94,6 +94,11 @@ button:active{transform:scale(.98)}
  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px"><h3 style="margin:0">دفتر الحركات المالية</h3><button id="refreshWallet" type="button" class="secondary" style="padding:8px 12px">تحديث الرصيد</button></div>
  <div id="walletLedger" class="hint" aria-live="polite">جارٍ تحميل الحركات...</div>
 </section>
+<section class="panel" id="walletPayOrdersPanel">
+ <h2>الدفع من رصيد المحفظة</h2>
+ <p class="hint">تظهر هنا طلباتك التي أكد المكتب سعرها. يمكنك دفع أجرة التوصيل من رصيدك دون تحويل جديد.</p>
+ <div id="walletPayOrders" class="hint" aria-live="polite">جارٍ تحميل الطلبات المستحقة...</div>
+</section>
 <section class="panel">
  <h2>1. اختر وسيلة الدفع</h2>
  <p class="hint">اختر الوسيلة التي تفضلها، وسنطلب من المكتب بيانات الاستلام الرسمية قبل أي تحويل.</p>
@@ -180,14 +185,19 @@ async function loadWallet(){
   return;
  }
  walletAccountState.textContent="حساب موثّق: "+(walletUser.phone||"عميل أحمدكو");
- const [wallet,requests,ledger]=await Promise.all([
+ const [wallet,requests,ledger,orders]=await Promise.all([
   db.from("customer_wallets").select("balance,currency").eq("user_id",walletUser.id).maybeSingle(),
   db.from("wallet_topup_requests").select("id,amount,payment_method,status,created_at,payment_reference").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(8),
-  db.from("wallet_transactions").select("id,transaction_type,amount,balance_after,description,created_at").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(20)
+  db.from("wallet_transactions").select("id,transaction_type,amount,balance_after,description,created_at").eq("user_id",walletUser.id).order("created_at",{ascending:false}).limit(20),
+  db.rpc("get_my_customer_orders")
  ]);
  if(wallet.error)throw wallet.error;
  if(requests.error)throw requests.error;
  if(ledger.error)throw ledger.error;
+ if(orders.error)throw orders.error;
+ const payableOrdersEl=document.getElementById("walletPayOrders");
+ const payable=(orders.data||[]).filter(o=>o.status==="confirmed"&&Number(o.delivery_price)>0);
+ payableOrdersEl.innerHTML=payable.length?payable.map(o=>'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff20"><div><b>طلب #'+safeText(String(o.order_id).slice(0,8))+'</b><div style="font-size:11px;color:#b9c7d9">'+safeText(o.delivery_address||"طلب توصيل")+'</div><strong style="color:#f5c32b">'+safeText(Number(o.delivery_price).toFixed(2))+' ₪</strong></div><button type="button" class="copy" data-wallet-pay="'+safeText(o.order_id)+'">ادفع من المحفظة</button></div>').join(""):'لا توجد طلبات مؤكدة بانتظار الدفع حالياً.';
  walletBalanceEl.textContent=Number(wallet.data?.balance||0).toFixed(2)+" ₪";
  walletLoginHint.textContent="رصيدك وسجل عملياتك مرتبطان بحسابك الموثّق فقط.";
  const labels={pending:"بانتظار مراجعة المكتب",approved:"تم اعتماد الشحن",rejected:"لم تتم الموافقة"};
@@ -226,6 +236,23 @@ document.getElementById("notifyOffice").addEventListener("click",async()=>{
    :"تعذر تسجيل طلب الشحن: "+(e.message||"تأكد من تفعيل جداول المحفظة في Supabase.");
  }
  finally{button.disabled=false;}
+});
+document.getElementById("walletPayOrders").addEventListener("click",async(event)=>{
+ const button=event.target.closest("[data-wallet-pay]");
+ if(!button)return;
+ const orderId=button.getAttribute("data-wallet-pay");
+ if(!orderId)return;
+ if(!confirm("تأكيد دفع أجرة هذا الطلب من رصيد محفظتك؟"))return;
+ button.disabled=true;button.textContent="جارٍ الدفع...";
+ try{
+  const {data,error}=await db.rpc("wallet_pay_delivery_order",{p_order_id:orderId});
+  if(error)throw error;
+  statusEl.textContent=data?.already_paid?"هذا الطلب مدفوع مسبقاً، لم يتم خصم مبلغ جديد.":"تم دفع أجرة الطلب بنجاح. الرصيد المتبقي: "+Number(data?.balance||0).toFixed(2)+" ₪";
+  await loadWallet();
+ }catch(e){
+  statusEl.textContent="تعذر الدفع: "+(e.message||"حاول مجدداً.");
+  button.disabled=false;button.textContent="ادفع من المحفظة";
+ }
 });
 document.getElementById("refreshWallet").addEventListener("click",async()=>{const b=document.getElementById("refreshWallet");b.disabled=true;b.textContent="جارٍ التحديث...";try{await loadWallet();}catch(e){walletAccountState.textContent="تعذر تحديث المحفظة: "+(e.message||"حاول مجدداً.");}finally{b.disabled=false;b.textContent="تحديث الرصيد";}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadWallet().catch(e=>console.warn("Wallet refresh:",e));});
