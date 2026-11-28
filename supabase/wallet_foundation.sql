@@ -52,10 +52,10 @@ values
  )
 on conflict (code) do update set
   display_name=excluded.display_name,
-  instructions=excluded.instructions,
-  account_label=excluded.account_label,
-  is_active=excluded.is_active,
   sort_order=excluded.sort_order;
+-- Important: re-running this foundation must never disable a payment method
+-- that an administrator has explicitly activated, or overwrite verified
+-- receiving instructions/account details. New methods remain inactive by default.
 
 create table if not exists public.wallet_topup_requests (
   id uuid primary key default gen_random_uuid(),
@@ -262,3 +262,59 @@ grant execute on function public.wallet_review_topup(uuid,boolean,text) to authe
 
 grant select on public.wallet_accounts, public.wallet_payment_methods,
   public.wallet_topup_requests, public.wallet_transactions to authenticated;
+
+-- Defense in depth: client roles must never write balances, top-up requests,
+-- or ledger rows directly. All changes go through the guarded RPC functions.
+revoke insert, update, delete, truncate, references, trigger
+  on public.wallet_accounts, public.wallet_topup_requests, public.wallet_transactions
+  from anon, authenticated;
+ 
+-- Admin-only queue with customer contact details for the wallet review screen.
+create or replace function public.wallet_admin_list_topups()
+returns table (
+  request_id uuid,
+  user_id uuid,
+  customer_name text,
+  customer_phone text,
+  amount numeric,
+  method_code text,
+  transfer_reference text,
+  customer_note text,
+  status text,
+  created_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null or not public.is_admin() then
+    raise exception 'غير مصرح: هذه البيانات للإدارة فقط';
+  end if;
+
+  return query
+  select
+    r.id,
+    r.user_id,
+    coalesce(
+      nullif(u.raw_user_meta_data ->> 'full_name', ''),
+      nullif(u.raw_user_meta_data ->> 'name', ''),
+      nullif(u.raw_user_meta_data ->> 'display_name', ''),
+      'عميل أحمدكو'
+    ),
+    coalesce(u.phone, ''),
+    r.amount,
+    r.method_code,
+    r.transfer_reference,
+    r.customer_note,
+    r.status,
+    r.created_at
+  from public.wallet_topup_requests r
+  left join auth.users u on u.id = r.user_id
+  order by r.created_at desc
+  limit 100;
+end;
+$$;
+
+revoke all on function public.wallet_admin_list_topups() from public, anon;
+grant execute on function public.wallet_admin_list_topups() to authenticated;
