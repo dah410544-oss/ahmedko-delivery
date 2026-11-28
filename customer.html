@@ -25,7 +25,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <body>
 <header><div class="brand">AHMEDKO <span>DELIVERY</span></div><a href="./index.html#home">العودة إلى الرئيسية ←</a></header>
 <main>
-<section class="intro"><h1>طلباتك مع أحمدكو 🚚</h1><p>أرسل طلب توصيل دون إنشاء حساب. ولمتابعة طلباتك، تحقق من رقم هاتفك برسالة SMS.</p></section>
+<section class="intro"><h1>طلباتك مع أحمدكو 🚚</h1><p>أرسل طلب توصيل دون إنشاء حساب. ولمتابعة طلباتك، تحقق من رقم هاتفك برسالة تحقق عبر WhatsApp.</p></section>
 <div class="grid">
 <section class="panel">
 <h2>إنشاء طلب توصيل</h2>
@@ -62,7 +62,7 @@ footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 <form id="otpForm">
 <label for="trackingPhone">رقم الهاتف</label>
 <div class="otp-row"><input id="trackingPhone" maxlength="20" required inputmode="tel" autocomplete="tel" placeholder="059xxxxxxx"><button id="sendOtp" type="submit" class="yellow">إرسال رمز التحقق</button></div>
-<label for="otpCode">رمز SMS</label><input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="أدخل الرمز الذي وصلك">
+<label for="otpCode">رمز التحقق</label><input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="أدخل الرمز الذي وصلك">
 <button id="verifyOtp" class="full" type="button">تحقق واعرض طلباتي</button>
 <button id="enable-order-notifications" class="full" type="button" style="background:#102849;margin-top:8px">🔔 تفعيل إشعارات حالة الطلب</button>
 <p id="order-notification-state" class="muted" aria-live="polite">يمكنك تفعيل تنبيهات وصول الطلب وتغيّر حالته على هذا الجهاز.</p>
@@ -188,7 +188,7 @@ async function loadCustomerOrders(silent=true){
   if(!silent)setMessage("trackingMessage","تعذر تحديث الطلبات: "+(error.message||"خطأ غير معروف."),"error");
  }finally{customerOrdersLoading=false;}
 }
-window.setInterval(()=>loadCustomerOrders(true),8000);
+window.setInterval(()=>loadCustomerOrders(true),20000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadCustomerOrders(true);});
 
 $("otpForm").addEventListener("submit",async event=>{
@@ -198,9 +198,9 @@ $("otpForm").addEventListener("submit",async event=>{
  const button=$("sendOtp");button.disabled=true;
  setMessage("trackingMessage","جارٍ طلب إرسال رمز التحقق...");
  try{
-  const result=await db.auth.signInWithOtp({phone,options:{shouldCreateUser:true}});
+  const result=await db.auth.signInWithOtp({phone,options:{shouldCreateUser:true,channel:"whatsapp"}});
   if(result.error)throw result.error;
-  setMessage("trackingMessage","إذا كان إعداد إرسال الرسائل مفعّلاً، سيصلك رمز SMS على "+phone+". أدخل الرمز ثم اضغط تحقق.","success");
+  setMessage("trackingMessage","إذا كان مزود WhatsApp مفعّلاً، سيصلك رمز التحقق على "+phone+". أدخل الرمز ثم اضغط تحقق.","success");
  }catch(error){
   setMessage("trackingMessage","تعذر إرسال الرمز: "+(error.message||"خطأ في خدمة الرسائل.")+". قد يحتاج المشروع إلى إعداد مزود SMS في Supabase Auth.","error");
  }finally{button.disabled=false;}
@@ -208,7 +208,7 @@ $("otpForm").addEventListener("submit",async event=>{
 $("verifyOtp").addEventListener("click",async()=>{
  const phone=normalizePhone($("trackingPhone").value);
  const token=$("otpCode").value.trim();
- if(!token){setMessage("trackingMessage","أدخل رمز التحقق الذي وصلك برسالة SMS.","error");return;}
+ if(!token){setMessage("trackingMessage","أدخل رمز التحقق الذي وصلك عبر WhatsApp.","error");return;}
  const button=$("verifyOtp");button.disabled=true;
  setMessage("trackingMessage","جارٍ التحقق من الرمز...");
  try{
