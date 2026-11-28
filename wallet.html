@@ -110,7 +110,7 @@ button:active{transform:scale(.98)}
   <button class="copy" id="copyNumber" type="button">نسخ الرقم</button>
  </div>
  <div class="note" id="methodNote">بعد فتح التحويل، تأكد من ظهور اسم المستفيد الصحيح قبل التأكيد.</div>
- <button class="primary" id="startTransfer" type="button">فتح تحويل PalPay</button>
+ <button class="primary" id="startTransfer" type="button">طلب بيانات الدفع عبر واتساب</button>
  <div id="status" aria-live="polite"></div>
 </section>
 <section class="panel">
@@ -145,9 +145,9 @@ const noteEl=document.getElementById("methodNote");
 const startBtn=document.getElementById("startTransfer");
 let selected="palpay";
 const config={
- palpay:{title:"PalPay",button:"فتح تحويل PalPay",note:"سيُفتح طلب تحويل PalPay بالمبلغ ورقم الاستلام. راجع اسم المستفيد والمبلغ داخل الخدمة قبل التأكيد."},
- jawwal:{title:"جوال Pay",button:"فتح قائمة جوال Pay",note:"سنفتح قائمة جوال Pay العامة. أكمل خطوات التحويل داخل الخدمة الرسمية، وأدخل الرقم السري هناك فقط."},
- bank:{title:"بنك فلسطين",button:"نسخ بيانات التحويل",note:"استخدم الرقم الذي زوّدتنا به كبيانات استلام، وتأكد من اسم المستفيد وبيانات الحساب التي يعرضها البنك قبل تنفيذ الحوالة."}
+ palpay:{title:"PalPay",button:"طلب بيانات PalPay عبر واتساب",note:"اطلب من المكتب بيانات PalPay الرسمية واسم المستفيد قبل إجراء أي تحويل."},
+ jawwal:{title:"جوال Pay",button:"طلب بيانات جوال Pay عبر واتساب",note:"اطلب من المكتب بيانات جوال Pay الرسمية واسم المستفيد قبل إجراء أي تحويل."},
+ bank:{title:"بنك فلسطين",button:"طلب بيانات التحويل عبر واتساب",note:"رقم التواصل ليس رقم حساب بنكي. اطلب رقم الحساب أو IBAN واسم المستفيد المعتمد من المكتب."}
 };
 document.querySelectorAll("[data-method]").forEach(btn=>btn.addEventListener("click",()=>{
  selected=btn.dataset.method;
@@ -210,7 +210,7 @@ document.getElementById("notifyOffice").addEventListener("click",async()=>{
   const ref=document.getElementById("reference").value.trim();
   const {data:requestId,error}=await db.rpc("wallet_request_topup",{p_amount:Number(amount),p_payment_method:methods[selected],p_payment_reference:ref||null});
   if(error)throw error;
-  const msg="مرحباً أحمدكو، تم تسجيل طلب شحن محفظتي في التطبيق.\nرقم الطلب: "+requestId+"\nوسيلة الدفع: "+config[selected].title+"\nرقم الاستلام: "+receiver+"\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+(ref||"لم يُدخل")+"\nيرجى مطابقة الدفعة وإشعاري بعد المراجعة.";
+  const msg="مرحباً أحمدكو، تم تسجيل طلب شحن محفظتي في التطبيق.\nرقم الطلب: "+requestId+"\nوسيلة الدفع: "+config[selected].title+"\nرقم التواصل مع المكتب: "+receiver+" (ليس رقم حساب التحويل)\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+(ref||"لم يُدخل")+"\nيرجى مطابقة الدفعة وإشعاري بعد المراجعة.";
   statusEl.textContent="تم تسجيل طلب الشحن بانتظار مراجعة المكتب. لا يصبح الرصيد متاحاً إلا بعد اعتماد الدفعة.";
   await loadWallet();
   window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
