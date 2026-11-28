@@ -1,6 +1,6 @@
 const CACHE_NAME = "ahmedko-live-v48";
 const appUrl = path => new URL(path, self.registration.scope).toString();
-const APP_SHELL = [appUrl("index.html"), appUrl("wallet.html"), appUrl("customer.html"), appUrl("account.html"), appUrl("admin.html"), appUrl("driver.html"), appUrl("restaurant.html")];
+const APP_SHELL = [appUrl("index.html"), appUrl("wallet.html"), appUrl("customer.html"), appUrl("account.html"), appUrl("admin.html"), appUrl("driver.html"), appUrl("restaurant.html"), appUrl("live-app.js")];
 
 
 self.addEventListener("push", event => {
