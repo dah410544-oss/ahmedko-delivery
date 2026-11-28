@@ -91,12 +91,12 @@ button:active{transform:scale(.98)}
  <h2>حسابك وحركات المحفظة</h2>
  <p class="hint" id="walletLoginHint">يظهر رصيدك وسجل عملياتك بعد تسجيل الدخول برقم الهاتف.</p>
  <div id="walletHistory" class="hint" aria-live="polite">جارٍ التحقق من جلسة الحساب...</div>
- <h3 style="margin-top:20px">دفتر الحركات المالية</h3>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px"><h3 style="margin:0">دفتر الحركات المالية</h3><button id="refreshWallet" type="button" class="secondary" style="padding:8px 12px">تحديث الرصيد</button></div>
  <div id="walletLedger" class="hint" aria-live="polite">جارٍ تحميل الحركات...</div>
 </section>
 <section class="panel">
  <h2>1. اختر وسيلة الدفع</h2>
- <p class="hint">ثلاث وسائل فقط، دون خطوات زائدة.</p>
+ <p class="hint">اختر الوسيلة التي تفضلها، وسنطلب من المكتب بيانات الاستلام الرسمية قبل أي تحويل.</p>
  <div class="methods" role="group" aria-label="وسيلة الدفع">
   <button class="method" type="button" data-method="palpay" aria-pressed="true"><b>💙 PalPay</b><small>تحويل USSD</small></button>
   <button class="method" type="button" data-method="jawwal" aria-pressed="false"><b>📱 جوال Pay</b><small>قائمة الخدمة</small></button>
@@ -106,7 +106,7 @@ button:active{transform:scale(.98)}
  <input id="amount" type="number" inputmode="decimal" min="1" max="50000" step="0.01" placeholder="مثال: 50">
  <div class="quick-amounts" aria-label="مبالغ شحن سريعة"><button type="button" data-amount="20">20 ₪</button><button type="button" data-amount="50">50 ₪</button><button type="button" data-amount="100">100 ₪</button><button type="button" data-amount="200">200 ₪</button></div>
  <div class="recipient">
-  <div><small id="recipientLabel">رقم الاستلام الذي زوّدتنا به</small><strong>0598407547</strong></div>
+  <div><small id="recipientLabel">رقم التواصل مع مكتب أحمدكو (ليس رقم حساب بنكي)</small><strong>0598407547</strong></div>
   <button class="copy" id="copyNumber" type="button">نسخ الرقم</button>
  </div>
  <div class="note" id="methodNote">بعد فتح التحويل، تأكد من ظهور اسم المستفيد الصحيح قبل التأكيد.</div>
@@ -114,8 +114,8 @@ button:active{transform:scale(.98)}
  <div id="status" aria-live="polite"></div>
 </section>
 <section class="panel">
- <h2>3. بعد إتمام التحويل</h2>
- <p class="hint">أدخل رقم العملية إن ظهر لك، ثم أرسل إشعاراً للمكتب لمطابقة الحوالة.</p>
+ <h2>3. بعد استلام بيانات الدفع وإتمام التحويل</h2>
+ <p class="hint">اطلب بيانات الاستلام المعتمدة من المكتب أولاً. بعد تنفيذ التحويل أدخل مرجع العملية إن توفر، ثم أرسل طلب المراجعة.</p>
  <label for="reference">رقم مرجع العملية (اختياري)</label>
  <input id="reference" maxlength="100" placeholder="رقم العملية من إيصال التحويل">
  <button class="secondary" id="notifyOffice" type="button">تسجيل طلب الشحن وإبلاغ المكتب</button>
@@ -163,17 +163,9 @@ document.getElementById("copyNumber").addEventListener("click",async()=>{
 function validAmount(){const n=Number(amountEl.value);if(!Number.isFinite(n)||n<1||n>50000){statusEl.textContent="أدخل مبلغاً صحيحاً من 1 إلى 50000 شيكل.";amountEl.focus();return null;}return String(n);}
 startBtn.addEventListener("click",()=>{
  const amount=validAmount();if(!amount)return;
- if(selected==="palpay"){
-  const code="*370*1*1*"+receiver+"*"+amount+"#";
-  statusEl.textContent="تحقق من اسم المستفيد والمبلغ في شاشة PalPay قبل التأكيد.";
-  window.location.href="tel:"+code.replace("#","%23");
- }else if(selected==="jawwal"){
-  statusEl.textContent="أدخل خطوات التحويل داخل قائمة جوال Pay الرسمية. لا تدخل الرقم السري في أحمدكو.";
-  window.location.href="tel:*110%23";
- }else{
-  try{navigator.clipboard.writeText(receiver);statusEl.textContent="تم نسخ رقم الاستلام. راجع بيانات الحساب واسم المستفيد في تطبيق البنك قبل التحويل.";}
-  catch(_){statusEl.textContent="رقم الاستلام: "+receiver+". راجع بيانات الحساب واسم المستفيد في تطبيق البنك قبل التحويل.";}
- }
+ const msg="مرحباً أحمدكو، أريد شحن محفظتي بمبلغ "+amount+" شيكل عبر "+config[selected].title+". يرجى إرسال بيانات الاستلام الرسمية المعتمدة واسم المستفيد قبل أن أنفذ أي تحويل.";
+ statusEl.textContent="رقم 0598407547 للتواصل مع المكتب فقط، وليس رقم حساب بنكي. اطلب بيانات الدفع المعتمدة أولاً.";
+ window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
 });
 async function loadWallet(){
  const {data:{session},error:sessionError}=await db.auth.getSession();
@@ -225,6 +217,8 @@ document.getElementById("notifyOffice").addEventListener("click",async()=>{
  }catch(e){statusEl.textContent="تعذر تسجيل طلب الشحن: "+(e.message||"تأكد من تفعيل جداول المحفظة في Supabase.");}
  finally{button.disabled=false;}
 });
+document.getElementById("refreshWallet").addEventListener("click",async()=>{const b=document.getElementById("refreshWallet");b.disabled=true;b.textContent="جارٍ التحديث...";try{await loadWallet();}catch(e){walletAccountState.textContent="تعذر تحديث المحفظة: "+(e.message||"حاول مجدداً.");}finally{b.disabled=false;b.textContent="تحديث الرصيد";}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadWallet().catch(e=>console.warn("Wallet refresh:",e));});
 loadWallet().catch(e=>{walletAccountState.textContent="تعذر تحميل المحفظة: "+(e.message||"تحقق من إعداد قاعدة البيانات.");walletHistoryEl.textContent="قد تحتاج إلى تشغيل customer_wallet.sql في Supabase أولاً.";});
 </script>
 <script src="live-app.js?v=48" defer></script>
