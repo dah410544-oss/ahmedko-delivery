@@ -18,6 +18,7 @@ button,.button{border:0;border-radius:10px;background:var(--navy);color:#fff;pad
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.message{padding:11px;border-radius:10px;background:#edf2f8;color:#334155;font-size:13px;margin-top:12px;white-space:pre-wrap}.message.error{background:#fff0ef;color:#a93232}.message.success{background:#eaf8f1;color:#137a4a}
 .otp-row{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:end}.otp-row button{white-space:nowrap}
 .orders{display:grid;gap:10px;margin-top:14px}.order{border:1px solid var(--line);border-radius:12px;padding:13px}.order h3{font-size:14px;margin:0 0 7px}.order p{font-size:12px;color:#526176;margin:3px 0;overflow-wrap:anywhere}.tag{display:inline-block;border-radius:30px;padding:2px 9px;background:#fff4cc;color:#725400;font-size:11px;font-weight:bold}.order-id{font-size:11px;color:#64748b;direction:ltr;display:inline-block;overflow-wrap:anywhere}
+.order-progress{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:13px 0 10px}.progress-step{min-width:0;text-align:center;font-size:10px;color:#94a3b8;position:relative}.progress-step:before{content:"";display:block;height:5px;border-radius:9px;background:#e2e8f0;margin:0 2px 6px}.progress-step.done{color:#137a4a;font-weight:bold}.progress-step.done:before{background:#16a36a}.progress-step.current{color:#071A35;font-weight:900}.progress-step.current:before{background:#F5C32B}.cancelled-note{background:#fff0ef;color:#a93232;padding:9px;border-radius:9px;font-size:12px;margin:10px 0}
 footer{text-align:center;color:#64748b;font-size:11px;padding:24px}
 @media(max-width:720px){.grid{grid-template-columns:1fr}main{margin:14px auto}.intro{padding:19px}.row{grid-template-columns:1fr}.otp-row{grid-template-columns:1fr}.otp-row button{width:100%}}
 </style>
@@ -179,7 +180,12 @@ async function loadCustomerOrders(silent=true){
   }else{
    orders.forEach(order=>{
     const article=document.createElement("article");article.className="order";
-    article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3><p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع المكتب":esc(order.delivery_price)+" ₪")+'</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
+    const stages=[["new","استلام"],["confirmed","تأكيد"],["assigned","تعيين السائق"],["picked_up","استلام السائق"],["delivered","تسليم"]];
+    const stageIndex=stages.findIndex(stage=>stage[0]===order.status);
+    const progress=order.status==="cancelled"
+     ?'<div class="cancelled-note">تم إلغاء هذا الطلب. تواصل مع المكتب إذا كنت بحاجة إلى توضيح.</div>'
+     :'<div class="order-progress" aria-label="مراحل الطلب">'+stages.map((stage,index)=>'<div class="progress-step '+(index<stageIndex?'done':index===stageIndex?'current':'')+'"><span>'+stage[1]+'</span></div>').join("")+'</div>';
+    article.innerHTML='<h3>طلب أحمدكو <span class="tag">'+esc(statusNames[order.status]||order.status)+'</span></h3>'+progress+'<p>رقم الطلب: <span class="order-id">'+esc(order.order_id)+'</span></p><p>الاستلام: '+esc(order.pickup_address)+'</p><p>التسليم: '+esc(order.delivery_address)+'</p><p>وسيلة الطلب: '+esc(order.order_type)+'</p><p>أجرة التوصيل: '+(order.delivery_price===null||order.delivery_price===undefined?"قيد الاتفاق مع المكتب":esc(order.delivery_price)+" ₪")+'</p><p>تاريخ الطلب: '+esc(new Date(order.created_at).toLocaleString("ar-PS"))+'</p>';
     $("ordersList").appendChild(article);
    });
   }
