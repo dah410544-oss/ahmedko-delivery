@@ -202,19 +202,29 @@ document.getElementById("notifyOffice").addEventListener("click",async()=>{
  const amount=validAmount();if(!amount)return;
  const button=document.getElementById("notifyOffice");
  button.disabled=true;statusEl.textContent="جارٍ تسجيل طلب الشحن...";
+ let requestId=null;
  try{
   const {data:{session},error:sessionError}=await db.auth.getSession();
   if(sessionError)throw sessionError;
   if(!session?.user){statusEl.textContent="سجّل الدخول برقم الهاتف أولاً قبل تسجيل طلب الشحن.";return;}
   const methods={palpay:"palpay",jawwal:"jawwal_pay",bank:"bank_transfer"};
   const ref=document.getElementById("reference").value.trim();
-  const {data:requestId,error}=await db.rpc("wallet_request_topup",{p_amount:Number(amount),p_payment_method:methods[selected],p_payment_reference:ref||null});
+  const {data,error}=await db.rpc("wallet_request_topup",{p_amount:Number(amount),p_payment_method:methods[selected],p_payment_reference:ref||null});
   if(error)throw error;
-  const msg="مرحباً أحمدكو، تم تسجيل طلب شحن محفظتي في التطبيق.\nرقم الطلب: "+requestId+"\nوسيلة الدفع: "+config[selected].title+"\nرقم التواصل مع المكتب: "+receiver+" (ليس رقم حساب التحويل)\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+(ref||"لم يُدخل")+"\nيرجى مطابقة الدفعة وإشعاري بعد المراجعة.";
+  requestId=data;
   statusEl.textContent="تم تسجيل طلب الشحن بانتظار مراجعة المكتب. لا يصبح الرصيد متاحاً إلا بعد اعتماد الدفعة.";
-  await loadWallet();
+  try{await loadWallet();}
+  catch(refreshError){
+   walletAccountState.textContent="تم تسجيل طلبك، لكن تعذر تحديث عرض الرصيد الآن. اضغط «تحديث الرصيد» لاحقاً.";
+   statusEl.textContent="تم تسجيل الطلب بنجاح. تعذر تحديث السجل مؤقتاً، ولم يُلغَ الطلب.";
+  }
+  const msg="مرحباً أحمدكو، تم تسجيل طلب شحن محفظتي في التطبيق.\nرقم الطلب: "+requestId+"\nوسيلة الدفع: "+config[selected].title+"\nرقم التواصل مع المكتب: "+receiver+" (ليس رقم حساب التحويل)\nالمبلغ: "+amount+" ₪\nمرجع العملية: "+(ref||"لم يُدخل")+"\nيرجى مطابقة الدفعة وإشعاري بعد المراجعة.";
   window.location.href="https://wa.me/972598407547?text="+encodeURIComponent(msg);
- }catch(e){statusEl.textContent="تعذر تسجيل طلب الشحن: "+(e.message||"تأكد من تفعيل جداول المحفظة في Supabase.");}
+ }catch(e){
+  statusEl.textContent=requestId
+   ?"تم تسجيل طلبك بنجاح، لكن حدث خطأ بعد التسجيل. لا تعِد الطلب؛ تواصل مع المكتب برقم الطلب "+requestId+"."
+   :"تعذر تسجيل طلب الشحن: "+(e.message||"تأكد من تفعيل جداول المحفظة في Supabase.");
+ }
  finally{button.disabled=false;}
 });
 document.getElementById("refreshWallet").addEventListener("click",async()=>{const b=document.getElementById("refreshWallet");b.disabled=true;b.textContent="جارٍ التحديث...";try{await loadWallet();}catch(e){walletAccountState.textContent="تعذر تحديث المحفظة: "+(e.message||"حاول مجدداً.");}finally{b.disabled=false;b.textContent="تحديث الرصيد";}});
