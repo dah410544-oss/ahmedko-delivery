@@ -102,6 +102,34 @@ $function$;
 revoke all on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) from public;
 grant execute on function public.create_customer_order(text,text,text,text,uuid,uuid,text,text,text) to anon, authenticated;
 
+-- After OTP verification, safely attach previous anonymous orders matching this verified phone.
+create or replace function public.wallet_claim_orders_by_phone()
+returns integer
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $function$
+declare
+  v_phone text;
+  v_count integer;
+begin
+  if auth.uid() is null then raise exception 'سجّل الدخول برقم الهاتف أولاً.'; end if;
+  select right(regexp_replace(coalesce(phone,''), '[^0-9]', '', 'g'), 9)
+    into v_phone from auth.users where id = auth.uid();
+  if v_phone is null or length(v_phone) <> 9 then
+    raise exception 'تعذر التحقق من رقم الهاتف المرتبط بحسابك.';
+  end if;
+  update public.orders
+  set customer_user_id = auth.uid()
+  where customer_user_id is null
+    and right(regexp_replace(coalesce(customer_phone,''), '[^0-9]', '', 'g'), 9) = v_phone;
+  get diagnostics v_count = row_count;
+  return v_count;
+end;
+$function$;
+revoke all on function public.wallet_claim_orders_by_phone() from public, anon;
+grant execute on function public.wallet_claim_orders_by_phone() to authenticated;
+
 -- A customer may pay only their own confirmed order, once, using a locked wallet balance.
 create or replace function public.wallet_pay_delivery_order(p_order_id uuid)
 returns jsonb
