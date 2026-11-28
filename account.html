@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -64,15 +65,144 @@ const normalizePhone=value=>{let d=String(value||"").replace(/\D/g,"");if(d.star
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 let verifiedPhone="";
 function showCode(on){$("codeArea").style.display=on?"block":"none";}
-async function sendCode(event){event.preventDefault();const phone=normalizePhone($("phone").value);if(phone.length<10){setMsg("customerMessage","تحقق من رقم الهاتف وحاول مرة أخرى.","error");return;}const b=$("sendCode");b.disabled=true;setMsg("customerMessage","جارٍ إرسال رمز التحقق...");try{const {error}=await db.auth.signInWithOtp({phone,options:{shouldCreateUser:true}});if(error)throw error;verifiedPhone=phone;showCode(true);setMsg("customerMessage","تم طلب الرمز. أدخل رمز الرسالة النصية لإكمال الدخول.","success");$("code").focus();}catch(e){setMsg("customerMessage","لم نتمكن من إرسال الرمز: "+(e.message||"تحقق من إعداد خدمة SMS في Supabase."),"error");}finally{b.disabled=false;}}
-async function loadOrders(){const b=$("refreshOrders");b.disabled=true;try{const {data,error}=await db.rpc("get_my_customer_orders");if(error)throw error;const rows=data||[];$("orders").innerHTML=rows.length?rows.map(o=>'<article class="order"><strong>طلب #'+esc(String(o.order_id).slice(0,8))+'</strong><small>الحالة: '+esc(o.status)+'</small><small>من: '+esc(o.pickup_address)+'</small><small>إلى: '+esc(o.delivery_address)+'</small><small>الأجرة: '+(o.delivery_price==null?"قيد الاتفاق":esc(o.delivery_price)+" ₪")+'</small></article>').join(""):'<div class="message">لا توجد طلبات مرتبطة بهذا الرقم حالياً.</div>';}catch(e){setMsg("customerMessage","تم التحقق من الهاتف، لكن تعذر تحميل الطلبات: "+e.message,"error");}finally{b.disabled=false;}}
-async function verifyCode(){const token=$("code").value.trim();if(!verifiedPhone||!token){setMsg("customerMessage","أدخل رمز التحقق أولاً.","error");return;}const b=$("verifyCode");b.disabled=true;setMsg("customerMessage","جارٍ تأكيد الرمز...");try{const {error}=await db.auth.verifyOtp({phone:verifiedPhone,token,type:"sms"});if(error)throw error;$("accountArea").style.display="block";$("phoneForm").style.display="none";showCode(false);setMsg("customerMessage","تم التحقق من رقمك بنجاح. أهلاً بك في أحمدكو.","success");await loadOrders();}catch(e){setMsg("customerMessage","لم ينجح التحقق: "+(e.message||"الرمز غير صحيح أو انتهت صلاحيته."),"error");}finally{b.disabled=false;}}
-async function routeStaff(user){setMsg("teamMessage","تم التحقق من بيانات الدخول. جارٍ تحديد صلاحيات حسابك...");$("teamMessage").hidden=false;const admin=await db.from("user_roles").select("role").eq("user_id",user.id).maybeSingle();if(admin.error)throw admin.error;if(admin.data?.role==="admin"){location.replace("./admin.html");return;}const driver=await db.from("drivers").select("id").eq("user_id",user.id).limit(1);if(driver.error)throw driver.error;if(driver.data?.length){location.replace("./driver.html");return;}const store=await db.from("store_users").select("store_id").eq("user_id",user.id).limit(1);if(store.error)throw store.error;if(store.data?.length){location.replace("./restaurant.html");return;}await db.auth.signOut();throw new Error("بيانات الدخول صحيحة، لكن لا توجد صلاحية سائق أو مطعم أو مدير مرتبطة بهذا الحساب. تواصل مع مكتب أحمدكو لتفعيلها.");}
-$("phoneForm").addEventListener("submit",sendCode);$("verifyCode").addEventListener("click",verifyCode);$("refreshOrders").addEventListener("click",loadOrders);
-$("teamToggle").addEventListener("click",()=>{const on=$("teamArea").style.display!=="block";$("teamArea").style.display=on?"block":"none";$("teamToggle").textContent=on?"إخفاء دخول الفريق":"دخول فريق أحمدكو";});
-$("teamForm").addEventListener("submit",async e=>{e.preventDefault();const b=$("teamLogin");b.disabled=true;$("teamMessage").hidden=false;setMsg("teamMessage","جارٍ التحقق من الحساب...");try{const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;if(!data.user)throw new Error("لم يتم العثور على حساب صالح.");await routeStaff(data.user);}catch(err){setMsg("teamMessage",err.message||"تعذر تسجيل الدخول.","error");}finally{b.disabled=false;}});
-$("logoutCustomer").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
-(async()=>{try{const {data,error}=await db.auth.getSession();if(error)throw error;if(data.session?.user?.phone){verifiedPhone=data.session.user.phone;$("phone").value=verifiedPhone;$("phoneForm").style.display="none";$("accountArea").style.display="block";setMsg("customerMessage","أنت مسجل الدخول بالفعل.","success");await loadOrders();}}catch(e){console.warn("Ahmedko session check:",e);}})();
+
+async function sendCode(event){
+  event.preventDefault();
+  const phone=normalizePhone($("phone").value);
+  if(phone.length<10){
+    setMsg("customerMessage","تحقق من رقم الهاتف وحاول مرة أخرى.","error");
+    return;
+  }
+  const b=$("sendCode");
+  b.disabled=true;
+  setMsg("customerMessage","جارٍ إرسال رمز التحقق عبر واتساب...");
+  try{
+    const {error}=await db.auth.signInWithOtp({
+      phone,
+      options:{
+        shouldCreateUser:true,
+        channel:"whatsapp"
+      }
+    });
+    if(error)throw error;
+    verifiedPhone=phone;
+    showCode(true);
+    setMsg("customerMessage","تم طلب الرمز عبر واتساب. أدخل رمز التحقق الذي وصلك لإكمال الدخول.","success");
+    $("code").focus();
+  }catch(e){
+    setMsg("customerMessage","لم نتمكن من إرسال الرمز: "+(e.message||"تحقق من إعداد مزود WhatsApp في Supabase وبيانات Twilio."),"error");
+  }finally{
+    b.disabled=false;
+  }
+}
+
+async function loadOrders(){
+  const b=$("refreshOrders");
+  b.disabled=true;
+  try{
+    const {data,error}=await db.rpc("get_my_customer_orders");
+    if(error)throw error;
+    const rows=data||[];
+    $("orders").innerHTML=rows.length?rows.map(o=>'<article class="order"><strong>طلب #'+esc(String(o.order_id).slice(0,8))+'</strong><small>الحالة: '+esc(o.status)+'</small><small>من: '+esc(o.pickup_address)+'</small><small>إلى: '+esc(o.delivery_address)+'</small><small>الأجرة: '+(o.delivery_price==null?"قيد الاتفاق":esc(o.delivery_price)+" ₪")+'</small></article>').join(""):'<div class="message">لا توجد طلبات مرتبطة بهذا الرقم حالياً.</div>';
+  }catch(e){
+    setMsg("customerMessage","تم التحقق من الهاتف، لكن تعذر تحميل الطلبات: "+e.message,"error");
+  }finally{
+    b.disabled=false;
+  }
+}
+
+async function verifyCode(){
+  const token=$("code").value.trim();
+  if(!verifiedPhone||!token){
+    setMsg("customerMessage","أدخل رمز التحقق أولاً.","error");
+    return;
+  }
+  const b=$("verifyCode");
+  b.disabled=true;
+  setMsg("customerMessage","جارٍ تأكيد الرمز...");
+  try{
+    const {error}=await db.auth.verifyOtp({phone:verifiedPhone,token,type:"sms"});
+    if(error)throw error;
+    $("accountArea").style.display="block";
+    $("phoneForm").style.display="none";
+    showCode(false);
+    setMsg("customerMessage","تم التحقق من رقمك بنجاح. أهلاً بك في أحمدكو.","success");
+    await loadOrders();
+  }catch(e){
+    setMsg("customerMessage","لم ينجح التحقق: "+(e.message||"الرمز غير صحيح أو انتهت صلاحيته."),"error");
+  }finally{
+    b.disabled=false;
+  }
+}
+
+async function routeStaff(user){
+  setMsg("teamMessage","تم التحقق من بيانات الدخول. جارٍ تحديد صلاحيات حسابك...");
+  $("teamMessage").hidden=false;
+  const admin=await db.from("user_roles").select("role").eq("user_id",user.id).maybeSingle();
+  if(admin.error)throw admin.error;
+  if(admin.data?.role==="admin"){location.replace("./admin.html");return;}
+  const driver=await db.from("drivers").select("id").eq("user_id",user.id).limit(1);
+  if(driver.error)throw driver.error;
+  if(driver.data?.length){location.replace("./driver.html");return;}
+  const store=await db.from("store_users").select("store_id").eq("user_id",user.id).limit(1);
+  if(store.error)throw store.error;
+  if(store.data?.length){location.replace("./restaurant.html");return;}
+  await db.auth.signOut();
+  throw new Error("بيانات الدخول صحيحة، لكن لا توجد صلاحية سائق أو مطعم أو مدير مرتبطة بهذا الحساب. تواصل مع مكتب أحمدكو لتفعيلها.");
+}
+
+$("phoneForm").addEventListener("submit",sendCode);
+$("verifyCode").addEventListener("click",verifyCode);
+$("refreshOrders").addEventListener("click",loadOrders);
+
+$("teamToggle").addEventListener("click",()=>{
+  const on=$("teamArea").style.display!=="block";
+  $("teamArea").style.display=on?"block":"none";
+  $("teamToggle").textContent=on?"إخفاء دخول الفريق":"دخول فريق أحمدكو";
+});
+
+$("teamForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const b=$("teamLogin");
+  b.disabled=true;
+  $("teamMessage").hidden=false;
+  setMsg("teamMessage","جارٍ التحقق من الحساب...");
+  try{
+    const {data,error}=await db.auth.signInWithPassword({
+      email:$("email").value.trim(),
+      password:$("password").value
+    });
+    if(error)throw error;
+    if(!data.user)throw new Error("لم يتم العثور على حساب صالح.");
+    await routeStaff(data.user);
+  }catch(err){
+    setMsg("teamMessage",err.message||"تعذر تسجيل الدخول.","error");
+  }finally{
+    b.disabled=false;
+  }
+});
+
+$("logoutCustomer").addEventListener("click",async()=>{
+  await db.auth.signOut();
+  location.reload();
+});
+
+(async()=>{
+  try{
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
+    if(data.session?.user?.phone){
+      verifiedPhone=data.session.user.phone;
+      $("phone").value=verifiedPhone;
+      $("phoneForm").style.display="none";
+      $("accountArea").style.display="block";
+      setMsg("customerMessage","أنت مسجل الدخول بالفعل.","success");
+      await loadOrders();
+    }
+  }catch(e){
+    console.warn("Ahmedko session check:",e);
+  }
+})();
 </script>
 </body>
 </html>
