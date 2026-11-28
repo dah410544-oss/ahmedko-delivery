@@ -80,6 +80,14 @@ function startDriverRealtime(){
 const vehicleNames={bicycle:"دراجة عادية",electric_bicycle:"دراجة كهربائية",motorcycle:"دراجة نارية",car:"سيارة / جيب",tuk_tuk:"توك توك",bus:"باص"};
 const statusNames={new:"طلب جديد",confirmed:"تم التأكيد",assigned:"تم إسناده إليك",picked_up:"تم الاستلام",delivered:"تم التسليم",cancelled:"ملغي"};
 const esc=v=>String(v??"—").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+function normalizeWhatsAppPhone(value){
+ let digits=String(value||"").replace(/\D/g,"");
+ if(digits.startsWith("00"))digits=digits.slice(2);
+ if(digits.startsWith("970")||digits.startsWith("972"))return digits;
+ if(digits.startsWith("0"))return "970"+digits.slice(1);
+ if(digits.length===9&&digits.startsWith("5"))return "970"+digits;
+ return digits;
+}
 function msg(id,text,type){const el=$(id);el.textContent=text;el.className="message"+(type?" "+type:"");}
 function show(id,on){$(id).classList.toggle("hidden",!on);}
 async function signIn(){
@@ -150,7 +158,11 @@ async function loadOrders(silent=false){
    const nextStatus=o.status==="assigned"?"picked_up":o.status==="picked_up"?"delivered":null;
    const actionLabel=nextStatus==="picked_up"?"تأكيد استلام الطلب":nextStatus==="delivered"?"تأكيد تسليم الطلب":null;
    const text="طلب أحمدكو رقم: "+o.id+"\\nالزبون: "+(o.customer_name||"—")+"\\nالاستلام: "+(o.pickup_address||"—")+"\\nالتسليم: "+(o.delivery_address||"—")+"\\nالحالة: "+(statusNames[o.status]||o.status);
-   card.innerHTML='<h3>طلب توصيل <span class="tag">'+esc(statusNames[o.status]||o.status)+'</span></h3><p>الزبون: '+esc(o.customer_name)+'</p><p>هاتف الزبون: '+esc(o.customer_phone)+'</p><p>الاستلام: '+esc(o.pickup_address)+'</p><p>التسليم: '+esc(o.delivery_address)+'</p><p>نوع الطلب: '+esc(o.order_type)+'</p><p>ملاحظات: '+esc(o.notes)+'</p><p>أجرة التوصيل: '+esc(o.delivery_price)+' ₪</p><div class="actions"><a class="btn yellow" target="_blank" rel="noopener" href="https://wa.me/972598407547?text='+encodeURIComponent(text)+'">إبلاغ المكتب عن الطلب</a></div><div class="message workflow-status" aria-live="polite"></div>';
+   const customerWa=normalizeWhatsAppPhone(o.customer_phone);
+   const customerContact=customerWa.length>=10
+    ?'<a class="btn yellow" target="_blank" rel="noopener" href="https://wa.me/'+encodeURIComponent(customerWa)+'?text='+encodeURIComponent("مرحباً "+(o.customer_name||"")+", أنا سائق أحمدكو بخصوص طلبك رقم "+String(o.id).slice(0,8)+".")+'">مراسلة الزبون</a><a class="btn" href="tel:+'+encodeURIComponent(customerWa)+'">اتصال بالزبون</a>'
+    :'';
+   card.innerHTML='<h3>طلب توصيل <span class="tag">'+esc(statusNames[o.status]||o.status)+'</span></h3><p>الزبون: '+esc(o.customer_name)+'</p><p>هاتف الزبون: '+esc(o.customer_phone)+'</p><p>الاستلام: '+esc(o.pickup_address)+'</p><p>التسليم: '+esc(o.delivery_address)+'</p><p>نوع الطلب: '+esc(o.order_type)+'</p><p>ملاحظات: '+esc(o.notes)+'</p><p>أجرة التوصيل: '+(o.delivery_price==null?"قيد الاتفاق مع المكتب":esc(o.delivery_price)+" ₪")+'</p><div class="actions">'+customerContact+'<a class="btn" target="_blank" rel="noopener" href="https://wa.me/972598407547?text='+encodeURIComponent(text)+'">إبلاغ المكتب عن الطلب</a></div><div class="message workflow-status" aria-live="polite"></div>';
    const actions=card.querySelector(".actions");
    if(actionLabel){
     const button=document.createElement("button");button.type="button";button.className="yellow";button.textContent=actionLabel;
