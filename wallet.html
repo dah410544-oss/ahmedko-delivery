@@ -71,6 +71,12 @@ button{transition:transform .18s ease,box-shadow .18s ease}
 button:active{transform:scale(.98)}
 @media(max-width:480px){.panel{padding:16px}.hero{padding:20px}.hero h1{font-size:23px}}
 
+
+.quick-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:9px}
+.quick-amounts button{background:rgba(245,195,43,.10);border:1px solid rgba(245,195,43,.35);color:#ffe08a;padding:9px 5px;border-radius:10px;font-size:13px}
+.quick-amounts button:focus,.quick-amounts button:hover{background:#f5c32b;color:#071a35}
+#walletHistory{margin-top:10px;color:#d8e4f1;line-height:1.8}
+#notifyOffice:disabled,#startTransfer:disabled{opacity:.6;cursor:wait}
 </style>
 </head>
 <body>
@@ -96,6 +102,7 @@ button:active{transform:scale(.98)}
  </div>
  <label for="amount">2. مبلغ التحويل (شيكل)</label>
  <input id="amount" type="number" inputmode="decimal" min="1" max="50000" step="0.01" placeholder="مثال: 50">
+ <div class="quick-amounts" aria-label="مبالغ شحن سريعة"><button type="button" data-amount="20">20 ₪</button><button type="button" data-amount="50">50 ₪</button><button type="button" data-amount="100">100 ₪</button><button type="button" data-amount="200">200 ₪</button></div>
  <div class="recipient">
   <div><small id="recipientLabel">رقم الاستلام الذي زوّدتنا به</small><strong>0598407547</strong></div>
   <button class="copy" id="copyNumber" type="button">نسخ الرقم</button>
@@ -128,6 +135,7 @@ const walletHistoryEl=document.getElementById("walletHistory");
 const walletLoginHint=document.getElementById("walletLoginHint");
 const safeText=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll(String.fromCharCode(34),"&quot;");
 const receiver="0598407547";
+document.querySelectorAll("[data-amount]").forEach(b=>b.addEventListener("click",()=>{amountEl.value=b.dataset.amount;statusEl.textContent="تم اختيار "+b.dataset.amount+" شيكل.";}));
 const amountEl=document.getElementById("amount");
 const statusEl=document.getElementById("status");
 const noteEl=document.getElementById("methodNote");
