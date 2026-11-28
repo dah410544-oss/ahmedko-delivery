@@ -262,6 +262,12 @@ grant execute on function public.wallet_review_topup(uuid,boolean,text) to authe
 
 grant select on public.wallet_accounts, public.wallet_payment_methods,
   public.wallet_topup_requests, public.wallet_transactions to authenticated;
+
+-- Defense in depth: client roles must never write balances, top-up requests,
+-- or ledger rows directly. All changes go through the guarded RPC functions.
+revoke insert, update, delete, truncate, references, trigger
+  on public.wallet_accounts, public.wallet_topup_requests, public.wallet_transactions
+  from anon, authenticated;
  
 -- Admin-only queue with customer contact details for the wallet review screen.
 create or replace function public.wallet_admin_list_topups()
