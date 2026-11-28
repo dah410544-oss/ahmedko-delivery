@@ -89,4 +89,29 @@ if (!driver.includes('rpc("driver_update_order_status"')) {
   throw new Error("Driver status updates are not routed through the protected RPC.");
 }
 
-console.log("AHMEDKO release validation passed: all app pages, manifest, app identity, privacy page and protected flows.");
+if (!customer.includes('channel:"whatsapp"') || !customer.includes('type:"sms"')) {
+  throw new Error("Customer tracking must request WhatsApp OTP and verify it with Supabase type sms.");
+}
+
+const wallet = await readFile("www/wallet.html", "utf8");
+if (!wallet.includes('from("wallet_transactions")') ||
+    !wallet.includes('.eq("user_id",walletUser.id)') ||
+    !wallet.includes('rpc("wallet_request_topup"')) {
+  throw new Error("Customer wallet ledger or user-scoped top-up workflow is incomplete.");
+}
+
+const serviceWorker = await readFile("www/service-worker.js", "utf8");
+for (const asset of ['privacy.html','taj-menu.html','auto-o2-menu.js','manifest.webmanifest','icon.svg']) {
+  if (!serviceWorker.includes('appUrl("' + asset + '")')) {
+    throw new Error("Offline app shell is missing " + asset);
+  }
+}
+
+const manualPricing = await readFile("supabase/allow_manual_order_pricing.sql", "utf8");
+if (!manualPricing.includes("v_price_count = 0") ||
+    !manualPricing.includes("v_delivery_price := null") ||
+    !manualPricing.includes("notify pgrst, 'reload schema'")) {
+  throw new Error("Manual office-agreed delivery pricing migration is incomplete.");
+}
+
+console.log("AHMEDKO release validation passed: app pages, offline shell, WhatsApp OTP, wallet ledger, manual pricing migration and protected partner flows.");
